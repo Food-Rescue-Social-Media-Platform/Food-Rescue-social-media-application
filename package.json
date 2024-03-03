@@ -6,5 +6,10 @@
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.0.2"
+  },
+  "dependencies": {
+    "@react-navigation/native": "^6.1.14",
+    "react-native-safe-area-context": "^4.9.0",
+    "react-native-screens": "^3.29.0"
   }
 }

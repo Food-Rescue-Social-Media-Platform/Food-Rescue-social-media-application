@@ -19,19 +19,19 @@ const OnboardingScreen = ({navigation}) => {
         pages={[
             {
             backgroundColor: '#e9bcbe',
-            image: <Image source={require('../assets/onboarding-img1.png')} />,
+            image: <Image source={require('../assets/Images/onboarding-img1.png')} />,
             title: 'Connect to our Awesome Community',
             subtitle: 'A New Way to Save Food from Wasting',
             },
             {
             backgroundColor: '#fdeb93',
-            image: <Image source={require('../assets/onboarding-img2.png')} />,
+            image: <Image source={require('../assets/Images/onboarding-img2.png')} />,
             title: 'Share Your Food',
             subtitle: 'Share your Surplus Food',
             },
             {
             backgroundColor: '#a6e4d0',
-            image: <Image source={require('../assets/onboarding-img3.png')} />,
+            image: <Image source={require('../assets/Images/onboarding-img3.png')} />,
             title: 'Become An Advertising Star',
             subtitle: 'Be One of the Food Rescuer to Reducing Food Waste',
             },

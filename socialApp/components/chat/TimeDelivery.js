@@ -1,5 +1,4 @@
 import { View, Text, StyleSheet } from 'react-native';
-import { Icon } from 'native-base';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { COLORS } from '../Constant/Color';
@@ -20,24 +19,24 @@ const TimeDelivery = (props) => {
             {MsgComponent(item.sent_time).format('LLL')}
             </Text>
 
-            <Icon
-              name = {"checkmark-done"}
-              type = "Ionicons"
-              style = {{color: item.seen ? COLORS.black: COLORS.white , fontSize: 15, marginLeft: 5}}
-            />
-        </View>
+            </View>
+            
+            )
+        }
         
-    )
-}
-
-
-const styles = StyleSheet.create({
-    mainView: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 2
-    }
+        
+        const styles = StyleSheet.create({
+            mainView: {
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginBottom: 2
+            }
 })
 
 
 export default TimeDelivery;
+// <Icon
+//   name = {"checkmark-done"}
+//   type = "Ionicons"
+//   style = {{color: item.seen ? COLORS.black: COLORS.white , fontSize: 15, marginLeft: 5}}
+// />

@@ -4,19 +4,39 @@ import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialButton from '../components/SocialButton';
 
-const LoginScreen = ({ navigation }) => {
+const SignUpScreen = ({ navigation }) => {
+  const[firstName, setFirstName] = useState('');
+  const[lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const[phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
+  
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
-        <Image
-          source={require('../assets/Images/PhoneAuthLogo.png')}
-          style={styles.logo}
+
+        <Text style={styles.text}>Sign up</Text>
+        
+        <FormInput
+          placeHolderText="Fisrt Name"
+          iconType="id-card"
+          labelValue={firstName}
+          onChangeText={(firstName) => setEmail(setFirstName)}
+          autoCapitalize="none"
+          autoCorrect={false}
         />
-        <Text style={styles.text}>Sign in</Text>
-        <Text style={{ paddingBottom: 10 }}>Rescue The Food From Wasting</Text>
+
+        <FormInput
+          placeHolderText="Last Name"
+          iconType="id-card"
+          labelValue={lastName}
+          onChangeText={(lastName) => setLastName(lastName)}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+
         <FormInput
           placeHolderText="Email"
           iconType="email"
@@ -26,6 +46,17 @@ const LoginScreen = ({ navigation }) => {
           autoCapitalize="none"
           autoCorrect={false}
         />
+
+        <FormInput
+          placeHolderText="Phone Number"
+          iconType="phone"
+          keyboardType="phone-pad"
+          labelValue={phoneNumber}
+          onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+
         <FormInput
           placeHolderText="Password"
           iconType="lock"
@@ -33,20 +64,35 @@ const LoginScreen = ({ navigation }) => {
           onChangeText={(userPassword) => setPassword(userPassword)}
           secureTextEntry={true}
         />
-        <View style={styles.forgotButton} onPress={() => {}}>
-          <TouchableOpacity>
-            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }}>Forgot your Password ?</Text>
-          </TouchableOpacity>
-        </View>
-        <FormButton
-          buttonTitle="Sign in"
-          onPress={() => alert('Sign In Clicked')}
+
+        <FormInput
+          placeHolderText="Confirm Password"
+          iconType="lock-check"
+          labelValue={confirmPassword}
+          onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
+          secureTextEntry={true}
         />
+
+        <View style={styles.textPrivate}>
+            <Text style={styles.color_textPrivate}>By registering, you confirm that you accept our{' '}</Text>
+            <TouchableOpacity onPress={() => alert('Terms Clicked!')}>
+                <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Terms of service</Text>
+            </TouchableOpacity>
+            <Text style={styles.color_textPrivate}> and </Text>
+            <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Privacy Policy</Text>
+        </View>
+
+        <FormButton
+          buttonTitle="Sign up"
+          onPress={() => alert('Sign Up Clicked')}
+        />
+
         <View style={styles.orRowContainer}>
           <View style={styles.line}></View>
           <Text style={styles.orText}>or</Text>
           <View style={styles.line}></View>
         </View>
+
         <View style={styles.SocialButtonContainer}>
             <SocialButton
                 buttonTitle="Sign In with Facebook"
@@ -63,23 +109,25 @@ const LoginScreen = ({ navigation }) => {
                 onPress={() => {}}
             />
         </View>
+
         <View style={styles.createAccountContainer}>
-          <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
+          <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>Already have an account? </Text>
           <TouchableOpacity>
-            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>Sign up</Text>
+            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>Sign in</Text>
           </TouchableOpacity>
         </View>
+
       </View>
     </View>
   );
 };
 
-export default LoginScreen;
+export default SignUpScreen;
 
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 5,
     borderBottomWidth: 0, // Add bottom border
     borderRightWidth: 0,
     borderLeftWidth: 0,
@@ -96,24 +144,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logo: {
-    height: 150,
-    width: 190,
-    resizeMode: 'cover',
-    borderRadius: 100,
-  },
   text: {
     fontFamily: 'Roboto',
     fontSize: 28,
     marginBottom: 10,
     color: '#051d5f',
-  },
-  forgotButton: {
-    width: '95%', // Set the width to 95% of the screen
-    alignItems: 'flex-end', // Align items to the right
-    color: '#34ebde',
-    paddingBottom: 8,
-    paddingTop: 10,
   },
   createAccountContainer: {
     flexDirection: 'row', // Arrange children horizontally
@@ -134,6 +169,20 @@ const styles = StyleSheet.create({
   orText: {
     width: 50,
     textAlign: 'center',
+  },
+  textPrivate: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginVertical: 10,
+    justifyContent: 'center',
+    width: '95%',
+    
+  },
+  color_textPrivate: {
+    fontSize: 13,
+    fontWeight: '400',
+    fontFamily: 'Roboto',
+    color: 'grey',
   },
   SocialButtonContainer: {
     flexDirection: 'row',

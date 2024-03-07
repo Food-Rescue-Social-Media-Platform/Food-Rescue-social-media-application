@@ -4,7 +4,7 @@ import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialButton from '../components/SocialButton';
 
-const LoginScreen = ({ navigation }) => {
+const ForgotMyPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -15,8 +15,8 @@ const LoginScreen = ({ navigation }) => {
           source={require('../assets/Images/PhoneAuthLogo.png')}
           style={styles.logo}
         />
-        <Text style={styles.text}>Sign in</Text>
-        <Text style={{ paddingBottom: 10 }}>Rescue The Food From Wasting</Text>
+        <Text style={styles.text}>Forgot My Password</Text>
+        <Text style={{ paddingBottom: 10 }}>Enter your Email to continue</Text>
         <FormInput
           placeHolderText="Email"
           iconType="email"
@@ -26,43 +26,15 @@ const LoginScreen = ({ navigation }) => {
           autoCapitalize="none"
           autoCorrect={false}
         />
-        <FormInput
-          placeHolderText="Password"
-          iconType="lock"
-          labelValue={password}
-          onChangeText={(userPassword) => setPassword(userPassword)}
-          secureTextEntry={true}
-        />
-        <View style={styles.forgotButton}>
+        <View style={styles.rememberPasswordButton}>
           <TouchableOpacity>
-            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('ForgotMyPasswordScreen')}>Forgot your Password ?</Text>
+            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>I remember my password</Text>
           </TouchableOpacity>
         </View>
         <FormButton
-          buttonTitle="Sign in"
-          onPress={() => alert('Sign In Clicked')}
+          buttonTitle="Send recovery mail"
+          onPress={() => alert('recovery button Clicked')}
         />
-        <View style={styles.orRowContainer}>
-          <View style={styles.line}></View>
-          <Text style={styles.orText}>or</Text>
-          <View style={styles.line}></View>
-        </View>
-        <View style={styles.SocialButtonContainer}>
-            <SocialButton
-                buttonTitle="Sign In with Facebook"
-                btnType="facebook"
-                color="#4867aa"
-                backgroundColor="#e6eaf4"
-                onPress={() => {}}
-            />
-            <SocialButton
-                buttonTitle="Sign In with Google"
-                btnType="google"
-                color="#de4d41"
-                backgroundColor="#f5e7ea"
-                onPress={() => {}}
-            />
-        </View>
         <View style={styles.createAccountContainer}>
           <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
           <TouchableOpacity>
@@ -74,12 +46,12 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-export default LoginScreen;
+export default ForgotMyPasswordScreen;
 
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 5,
     borderBottomWidth: 0, // Add bottom border
     borderRightWidth: 0,
     borderLeftWidth: 0,
@@ -108,7 +80,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#051d5f',
   },
-  forgotButton: {
+  rememberPasswordButton: {
     width: '95%', // Set the width to 95% of the screen
     alignItems: 'flex-end', // Align items to the right
     color: '#34ebde',

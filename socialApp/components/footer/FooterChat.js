@@ -34,12 +34,12 @@ const styles = StyleSheet.create({
         width: '100%',
         flexDirection: 'row',
         // justifyContent: 'space-between',
-        alignItems: 'center',
         padding: 10,
         bottom: 0,
         left: 0,
         right: 0,
         backgroundColor: COLORS.headerChat,
+        position: 'absolute',
     },
     windowSend :{
         // flex: 1,

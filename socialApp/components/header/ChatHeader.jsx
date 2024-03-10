@@ -2,6 +2,7 @@ import { View, Text, Image, StyleSheet, StatusBar } from "react-native";
 import { useState } from "react";
 import {COLORS} from "../../styles/colors";
 import FontAwesomeIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { windowHeight } from "../../utils/Dimentions";
 
 
 // import dotsThreeVertical from 'react-native-vector-icons/AntDesign';
@@ -22,7 +23,7 @@ const ChatHeader = (props) => {
 
 const styled = StyleSheet.create({
     container:{
-      height: 70,
+      height: windowHeight/12,
       backgroundColor: COLORS.headerChat,
       elevation: 5,
       flexDirection: 'row',

@@ -1,8 +1,8 @@
-import {View, Text, StatusBar,StyleSheet, SafeAreaView, FlatList} from "react-native";
+import {View, Text, StatusBar,StyleSheet,ImageBackground, SafeAreaView, FlatList} from "react-native";
 import React, { useState} from 'react';
 import {COLORS} from '../../styles/colors';
 import MsgComponent from "./MsgComponent";
-
+import {windowHeight, windowWidth} from '../../utils/Dimentions';
 
 const DATA = [
   {
@@ -82,47 +82,44 @@ const DATA = [
 ]
 
 
-function ListMessages() {
-  const [meId, setMeId] = useState('Me');
 
-  const renderItem = ( item ) => (
-      <View style={styles.item} key={item.id}>
-        <Text style={styles.msg}>w</Text>
+function ListMessages() {
+  const [meId, setMeId] = useState('Me'); 
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.msg}>
+      <MsgComponent
+        sender={item.sender}
+        message={item.massage}
+        item={item}
+        sendTime={'20:34'}
+      />
       </View>
-  );
+    );
+  };
 
   return (
-      <SafeAreaView style={styles.container}>
-        <FlatList
-          horizontal={true}
-          style={{ flex: 1, borderColor: 'red', borderWidth: 1 }}
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      </SafeAreaView>
+    <View style={styles.container} >
+     <FlatList
+      data={DATA}
+      renderItem={renderItem}
+      showsVerticalScrollIndicator={false}
+      keyExtractor={(item) => item.id}
+      /> 
+      </View>
   );
 }
 
 
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-    height: 500
-  },
-  item: {
-    backgroundColor: '#d9f9b1',
-    padding: 20,
-    height: 100,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
-  msg: {
-    height: 30,
-    fontSize: 32,
-  
-  },
+    marginTop:  5,
+    marginLeft: windowWidth/14,
+    marginRight: windowWidth/14,
+    height: windowHeight - StatusBar.currentHeight - windowHeight / 11 ,
+  }
 });
 
 

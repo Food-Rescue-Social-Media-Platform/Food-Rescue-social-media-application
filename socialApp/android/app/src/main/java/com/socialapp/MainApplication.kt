@@ -1,5 +1,5 @@
 package com.socialapp
-
+import io.invertase.firebase.app.ReactNativeFirebaseAppPackage
 import android.app.Application
 import android.content.res.Configuration
 import androidx.annotation.NonNull
@@ -26,7 +26,7 @@ class MainApplication : Application(), ReactApplication {
         object : DefaultReactNativeHost(this) {
           override fun getPackages(): List<ReactPackage> {
             // Packages that cannot be autolinked yet can be added manually here, for example:
-            // packages.add(new MyReactNativePackage());
+            // packages.add(new ReactNativeFirebaseAppPackage());
             return PackageList(this).packages
           }
 

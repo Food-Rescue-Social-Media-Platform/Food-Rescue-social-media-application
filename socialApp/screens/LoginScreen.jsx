@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialButton from '../components/SocialButton';
+import { AuthContext } from '../navigation/AuthProvider';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const {login} = useContext(AuthContext);
 
   return (
     <View style={styles.outerContainer}>
@@ -40,7 +42,7 @@ const LoginScreen = ({ navigation }) => {
         </View>
         <FormButton
           buttonTitle="Sign in"
-          onPress={() => alert('Sign In Clicked')}
+          onPress={() => login(email,password)}
         />
         <View style={styles.orRowContainer}>
           <View style={styles.line}></View>

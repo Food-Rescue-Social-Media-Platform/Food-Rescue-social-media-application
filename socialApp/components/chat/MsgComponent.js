@@ -1,5 +1,5 @@
 
-import { Pressable, View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import TimeDelivery from "./TimeDelivery";
 import {COLORS} from '../../styles/colors';
 
@@ -8,26 +8,30 @@ import {COLORS} from '../../styles/colors';
 const MsgComponent = (props) => {
     const { sender, message, item, sendTime } = props;
     return (
-        <View styles={{height:30}}>
-        <Text>{message}</Text>
+        <View 
+        style= {[styles.msgBox, sender === 'me'? styles.right : styles.left ]}
+        >
+        <Text >{message}</Text>
+        <Text style={styles.timeText}>{sendTime}</Text>
         </View>
         )
     }
 
 
 const styles = StyleSheet.create({
-    masBox: {
-        alignSelf: 'flex-end',
+    msgBox :{
         marginHorizontal: 10,
         minWidth: 80,
         maxWidth: '80%',
-        paddingHorizontal: 10,
         marginVertical: 5,
-        paddingTop: 5,
-        borderRadius: 8
+        padding: 6,
+        borderRadius: 8,
+        margin: 10,
     },
     timeText: {
-        fontSize: 10
+        fontSize: 10,
+        paddingTop:4,
+        alignSelf: 'flex-end',
     },
     dayview: {
         alignSelf: 'center',
@@ -49,10 +53,8 @@ const styles = StyleSheet.create({
     },
     TriangleShapeCSS: {
         position: 'absolute',
-        // top: -3,
         width: 0,
         height: 0,
-        // borderBottomLeftRadius:5,
         backgroundColor: 'transparent',
         borderStyle: 'solid',
         borderLeftWidth: 15,
@@ -60,20 +62,15 @@ const styles = StyleSheet.create({
         borderBottomWidth: 20,
         borderLeftColor: 'transparent',
         borderRightColor: 'transparent',
-        // borderBottomColor: '#757474'
     },
     left: {
-        borderBottomColor: COLORS.white,
-        left: 2,
-        bottom: 10,
-        transform: [{ rotate: '0deg' }]
+        backgroundColor: COLORS.messageNotME,
+        alignSelf: 'flex-start',
     },
     right: {
-        borderBottomColor: COLORS.theme,
-        right: 2,
-        // top:0,
-        bottom: 5,
-        transform: [{ rotate: '103deg' }]
+        backgroundColor: COLORS.theme,
+        alignSelf: 'flex-end',
+
     },
 })
 

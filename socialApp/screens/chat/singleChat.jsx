@@ -3,53 +3,8 @@ import { View, Text, StyleSheet, ImageBackground, TextInput, SectionList, Toucha
 import { useState } from 'react';
 import ChatHeader from '../../components/header/ChatHeader';
 import FooterChat from '../../components/footer/FooterChat';
+import ListMessages from '../../components/chat/ListMessages';
 
-const Data = [
-    {
-        massage: 'Yes Ofcourse..',
-        type: 'sender'
-    },
-    {
-        massage: 'How are You ?',
-        type: 'sender'
-    },
-    {
-        massage: 'How Your Opinion about the one done app ?',
-        type: 'sender'
-    },
-    {
-        massage: 'Well i am not satisfied with this design plzz make design better ',
-        type: 'receiver'
-    },
-    {
-        massage: 'could you plz change the design...',
-        type: 'receiver'
-    },
-    {
-        massage: 'How are You ?',
-        type: 'sender'
-    },
-    {
-        massage: 'How Your Opinion about the one done app ?',
-        type: 'sender'
-    },
-    {
-        massage: 'Well i am not satisfied with this design plzz make design better ',
-        type: 'receiver'
-    },
-    {
-        massage: 'could you plz change the design...',
-        type: 'receiver'
-    },
-    {
-        massage: 'How are You ?',
-        type: 'sender'
-    },
-    {
-        massage: 'How Your Opinion about the one done app ?',
-        type: 'sender'
-    }
-]
 
 
 const SingleChat = (props) => {
@@ -65,8 +20,7 @@ const SingleChat = (props) => {
     return (
         <View>
         <ChatHeader data = {dataProps}/>
-        <Text>SingleChat</Text>
-        <FooterChat />
+        <ListMessages />
         </View>
     )
 }

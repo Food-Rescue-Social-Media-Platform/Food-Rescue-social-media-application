@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import  {COLORS}  from "../../styles/colors";
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
+import { windowHeight, windowWidth } from "../../utils/Dimentions";
 
 const FooterChat = (props) => {
 
@@ -17,19 +18,11 @@ const FooterChat = (props) => {
    }
 
     return(
-        <View  style={styles.container}>
-                <TouchableOpacity onPress={handlePressSmiley} style={styles.send}>
-                    <AntDesign name='phone' size={23} color="#666" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handlePressAttach} style={styles.send}>
-                    <AntDesign name='phone' size={23} color="#666" />
-                </TouchableOpacity>
+        <View  style={styles.container}>               
                 <View style={styles.windowSend} >
                     <Text>Send message...</Text>
                 </View>
-                <TouchableOpacity onPress={handlePressSendMsg} style={styles.send}>
-                    <AntDesign name='phone' size={23} color="#666" />
-                </TouchableOpacity>
+              
         </View>
     );
 };
@@ -37,7 +30,8 @@ const FooterChat = (props) => {
 
 const styles = StyleSheet.create({
     container :{
-        height: 60,
+        height: windowHeight / 12,
+        width: '100%',
         flexDirection: 'row',
         // justifyContent: 'space-between',
         alignItems: 'center',
@@ -53,7 +47,7 @@ const styles = StyleSheet.create({
         // justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
-        width: 300,
+        width: windowWidth / 1.4,
         borderRadius: 20,
         backgroundColor: COLORS.white,
         borderTopWidth: 1,
@@ -65,7 +59,15 @@ const styles = StyleSheet.create({
     },
 });
 
-
+// <TouchableOpacity onPress={handlePressSmiley} style={styles.send}>
+//                     <AntDesign name='phone' size={23} color="#666" />
+//                 </TouchableOpacity>
+//                 <TouchableOpacity onPress={handlePressAttach} style={styles.send}>
+//                     <AntDesign name='phone' size={23} color="#666" />
+//                 </TouchableOpacity>
+//                 <TouchableOpacity onPress={handlePressSendMsg} style={styles.send}>
+//                 <AntDesign name='phone' size={23} color="#666" />
+//             </TouchableOpacity>
 
 
 export default FooterChat;

@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { COLORS } from '../Constant/Color';
+import {COLORS} from '../../styles/colors';
 
 const TimeDelivery = (props) => {
     const { sender , item} = props;
@@ -14,7 +13,7 @@ const TimeDelivery = (props) => {
             <Text  style={{
                 fontFamily: 'Poppins-Regular',
                 fontSize: 7, 
-                color: sender ? COLORS.white: COLORS.gray
+                color: COLORS.black
             }}>
             {MsgComponent(item.sent_time).format('LLL')}
             </Text>

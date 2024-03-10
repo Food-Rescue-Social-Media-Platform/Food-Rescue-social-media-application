@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth'; // Import Firebase functions
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut} from 'firebase/auth'; // Import Firebase functions
 import { auth } from '../firebase'; // Import 'auth' from firebase.js
 
 export const AuthContext = createContext();
@@ -24,6 +24,14 @@ export const AuthProvider = ({ children }) => {
                 register: async (email, password) => {
                     try {
                         await createUserWithEmailAndPassword(auth, email, password);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                },
+
+                forgotPassword: async (email) => {
+                    try {
+                        await sendPasswordResetEmail(auth, email);
                     } catch (e) {
                         console.log(e);
                     }

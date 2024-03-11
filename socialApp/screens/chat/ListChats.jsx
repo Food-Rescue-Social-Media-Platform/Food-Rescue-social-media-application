@@ -4,7 +4,6 @@ import { View, FlatList, StyleSheet, TextInput } from 'react-native';
 import {ListItem, Avatar} from 'react-native-elements';
 import {COLORS} from '../../styles/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Button, Icon } from 'react-native-elements';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
 
 const listData = [
@@ -96,11 +95,9 @@ const renderItem = ({ item }) => (
       <ListItem.Title style={{ fontSize: 14 }}>
         {item.name}
       </ListItem.Title>
-      {item.subtitle && ( // Conditionally render subtitle if it exists
         <ListItem.Subtitle numberOfLines={1} style={{ fontSize: 12 }}>
           {item.subtitle}
         </ListItem.Subtitle>
-      )}
     </ListItem.Content>
   </ListItem>
 );
@@ -108,7 +105,7 @@ const renderItem = ({ item }) => (
 return (
     <View style={styles.container}>
     <View style={styles.searchContainer}>      
-    <AntDesign name="search1" size={18} style={{flex:1}} />
+    <AntDesign name="search1" size={18} style={styles.searchIcon} />
     <TextInput style={styles.searchInput}
         value={search}
         onChangeText={(text)=> setSearch(text)}
@@ -117,7 +114,6 @@ return (
     />
     </View>
     <FlatList
-        showsVerticalScrollIndicator={true}
         keyExtractor={(item, index) => index.toString()}
         data={listData}
         renderItem={renderItem}
@@ -135,8 +131,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white
   },  
   searchContainer : {
-    backgroundColor:COLORS.messageNotME,
-    // paddingHorizontal:10,
+    width: windowWidth/1.1,
+    rounded: 10,
+    paddingHorizontal:10,
     flexDirection:'row',
     alignItems:'center',
 }, 
@@ -144,6 +141,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 1.7,
     height: windowHeight/18,
-    width: windowWidth/1.8
-} , 
+    width: windowWidth/1.8,
+
+  },
+  searchIcon:{
+    marginRight: 10,
+  } 
 });

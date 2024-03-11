@@ -95,7 +95,6 @@ const SingleChat = (props) => {
     
     return (
         <View>
-            <ChatHeader data = {dataProps}/>
             <ListMessages/>
             <FooterChat/>
         </View>

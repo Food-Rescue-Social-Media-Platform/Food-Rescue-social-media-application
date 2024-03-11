@@ -1,9 +1,11 @@
-import {Container} from 'native-base';
+// import {Container} from 'native-base';
 import React, { useState } from 'react';
-import { FlatList, StatusBar, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, TextInput } from 'react-native';
 import {ListItem, Avatar} from 'react-native-elements';
-import SearchBar from 'react-native-elements/dist/searchbar/SearchBar-ios';
 import {COLORS} from '../../styles/colors';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Button, Icon } from 'react-native-elements';
+import {windowHeight, windowWidth} from '../../utils/Dimentions';
 
 const listData = [
   {
@@ -66,54 +68,82 @@ const listData = [
       'https://static.toiimg.com/thumb.cms?msid=80482429&height=600&width=600',
     subtitle: ' If you use this site regularly and would like to help keep the site',
   },
+  {
+    name: 'BB',
+    avatar_url:
+    'https://m.media-amazon.com/images/M/MV5BOTU3NDE5MDQ4MV5BMl5BanBnXkFtZTgwMzE5ODQ3MDI@._V1_.jpg',
+    subtitle: ' What is Lorem Ipsum?',
+  },
 ];
 
-const AllUser = () => {
 
-  const [search, setsearch] = useState('')  
+const ListChats = () => {
 
-  const renderItem = ({item}) => (
-    <ListItem bottomDivider containerStyle={{paddingVertical:7,marginVertical:2}}>
-      <Avatar 
-      source={{uri: item.avatar_url}} 
+const [search, setSearch] = useState('')  
+
+const renderItem = ({ item }) => (
+  <ListItem
+    bottomDivider
+    containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
+  >
+    <Avatar
+      source={{ uri: item.avatar_url }}
       rounded
       title={item.name}
-      size="medium" />
-      <ListItem.Content>
-        <ListItem.Title style={{fontSize:14}}>
-           {item.name}
-        </ListItem.Title>
-        <ListItem.Subtitle 
-        style={{fontSize:12}}  numberOfLines={1}>
+      size="medium"
+    />
+    <ListItem.Content>
+      <ListItem.Title style={{ fontSize: 14 }}>
+        {item.name}
+      </ListItem.Title>
+      {item.subtitle && ( // Conditionally render subtitle if it exists
+        <ListItem.Subtitle numberOfLines={1} style={{ fontSize: 12 }}>
           {item.subtitle}
         </ListItem.Subtitle>
-      </ListItem.Content>
-    </ListItem>
-  );
+      )}
+    </ListItem.Content>
+  </ListItem>
+);
 
-  return (
-    <Container style={{flex: 1, backgroundColor: COLORS.white}}>
-      <StatusBar barStyle="dark-content" backgroundColor={COLORS.white} />
-       <SearchBar
-        placeholder="Search by name..."
-        onChangeText={(val)=>setsearch(val)}
+return (
+    <View style={styles.container}>
+    <View style={styles.searchContainer}>      
+    <AntDesign name="search1" size={18} style={{flex:1}} />
+    <TextInput style={styles.searchInput}
         value={search}
-        containerStyle={styles.searchContainer}
-        inputStyle={styles.searchInput}
-       />
-      <FlatList
-        showsVerticalScrollIndicator={false}
+        onChangeText={(text)=> setSearch(text)}
+        placeholder='Search User'
+        keyBoardType="string"
+    />
+    </View>
+    <FlatList
+        showsVerticalScrollIndicator={true}
         keyExtractor={(item, index) => index.toString()}
         data={listData}
         renderItem={renderItem}
-      />
-    </Container>
+    />
+    <View>
+    </View>
+    </View>
   );
 };
 
-export default AllUser;
+export default ListChats;
 
 const styles = StyleSheet.create({
-  searchContainer : {elevation:2,backgroundColor:COLORS.white,paddingHorizontal:10},
-  searchInput : {fontSize:15,color:COLORS.black,opacity:.7}
+  container:{
+    backgroundColor: COLORS.white
+  },  
+  searchContainer : {
+    backgroundColor:COLORS.messageNotME,
+    // paddingHorizontal:10,
+    flexDirection:'row',
+    alignItems:'center',
+}, 
+  searchInput: {
+    fontSize: 14,
+    opacity: 1.7,
+    height: windowHeight/18,
+    width: windowWidth/1.8
+} , 
 });

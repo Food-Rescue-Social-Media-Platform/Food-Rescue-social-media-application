@@ -2,6 +2,9 @@ import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
 import  {COLORS}  from "../../styles/colors";
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import { windowHeight, windowWidth } from "../../utils/Dimentions";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const FooterChat = (props) => {
 
@@ -18,11 +21,13 @@ const FooterChat = (props) => {
    }
 
     return(
-        <View  style={styles.container}>               
-                <View style={styles.windowSend} >
-                    <Text>Send message...</Text>
-                </View>
-              
+        <View  style={styles.container}> 
+        <Octicons name="smiley" size={24} style={styles.smiley}/> 
+        <MaterialIcons name="attach-file" size={24} style={styles.attachment}/>            
+            <View style={styles.windowSend} >
+                <Text>Send message...</Text>
+            </View>
+            <MaterialCommunityIcons name="send" size={25} style={styles.send}/>          
         </View>
     );
 };
@@ -31,43 +36,32 @@ const FooterChat = (props) => {
 const styles = StyleSheet.create({
     container :{
         height: windowHeight / 12,
-        width: '100%',
         flexDirection: 'row',
-        // justifyContent: 'space-between',
         padding: 10,
-        bottom: 0,
-        left: 0,
-        right: 0,
         backgroundColor: COLORS.headerChat,
-        position: 'absolute',
+    },
+    attachment:{
+        padding: 5,
+    },
+    smiley:{
+        padding: 5,
     },
     windowSend :{
-        // flex: 1,
         flexDirection: 'row',
         // justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
-        width: windowWidth / 1.4,
+        width: windowWidth / 1.5,
         borderRadius: 20,
         backgroundColor: COLORS.white,
         borderTopWidth: 1,
         borderTopColor: '#ddd',
     },
     send:{
-         padding:5,
-         backgroundColor: '#21231',
-    },
+         marginLeft: 10,
+         marginTop:5  
+      },
 });
-
-// <TouchableOpacity onPress={handlePressSmiley} style={styles.send}>
-//                     <AntDesign name='phone' size={23} color="#666" />
-//                 </TouchableOpacity>
-//                 <TouchableOpacity onPress={handlePressAttach} style={styles.send}>
-//                     <AntDesign name='phone' size={23} color="#666" />
-//                 </TouchableOpacity>
-//                 <TouchableOpacity onPress={handlePressSendMsg} style={styles.send}>
-//                 <AntDesign name='phone' size={23} color="#666" />
-//             </TouchableOpacity>
 
 
 export default FooterChat;

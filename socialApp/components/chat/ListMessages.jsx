@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     marginTop:  5,
     marginLeft: windowWidth/14,
     marginRight: windowWidth/14,
-    height: windowHeight - StatusBar.currentHeight - windowHeight / 11 ,
+    height: windowHeight - StatusBar.currentHeight - windowHeight / 11 - windowHeight / 12,
   }
 });
 

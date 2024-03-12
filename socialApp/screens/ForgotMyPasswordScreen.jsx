@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
-import SocialButton from '../components/SocialButton';
+import { AuthContext } from '../navigation/AuthProvider';
+
 
 const ForgotMyPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
+  const {forgotPassword} = useContext(AuthContext);
+  
   return (
     <View style={styles.outerContainer}>
       <View style={styles.container}>
@@ -33,7 +34,7 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
         </View>
         <FormButton
           buttonTitle="Send recovery mail"
-          onPress={() => alert('recovery button Clicked')}
+          onPress={() => forgotPassword(email)}
         />
         <View style={styles.createAccountContainer}>
           <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>

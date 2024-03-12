@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity} from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity} from "react-native";
 import  {COLORS}  from "../../styles/colors";
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import { windowHeight, windowWidth } from "../../utils/Dimentions";
@@ -20,14 +20,24 @@ const FooterChat = (props) => {
     console.log('Send attach...');
    }
 
+   const onChangeMessage = (text) => {
+    console.log('Send message...', text);
+   }
+
+   const handelClickSend = () => {
+    console.log('Send message...');
+   }
+
     return(
         <View  style={styles.container}> 
         <Octicons name="smiley" size={24} style={styles.smiley}/> 
         <MaterialIcons name="attach-file" size={24} style={styles.attachment}/>            
             <View style={styles.windowSend} >
-                <Text>Send message...</Text>
+                <TextInput
+                  onChangeText={onChangeMessage}
+                >Send message...</TextInput>
             </View>
-            <MaterialCommunityIcons name="send" size={25} style={styles.send}/>          
+            <MaterialCommunityIcons name="send" onPress={handelClickSend} size={25} style={styles.send}/>          
         </View>
     );
 };

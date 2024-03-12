@@ -1,5 +1,5 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Keyboard, Alert} from 'react-native';
 import FormInput from '../components/FormInput';
 import FormButton from '../components/FormButton';
 import SocialButton from '../components/SocialButton';
@@ -14,9 +14,49 @@ const SignUpScreen = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const {register} = useContext(AuthContext);
-  
+  const [topPadding, setTopPadding] = useState(5); // Initial top padding
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setTopPadding(48); // Update top padding when keyboard is shown
+      }
+    );
+
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setTopPadding(1); // Reset top padding when keyboard is hidden
+      }
+    );
+
+    // Cleanup function to remove listeners
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  const handleSignUp = () => {
+    // Basic validation
+    if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
+        Alert.alert('Error', 'Please fill in all fields');
+    } else if (password !== confirmPassword) {
+        Alert.alert('Error', 'Passwords do not match');
+    } else {
+        // Call register function
+        register(email, password, {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            phoneNumber: phoneNumber
+        });
+    }
+  };
+
   return (
-    <View style={styles.outerContainer}>
+    <View style={[styles.outerContainer, { paddingTop: topPadding }]}>
       <View style={styles.container}>
 
         <Text style={styles.text}>Sign up</Text>
@@ -25,7 +65,7 @@ const SignUpScreen = ({ navigation }) => {
           placeHolderText="Fisrt Name"
           iconType="id-card"
           labelValue={firstName}
-          onChangeText={(firstName) => setEmail(setFirstName)}
+          onChangeText={(firstName) => setFirstName(firstName)}
           autoCapitalize="none"
           autoCorrect={false}
         />
@@ -86,7 +126,7 @@ const SignUpScreen = ({ navigation }) => {
 
         <FormButton
           buttonTitle="Sign up"
-          onPress={() => register(email,password)}
+          onPress={handleSignUp}
         />
 
         <View style={styles.orRowContainer}>
@@ -129,7 +169,6 @@ export default SignUpScreen;
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    paddingTop: 5,
     borderBottomWidth: 0, // Add bottom border
     borderRightWidth: 0,
     borderLeftWidth: 0,
@@ -149,7 +188,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Roboto',
     fontSize: 28,
-    marginBottom: 10,
+    marginBottom: 5,
     color: '#051d5f',
   },
   createAccountContainer: {
@@ -160,7 +199,9 @@ const styles = StyleSheet.create({
   orRowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding:12,
+    padding:5,
+    paddingRight: 11,
+    paddingLeft: 11,
     marginTop:10,
   },
   line: {
@@ -175,7 +216,7 @@ const styles = StyleSheet.create({
   textPrivate: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginVertical: 10,
+    marginVertical: 5,
     justifyContent: 'center',
     width: '95%',
     

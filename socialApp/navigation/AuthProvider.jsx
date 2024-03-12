@@ -1,6 +1,7 @@
 import React, { createContext, useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut} from 'firebase/auth'; // Import Firebase functions
-import { auth } from '../firebase'; // Import 'auth' from firebase.js
+import { auth, database } from '../firebase'; // Import 'auth' from firebase.js
+import { setDoc, doc } from 'firebase/firestore'; // Import setDoc and doc functions from Firestore
 
 export const AuthContext = createContext();
 
@@ -21,9 +22,25 @@ export const AuthProvider = ({ children }) => {
                     }
                 },
 
-                register: async (email, password) => {
+                register: async (email, password, userInfo) => {
                     try {
-                        await createUserWithEmailAndPassword(auth, email, password);
+                        if(userInfo.password===userInfo.confirmPassword &&
+                          userInfo.firstName != '' &&
+                          userInfo.lastName != '' &&
+                          userInfo.email != '' &&
+                          userInfo.phoneNumber != '' &&
+                          userInfo.password != '' &&
+                          userInfo.confirmPassword != ''
+                          ){
+                            // Create user with email and password
+                        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+                        // Get the user's UID
+                        const uid = userCredential.user.uid;
+
+                        // Save user info to Firestore under 'users' collection with the UID as the document ID
+                        await setDoc(doc(database, 'users', uid), userInfo);
+                        }
                     } catch (e) {
                         console.log(e);
                     }

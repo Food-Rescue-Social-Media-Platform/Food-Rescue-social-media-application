@@ -1,6 +1,9 @@
 import { initializeApp } from 'firebase/app';
+import { getAnalytics } from "firebase/analytics";
 import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDiwU4JI2KtkDhg6uYMeL7125BmHtPQ_2A",
@@ -8,13 +11,20 @@ const firebaseConfig = {
     projectId: "food-rescue-social-platform",
     storageBucket: "food-rescue-social-platform.appspot.com",
     messagingSenderId: "684711937854",
-    appId: "1:684711937854:web:aa16c5dfb5ff0fe8f68e6f"
+    appId: "1:684711937854:web:aa16c5dfb5ff0fe8f68e6f",
+    measurementId: "G-P1SGVSNEJL"
 };
 
 export const app = initializeApp(firebaseConfig);
+export const analytics = () => {
+    if (typeof window !== "undefined") {
+      return getAnalytics()
+    } else {
+      return null
+    }
+}
 
 let auth;
-
 if (typeof window !== 'undefined' && window.document) {
     auth = getAuth(app);
 } else {
@@ -23,4 +33,6 @@ if (typeof window !== 'undefined' && window.document) {
     });
 }
 
+export const storage = getStorage(app);
+export const database = getFirestore(app);
 export { auth };

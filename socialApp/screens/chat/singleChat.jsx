@@ -1,9 +1,17 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, ImageBackground, TextInput, SectionList, TouchableOpacity, FlatList } from 'react-native';
+import React, { useEffect } from 'react';
+import { useRoute } from '@react-navigation/native';
+import {View, StatusBar,StyleSheet, FlatList} from "react-native";
 import { useState } from 'react';
 import ChatHeader from '../../components/header/ChatHeader';
 import FooterChat from '../../components/footer/FooterChat';
-import ListMessages from '../../components/chat/ListMessages';
+import {COLORS} from '../../styles/colors';
+import MsgComponent from "../../components/chat/MsgComponent";
+import {windowHeight, windowWidth} from '../../utils/Dimentions';
+import { Button } from 'react-native-elements';
+import { db } from '../../firebase';
+import { ref , set } from 'firebase/database';
+import { database } from '../../firebase';
+import { getDoc, doc } from 'firebase/firestore'; 
 
 
 const DATA = [
@@ -81,24 +89,90 @@ const DATA = [
         sender: '33'
   
     }
-  ]
-  
-const SingleChat = (props) => {
-    // const data = props.route.params;
-    const dataProps = '';
+]
 
-    const [msg , setMsg] = useState('');
-    const [update , setUpdate] = useState(false);
-    const [disable , setDisable] = useState(false);
-    const [allChats , setAllChats] = useState([]);
-    const [loading , setLoading] = useState(true);
+const SingleChat = () => {
+    const route = useRoute();
+    const senderId = route.params?.connection?.sender;
+    const receiverId = route.params?.connection?.receiver;
+    const [ sender, setSender ] = useState(route.params?.connection?.sender);
+    const [ receiver, setReceiver ] = useState(route.params?.connection?.receiver);
+    const [ chatCreated, setChatCreated ] = useState(false);  
+
+    useEffect(() => {
+        fetchUsers();
+    }, [])
+    
+    // console.log(route.params);
+    const fetchUsers = async () => { 
+        try {     
+            const docRef = doc(database, "users", receiverId);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+             console.log("Document data:", docSnap.data());
+             setReceiver(docSnap.data());
+            } else {
+             console.log("No such document!");
+            }
+        } catch (error) {
+            console.error("Error fetching document:", error);
+        }
+    }
+
+    const renderItem = ({ item }) => {
+      return (
+        <View style={styles.msg}>
+        <MsgComponent
+          sender={item.sender}
+          message={item.massage}
+          item={item}
+          sendTime={'20:34'}
+        />
+        </View>
+      );
+    };
+
+    const createNewChat = () => {
+        try{
+            set(ref(db, 'chatsList/' + senderId + '/' + receiverId),
+            {
+                sender: senderId,
+                receiver: receiverId,
+                image:"https://pbs.twimg.com/media/FjU2lkcWYAgNG6d.jpg",
+                emailId: receiver.email,
+                lastMsg: "",
+            });
+            setChatCreated(true);
+       } catch (error) {
+            console.error("Error adding document: ", error);
+       } 
+    }
     
     return (
         <View>
-            <ListMessages/>
+            <View style={styles.container} >
+            <FlatList
+                data={DATA}
+                renderItem={renderItem}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+            /> 
+            </View>
+            { !chatCreated? (<Button title='Create Chat' onPress={createNewChat}/>): null}
             <FooterChat/>
         </View>
     )
 }
 
+
+const styles = StyleSheet.create({
+    container: {
+      marginTop:  5,
+      marginLeft: windowWidth/14,
+      marginRight: windowWidth/14,
+      height: windowHeight - StatusBar.currentHeight - windowHeight / 11 - windowHeight / 12,
+    }
+  });
+  
 export default SingleChat;

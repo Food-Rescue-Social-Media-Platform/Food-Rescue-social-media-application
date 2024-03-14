@@ -1,7 +1,11 @@
 import ListChats from "../../components/chat/ListChats"
+import React from 'react';
 
-const ListChats = () => {
+const Chats = () => {
   return (
     <ListChats/>
   )
 }
+
+
+export default Chats;

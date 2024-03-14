@@ -1,13 +1,29 @@
-import React,{useContext} from 'react';
+import React,{useContext, useState} from 'react';
 import {View, StyleSheet,Text} from 'react-native';
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
+import { Button } from 'react-native-elements';
 
-const HomeScreen = () => {
+
+const HomeScreen = ({navigation}) => {
     const {user,logout} = useContext(AuthContext);
+
+    const [clickChat, setClickChat] = useState(false);
+
+    const handleClickChat = () => {
+       navigation.navigate('Chats');
+    }
+
+    const createChat = () => {
+        const receiver = 'PKJjhLY5iYeRcnjuoJssnUF4eIh1'
+        navigation.navigate('SingleChat', { receiver });
+    }
+   
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Welcome {user.uid}</Text>
+        <Button title='Chat' onPress={handleClickChat}/>
+        <Button title='Create Chat' onPress={createChat}/>
+        <Text style={styles.text}>Welcome {user.uid}</Text>
             <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </View>
     );

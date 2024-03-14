@@ -12,7 +12,7 @@ import { db } from '../../firebase';
 import { ref , set } from 'firebase/database';
 import { database } from '../../firebase';
 import { getDoc, doc } from 'firebase/firestore'; 
-
+import { useSelector } from 'react-redux';
 
 const DATA = [
     {
@@ -93,30 +93,38 @@ const DATA = [
 
 const SingleChat = () => {
     const route = useRoute();
-    const senderId = route.params?.connection?.sender;
-    const receiverId = route.params?.connection?.receiver;
-    const [ sender, setSender ] = useState(route.params?.connection?.sender);
-    const [ receiver, setReceiver ] = useState(route.params?.connection?.receiver);
+    const sender_data = useSelector(state => state.user.userData);
+    
+    const receiverId = route.params?.receiver;
+    
+    // console.log('receiverId: ', receiverId);
+    console.log('sender_data: ', sender_data);
+
+    const [ sender, setSender ] = useState(sender_data);
+    const [ receiver, setReceiver ] = useState({});
     const [ chatCreated, setChatCreated ] = useState(false);  
 
     useEffect(() => {
-        fetchUsers();
+        fetchUser();
+        // fetchData();
     }, [])
     
-    // console.log(route.params);
-    const fetchUsers = async () => { 
+    const fetchUser = async () => { 
         try {     
             const docRef = doc(database, "users", receiverId);
             const docSnap = await getDoc(docRef);
             
             if (docSnap.exists()) {
-             console.log("Document data:", docSnap.data());
-             setReceiver(docSnap.data());
+                let receiverTemp = docSnap.data();
+                receiverTemp.id = receiverId;
+                console.log("Document data:", receiverTemp);
+             setReceiver(receiverTemp);
             } else {
              console.log("No such document!");
             }
         } catch (error) {
-            console.error("Error fetching document:", error);
+       ;
+     console.error("Error fetching document:", error);
         }
     }
 
@@ -134,15 +142,28 @@ const SingleChat = () => {
     };
 
     const createNewChat = () => {
+        console.log('senderId', sender.id);
+        console.log('receiverId', receiver.id);
+        console.log('sender', sender);  
+        console.log('receiver', receiver);
         try{
-            set(ref(db, 'chatsList/' + senderId + '/' + receiverId),
+            set(ref(db, 'chatsList/' + sender.id + '/' + receiver.id),
             {
-                sender: senderId,
-                receiver: receiverId,
+                sender: sender.id ,
+                receiver: receiver.id,
                 image:"https://pbs.twimg.com/media/FjU2lkcWYAgNG6d.jpg",
                 emailId: receiver.email,
                 lastMsg: "",
+            })
+            set(ref(db, 'chatsList/' +  receiver.id + '/' + sender.id ),
+            {
+                sender: receiver.id,
+                receiver: sender.id,
+                image: "https://www.elitesingles.co.uk/wp-content/uploads/sites/59/2019/11/2b_en_articleslide_sm2-350x264.jpg",
+                emailId: sender.email,
+                lastMsg: "",
             });
+
             setChatCreated(true);
        } catch (error) {
             console.error("Error adding document: ", error);

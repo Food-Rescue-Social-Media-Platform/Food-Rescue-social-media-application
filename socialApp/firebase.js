@@ -30,9 +30,6 @@ if(firebase.apps.length === 0){
     firebase.initializeApp(firebaseConfig);   
 }
 
-const db =  getDatabase();
-
-export { db };
 
 let auth;
 if (typeof window !== 'undefined' && window.document) {
@@ -45,4 +42,6 @@ if (typeof window !== 'undefined' && window.document) {
 
 export const storage = getStorage(app);
 export const database = getFirestore(app);
+const db =  getDatabase();
+export { db };
 export { auth };

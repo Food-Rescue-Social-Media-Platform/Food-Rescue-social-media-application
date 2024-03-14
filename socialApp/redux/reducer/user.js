@@ -7,17 +7,17 @@ export const userSlice = createSlice({
         login : false,
     },
     reducers: {
-        setUser(state , action){
+        setUserData(state , action){
             const user =  action.payload;
-            return {...state , userData: user}
+            return {...state , userData: user, login: true}
         },
-        removerUser(state, action){
+        removerUserData(state, action){
             return {...state , userData: {}, login: false}
         }
     }
 });
 
 
-export const {setUser, removerUser} = userSlice.actions;
+export const {setUserData, removerUserData} = userSlice.actions;
 
 export default userSlice.reducer;

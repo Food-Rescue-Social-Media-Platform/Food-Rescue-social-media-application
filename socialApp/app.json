@@ -1,4 +1,6 @@
 {
+  "name": "socialApp",
+  "displayName": "socialApp",
   "expo": {
     "name": "socialApp",
     "slug": "socialApp",

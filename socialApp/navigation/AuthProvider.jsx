@@ -28,7 +28,9 @@ export const AuthProvider = ({ children }) => {
                             await getDoc(docRef).then((doc) => {
                                 if (doc.exists()) {
                                     // Save user info to redux
-                                    dispatch(setUserData(doc.data()));
+                                    let userData = doc.data();
+                                    userData.id = user.uid;
+                                    dispatch(setUserData(userData));
                                 } else {
                                     // doc.data() will be undefined in this case
                                     console.log("No such document!");
@@ -65,7 +67,9 @@ export const AuthProvider = ({ children }) => {
                         await setDoc(doc(database, 'users', uid), userInfo);
                         
                         // save user info to redux
-                        dispatch(setUserData(userInfo));                        
+                        let userData = userInfo;
+                        userData.id = uid;
+                        dispatch(setUserData(userData));
                         }
                     } catch (e) {
                         dispatch(removerUserData());

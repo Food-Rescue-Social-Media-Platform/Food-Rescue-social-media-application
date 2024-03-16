@@ -1,18 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import {View, StatusBar,StyleSheet, FlatList, TextInput} from "react-native";
 import { useRoute } from '@react-navigation/native';
-import {View, StatusBar,StyleSheet, FlatList} from "react-native";
-import { useState } from 'react';
-import ChatHeader from '../../components/header/ChatHeader';
-import FooterChat from '../../components/footer/FooterChat';
 import {COLORS} from '../../styles/colors';
-import MsgComponent from "../../components/chat/MsgComponent";
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
 import { Button } from 'react-native-elements';
 import { db } from '../../firebase';
-import { ref , set } from 'firebase/database';
-import { database } from '../../firebase';
-import { getDoc, doc } from 'firebase/firestore'; 
+import { ref , set , child, push, update } from 'firebase/database';
 import { useSelector } from 'react-redux';
+import  uuid from 'react-native-uuid';
+import moment from 'moment';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
+import MsgComponent from "../../components/chat/MsgComponent";
+
 
 const DATA = [
     {
@@ -91,42 +92,26 @@ const DATA = [
     }
 ]
 
-const SingleChat = () => {
-    const route = useRoute();
-    const sender_data = useSelector(state => state.user.userData);
-    
-    const receiverId = route.params?.receiver;
-    
-    // console.log('receiverId: ', receiverId);
-    console.log('sender_data: ', sender_data);
 
-    const [ sender, setSender ] = useState(sender_data);
-    const [ receiver, setReceiver ] = useState({});
+
+const SingleChat = ({navigation}) => {
+    const route = useRoute();
+    const chatData = route.params?.chatData || '';
+    const receiver = route.params?.receiverData || '';
+    console.log('SingleChat/chatData: ', chatData);
+    console.log('SingleChat/receiver: ', receiver);
+    const sender = useSelector(state => state.user.userData);
     const [ chatCreated, setChatCreated ] = useState(false);  
+    const [ msg, setMsg] = useState('');
+    const [ disable, setDisable] = useState(false);
+    const [ allChat, setAllChat ] = useState([]);
+    const [ roomId, setRoomId ] = useState('');
 
     useEffect(() => {
-        fetchUser();
-        // fetchData();
+        createNewChat();
     }, [])
     
-    const fetchUser = async () => { 
-        try {     
-            const docRef = doc(database, "users", receiverId);
-            const docSnap = await getDoc(docRef);
-            
-            if (docSnap.exists()) {
-                let receiverTemp = docSnap.data();
-                receiverTemp.id = receiverId;
-                console.log("Document data:", receiverTemp);
-             setReceiver(receiverTemp);
-            } else {
-             console.log("No such document!");
-            }
-        } catch (error) {
-       ;
-     console.error("Error fetching document:", error);
-        }
-    }
+
 
     const renderItem = ({ item }) => {
       return (
@@ -142,46 +127,107 @@ const SingleChat = () => {
     };
 
     const createNewChat = () => {
-        console.log('senderId', sender.id);
-        console.log('receiverId', receiver.id);
-        console.log('sender', sender);  
-        console.log('receiver', receiver);
+        if(chatData !== ''){
+            setRoomId(chatData.roomID);
+            return;
+        }
+        const roomID = uuid.v4();
+        console.log('roomID: ', roomID);
         try{
             set(ref(db, 'chatsList/' + sender.id + '/' + receiver.id),
             {
-                sender: sender.id ,
-                receiver: receiver.id,
-                image:"https://pbs.twimg.com/media/FjU2lkcWYAgNG6d.jpg",
+                roomID,
+                id: receiver.id,
+                sender: sender.firstName + " " + sender.lastName,
+                receiver: receiver.firstName + " " + receiver.lastName,
+                image:receiver?.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAiRQwXf9TTpgIOStvwMpdGBeEQecgottZew&usqp=CAU',
                 emailId: receiver.email,
                 lastMsg: "",
             })
             set(ref(db, 'chatsList/' +  receiver.id + '/' + sender.id ),
             {
-                sender: receiver.id,
-                receiver: sender.id,
-                image: "https://www.elitesingles.co.uk/wp-content/uploads/sites/59/2019/11/2b_en_articleslide_sm2-350x264.jpg",
+                roomID,
+                id: sender.id,
+                sender: receiver.firstName + ' ' + receiver.lastName,
+                receiver: sender.firstName + ' ' + sender.lastName,
+                image: sender?.image || "https://www.elitesingles.co.uk/wp-content/uploads/sites/59/2019/11/2b_en_articleslide_sm2-350x264.jpg",
                 emailId: sender.email,
                 lastMsg: "",
             });
 
+
+            setRoomId(roomID);
             setChatCreated(true);
        } catch (error) {
             console.error("Error adding document: ", error);
        } 
+
+    }
+
+    const sendMsg = () => {
+
+        if(msg === ''){
+           return;
+        }
+
+        let msgData = {
+           message: msg,
+           from: sender.id,
+           to: receiver?.id || chatData.id,
+           sentTime: moment().format(),
+           msgType: 'text',
+        }
+        console.log('msg: ', msgData);
+        
+       // Get a key for a new Message.
+        const newPostKey = push(child(ref(db), 'messages')).key;
+        msgData.id = newPostKey;
+          set(ref(db, 'messages/' + roomId + '/' + newPostKey),
+          ( msgData)).then(() => {
+            update(ref(db, 'chatsList/' + sender.id + '/' + chatData.id),
+            {
+                lastMsg: msg,
+            })
+            update(ref(db, 'chatsList/' +  chatData.id + '/' + sender.id ),
+            {
+                lastMsg: msg
+            });
+           
+
+          }).catch((error) => {
+            console.error("Error adding document: ", error);
+          }
+          );
+
+        setMsg('');
     }
     
+    // { chatData === '' ? (<Button title='Create Chat' onPress={createNewChat}/>): null}
     return (
         <View>
             <View style={styles.container} >
-            <FlatList
-                data={DATA}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item) => item.id}
-            /> 
+                <FlatList
+                    data={DATA}
+                    renderItem={renderItem}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item) => item.id}
+                /> 
             </View>
-            { !chatCreated? (<Button title='Create Chat' onPress={createNewChat}/>): null}
-            <FooterChat/>
+           
+            <View  style={styles.containerFooter}>  
+                <Octicons name="smiley" size={24} style={styles.smiley}/> 
+                <MaterialIcons name="attach-file" size={24} style={styles.attachment}/>            
+                    <View style={styles.windowSend} >
+                        <TextInput
+                        placeholder='Send message...'
+                        onChangeText={val => setMsg(val)}
+                        >
+                        {msg}
+                        </TextInput>
+                    </View>
+                    
+                <MaterialCommunityIcons name="send" onPress={sendMsg} size={25} style={styles.send}/>          
+            </View>
         </View>
     )
 }
@@ -193,7 +239,34 @@ const styles = StyleSheet.create({
       marginLeft: windowWidth/14,
       marginRight: windowWidth/14,
       height: windowHeight - StatusBar.currentHeight - windowHeight / 11 - windowHeight / 12,
-    }
+    },
+    containerFooter :{
+        height: windowHeight / 12,
+        flexDirection: 'row',
+        padding: 10,
+        backgroundColor: COLORS.headerChat,
+    },
+    attachment:{
+        padding: 5,
+    },
+    smiley:{
+        padding: 5,
+    },
+    windowSend :{
+        flexDirection: 'row',
+        // justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+        width: windowWidth / 1.5,
+        borderRadius: 20,
+        backgroundColor: COLORS.white,
+        borderTopWidth: 1,
+        borderTopColor: '#ddd',
+    },
+    send:{
+         marginLeft: 10,
+         marginTop:5  
+      },
   });
   
 export default SingleChat;

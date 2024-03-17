@@ -5,7 +5,6 @@ import { Provider } from 'react-redux';
 import {AppRegistry} from 'react-native';
 import {name as appName} from '../app.json';
 import store from '../redux/store'; 
-import App from '../App';
 
 const Providers = () => {    
     return (

@@ -1,10 +1,15 @@
 // import {Container} from 'native-base';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, TextInput } from 'react-native';
 import {ListItem, Avatar} from 'react-native-elements';
 import {COLORS} from '../../styles/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
+import { useSelector } from 'react-redux';
+import { db } from '../../firebase';
+import { ref  } from 'firebase/database';
+import { onValue } from '@firebase/database';
+
 
 const listData = [
   {
@@ -76,27 +81,52 @@ const listData = [
 ];
 
 
-const ListChats = () => {
+const HomeChat = ({navigation}) => {
 
-const [search, setSearch] = useState('')  
+const  userData  = useSelector(state => state.user.userData);
+console.log('userData: ', userData);  
+const [ listChats , setListChats] = useState([]);
+
+const [search, setSearch] = useState('');
+
+useEffect(()=>{
+   getChatList(); 
+},[]);
+
+
+const getChatList = async () => {
+  try{
+   const docRef = ref(db, "chatsList/" + userData.id);
+   onValue(docRef, (snapshot) => {
+      const data = snapshot.val();
+      if(!data) return console.log('-No data found');
+      console.log('data: ', Object.values(snapshot.val()));
+      setListChats(Object.values(snapshot.val()));
+   });
+  } catch (error){
+    console.log('Error fetching document: ', error);
+  }
+};
+
 
 const renderItem = ({ item }) => (
   <ListItem
     bottomDivider
     containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
+    onPress={() => navigation.navigate('SingleChat', {chatData: item, receiverData:''} )}
   >
     <Avatar
-      source={{ uri: item.avatar_url }}
+      source={{ uri: item.image }}
       rounded
-      title={item.name}
+      title={item.receiver}
       size="medium"
     />
     <ListItem.Content>
       <ListItem.Title style={{ fontSize: 14 }}>
-        {item.name}
+        {item.receiver}
       </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} style={{ fontSize: 12 }}>
-          {item.subtitle}
+          {item.lastMsg}
         </ListItem.Subtitle>
     </ListItem.Content>
   </ListItem>
@@ -115,7 +145,7 @@ return (
     </View>
     <FlatList
         keyExtractor={(item, index) => index.toString()}
-        data={listData}
+        data={listChats}
         renderItem={renderItem}
     />
     <View>
@@ -124,7 +154,7 @@ return (
   );
 };
 
-export default ListChats;
+export default HomeChat;
 
 const styles = StyleSheet.create({
   container:{

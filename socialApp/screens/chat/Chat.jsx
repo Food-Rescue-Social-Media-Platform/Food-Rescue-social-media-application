@@ -19,7 +19,7 @@ const Chat = () => {
     }
 
     const createChat = () => {
-        const receiverId = '84PVXzSui3eT7mERJFxFh5yj8cI2';
+        const receiverId = 'uNwhQOcidogqWCR5FU2Y6Wo003t1';
         // fetchUser(receiverId);
         fetchChat(receiverId);
     }

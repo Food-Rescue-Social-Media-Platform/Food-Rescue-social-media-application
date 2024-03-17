@@ -3,9 +3,8 @@ import {View, StatusBar,StyleSheet, FlatList, TextInput} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
-import { Button } from 'react-native-elements';
 import { db } from '../../firebase';
-import { ref , set , child, push, update } from 'firebase/database';
+import { ref , set , child, push, update, onValue } from 'firebase/database';
 import { useSelector } from 'react-redux';
 import  uuid from 'react-native-uuid';
 import moment from 'moment';
@@ -98,35 +97,33 @@ const SingleChat = ({navigation}) => {
     const route = useRoute();
     const chatData = route.params?.chatData || '';
     const receiver = route.params?.receiverData || '';
-    console.log('SingleChat/chatData: ', chatData);
-    console.log('SingleChat/receiver: ', receiver);
+    // console.log('SingleChat/chatData: ', chatData);
+    // console.log('SingleChat/receiver: ', receiver);
     const sender = useSelector(state => state.user.userData);
     const [ chatCreated, setChatCreated ] = useState(false);  
     const [ msg, setMsg] = useState('');
     const [ disable, setDisable] = useState(false);
     const [ allChat, setAllChat ] = useState([]);
     const [ roomId, setRoomId ] = useState('');
+    const [ isLoaded, setIsLoaded ] = useState(false);
 
     useEffect(() => {
         createNewChat();
-    }, [])
+        const docRef = ref(db, "messages/" + roomId);
+
+        onValue(docRef, (snapshot) => {
+            const data = snapshot.val();
+            if(!data) return console.log('No data found');
+            console.log('A new node has been added', Object.values(data));
+
+            setAllChat((state) => [Object.values(data), ...state ]);
+            setIsLoaded(true);
+        });
+    }, [receiver, chatData.roomID, chatCreated, roomId])
     
-
-
-    const renderItem = ({ item }) => {
-      return (
-        <View style={styles.msg}>
-        <MsgComponent
-          sender={item.sender}
-          message={item.massage}
-          item={item}
-          sendTime={'20:34'}
-        />
-        </View>
-      );
-    };
-
-    const createNewChat = () => {
+    
+   const createNewChat = () => {
+        // if chatData is not empty mean chat already created
         if(chatData !== ''){
             setRoomId(chatData.roomID);
             return;
@@ -154,46 +151,59 @@ const SingleChat = ({navigation}) => {
                 emailId: sender.email,
                 lastMsg: "",
             });
-
-
+            
+            
             setRoomId(roomID);
             setChatCreated(true);
-       } catch (error) {
+            fetchMessages();
+        } catch (error) {
             console.error("Error adding document: ", error);
        } 
+       
+    }
+    
 
+    const fetchMessages = () => {
+        //  const docRef = ref(db, "messages/" + roomId);
+        //  onValue(docRef, (snapshot) => {
+        //      const data = snapshot.val();
+        //      if(!data) return console.log('No data found');
+        //      console.log('A new node has been added', Object.values(data));
+
+        //     //  setAllChat((state) => [Object.values(data),... state]);
+        //      setAllChat(Object.values(data));
+        //  });
     }
 
-    const sendMsg = () => {
 
+    const sendMsg = () => { 
         if(msg === ''){
-           return;
+            return;
         }
-
+        
         let msgData = {
-           message: msg,
-           from: sender.id,
+            message: msg,
+            from: sender.id,
            to: receiver?.id || chatData.id,
            sentTime: moment().format(),
            msgType: 'text',
         }
         console.log('msg: ', msgData);
         
-       // Get a key for a new Message.
+        // Get a key for a new Message.
         const newPostKey = push(child(ref(db), 'messages')).key;
         msgData.id = newPostKey;
-          set(ref(db, 'messages/' + roomId + '/' + newPostKey),
-          ( msgData)).then(() => {
-            update(ref(db, 'chatsList/' + sender.id + '/' + chatData.id),
-            {
+        
+        set(ref(db, 'messages/' + roomId + '/' + newPostKey),
+        ( msgData)).then(() => {
+            const updateChat = {
                 lastMsg: msg,
-            })
+                sendTime: msgData.sentTime,
+            }
+            update(ref(db, 'chatsList/' + sender.id + '/' + chatData.id),
+            ( updateChat))
             update(ref(db, 'chatsList/' +  chatData.id + '/' + sender.id ),
-            {
-                lastMsg: msg
-            });
-           
-
+            (updateChat));      
           }).catch((error) => {
             console.error("Error adding document: ", error);
           }
@@ -202,16 +212,30 @@ const SingleChat = ({navigation}) => {
         setMsg('');
     }
     
-    // { chatData === '' ? (<Button title='Create Chat' onPress={createNewChat}/>): null}
+    const renderItem = ({ item }) => {
+        console.log('item: ', item);
+      return (
+        <View style={styles.msg}>
+        <MsgComponent
+          sender={item.sender}
+          message={item.massage}
+          item={item}
+          sendTime={'20:34'}
+        />
+        </View>
+      );
+    };
+
+
     return (
         <View>
             <View style={styles.container} >
-                <FlatList
-                    data={DATA}
-                    renderItem={renderItem}
-                    showsVerticalScrollIndicator={false}
-                    keyExtractor={(item) => item.id}
-                /> 
+            { isLoaded ? (<FlatList
+                data={DATA}
+                renderItem={renderItem}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(item) => item.id}
+             /> ): null} 
             </View>
            
             <View  style={styles.containerFooter}>  

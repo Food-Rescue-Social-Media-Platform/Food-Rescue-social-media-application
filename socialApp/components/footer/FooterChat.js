@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const FooterChat = (props) => {
+const FooterChat = ({sender, receiver, roomId}) => {
 
    const handlePressSendMsg = () => {
     console.log('Send message...');
@@ -26,6 +26,13 @@ const FooterChat = (props) => {
 
    const handelClickSend = () => {
     console.log('Send message...');
+    // database()
+    //     .ref('/users/123')
+    //     .set({
+    //         name: 'Ada Lovelace',
+    //         age: 31,
+    //     })
+    //     .then(() => console.log('Data set.'));
    }
 
     return(

@@ -2,9 +2,13 @@ import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
 import reducer from "../reducer";
 
 
-const store =  configureStore({
+const store = configureStore({
   reducer,
-//   middleware :[...getDefaultMiddleware({thunk:false})] 
-})
+  middleware: (getDefaultMiddleware) => {
+    return getDefaultMiddleware({
+      serializableCheck: false
+    })
+  }
+});
 
 export default store;

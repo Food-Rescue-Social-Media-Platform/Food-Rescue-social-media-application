@@ -113,7 +113,7 @@ const renderItem = ({ item }) => (
   <ListItem
     bottomDivider
     containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
-    onPress={() => navigation.navigate('SingleChat', {chatData: item, receiverData:''} )}
+    onPress={() => navigation.navigate('SingleChat', {chatData: item, receiverId:''} )}
   >
     <Avatar
       source={{ uri: item.image }}

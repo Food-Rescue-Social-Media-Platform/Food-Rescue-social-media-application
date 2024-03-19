@@ -3,7 +3,8 @@ import {View, StatusBar,StyleSheet, FlatList, TextInput} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
-import { db } from '../../firebase';
+import { db, database } from '../../firebase';
+import { getDoc, doc } from 'firebase/firestore';
 import { ref , set , child, push, update, onValue } from 'firebase/database';
 import { useSelector } from 'react-redux';
 import  uuid from 'react-native-uuid';
@@ -95,84 +96,89 @@ const DATA = [
 
 const SingleChat = ({navigation}) => {
     const route = useRoute();
-    const chatData = route.params?.chatData || '';
-    const receiver = route.params?.receiverData || '';
-    // console.log('SingleChat/chatData: ', chatData);
-    // console.log('SingleChat/receiver: ', receiver);
+    const receiverId = route.params?.receiverId || '';
+    console.log('receiverId: ', receiverId);
     const sender = useSelector(state => state.user.userData);
-    const [ chatCreated, setChatCreated ] = useState(false);  
+    const [ receiver, setReceiver] = useState();
+    const [ allMessages, setAllMessages ] = useState([]);
     const [ msg, setMsg] = useState('');
-    const [ disable, setDisable] = useState(false);
-    const [ allChat, setAllChat ] = useState([]);
+    const [ chatData, setChatData] = useState('');
     const [ roomId, setRoomId ] = useState('');
     const [ isLoaded, setIsLoaded ] = useState(false);
 
     useEffect(() => {
-        createNewChat();
-        const docRef = ref(db, "messages/" + roomId);
+        const fetchData = async () => {
+        try {     
+            const docRef = doc(database, "users", receiverId);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+                let receiverTemp = docSnap.data();
+                receiverTemp.id = receiverId;
+                setReceiver(receiverTemp);
 
-        onValue(docRef, (snapshot) => {
-            const data = snapshot.val();
-            if(!data) return console.log('No data found');
-            console.log('A new node has been added', Object.values(data));
+                // fetch chat
+                const docRef = ref(db, "chatsList/" + sender.id + '/' + receiverTemp.id);
+                onValue(docRef, (snapshot) => {
+                   const data = snapshot.val();
+                   // if chat not created then create new chat
+                   if(!data) {
+                       createNewChat(receiverTemp);
+                       return;
+                   };
+                   console.log('data: ', data);
+                   setChatData(data);
+                });
+            } else {
+             console.log("No such user!");
+            }
+        } catch (error) {
+             console.error("Error fetching document:", error);
+        
+        }}
 
-            setAllChat((state) => [Object.values(data), ...state ]);
-            setIsLoaded(true);
-        });
-    }, [receiver, chatData.roomID, chatCreated, roomId])
+        fetchData();
+        // Attach an asynchronous callback to read the data at our posts reference
+        // const docRef = ref(db, "messages/" + roomId);
+        // onValue(docRef, (snapshot) => {
+        //     const data = snapshot.val();
+        //     if(!data) return console.log('No messages found');
+        //     console.log('A new node has been added', Object.values(data));
+
+        //     setAllMessages((state) => [Object.values(data), ...state ]);
+        //     setIsLoaded(true);
+        // });
+    }, [receiverId])
     
-    
-   const createNewChat = () => {
-        // if chatData is not empty mean chat already created
-        if(chatData !== ''){
-            setRoomId(chatData.roomID);
-            return;
-        }
+
+    const createNewChat = (receiverData) => {
         const roomID = uuid.v4();
-        console.log('roomID: ', roomID);
-        try{
-            set(ref(db, 'chatsList/' + sender.id + '/' + receiver.id),
+        try{      
+            set(ref(db, 'chatsList/' + sender.id + '/' + receiverData.id),
             {
                 roomID,
-                id: receiver.id,
+                id: receiverData.id,
                 sender: sender.firstName + " " + sender.lastName,
-                receiver: receiver.firstName + " " + receiver.lastName,
-                image:receiver?.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAiRQwXf9TTpgIOStvwMpdGBeEQecgottZew&usqp=CAU',
-                emailId: receiver.email,
+                receiver: receiverData.firstName + " " + receiverData.lastName,
+                image:receiverData?.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAiRQwXf9TTpgIOStvwMpdGBeEQecgottZew&usqp=CAU',
+                emailId: receiverData.email,
                 lastMsg: "",
             })
-            set(ref(db, 'chatsList/' +  receiver.id + '/' + sender.id ),
+
+            set(ref(db, 'chatsList/' +  receiverData.id + '/' + sender.id ),
             {
                 roomID,
                 id: sender.id,
-                sender: receiver.firstName + ' ' + receiver.lastName,
+                sender: receiverData.firstName + ' ' + receiverData.lastName,
                 receiver: sender.firstName + ' ' + sender.lastName,
                 image: sender?.image || "https://www.elitesingles.co.uk/wp-content/uploads/sites/59/2019/11/2b_en_articleslide_sm2-350x264.jpg",
                 emailId: sender.email,
                 lastMsg: "",
-            });
-            
-            
+            });                        
             setRoomId(roomID);
-            setChatCreated(true);
-            fetchMessages();
         } catch (error) {
             console.error("Error adding document: ", error);
-       } 
-       
-    }
-    
-
-    const fetchMessages = () => {
-        //  const docRef = ref(db, "messages/" + roomId);
-        //  onValue(docRef, (snapshot) => {
-        //      const data = snapshot.val();
-        //      if(!data) return console.log('No data found');
-        //      console.log('A new node has been added', Object.values(data));
-
-        //     //  setAllChat((state) => [Object.values(data),... state]);
-        //      setAllChat(Object.values(data));
-        //  });
+       }    
     }
 
 
@@ -212,6 +218,7 @@ const SingleChat = ({navigation}) => {
         setMsg('');
     }
     
+
     const renderItem = ({ item }) => {
         console.log('item: ', item);
       return (
@@ -231,7 +238,7 @@ const SingleChat = ({navigation}) => {
         <View>
             <View style={styles.container} >
             { isLoaded ? (<FlatList
-                data={DATA}
+                data={allMessages}
                 renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item) => item.id}

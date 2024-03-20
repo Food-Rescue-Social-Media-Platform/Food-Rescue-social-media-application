@@ -1,4 +1,4 @@
-package com.socialapp
+package com.mohammad_belbesi.socialApp
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage
 import android.app.Application
 import android.content.res.Configuration

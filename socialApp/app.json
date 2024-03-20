@@ -10,6 +10,12 @@
     ],
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "android": {
+      "package": "com.mohammad_belbesi.socialApp"
+    },
+    "web": {
+      "bundler": "metro"
+    }
   }
 }

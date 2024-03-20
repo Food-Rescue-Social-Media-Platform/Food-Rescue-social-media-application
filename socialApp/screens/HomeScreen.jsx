@@ -1,124 +1,111 @@
 import React,{useContext} from 'react';
-import {View, StyleSheet,Text,TouchableOpacity} from 'react-native';
+import {View, StyleSheet,Text,TouchableOpacity, FlatList} from 'react-native';
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import { Container,Card, UserInfo, UserImg, UserName, PostTime, UserInfoText, PostText, PostImg, InteractionWrapper, Divider} from '../styles/feedStyles';
+import { Container} from '../styles/feedStyles';
+import PostCard from '../components/PostCard';
+
+const Posts = [
+    {
+      id: '1',
+      userName: 'Mohammad Salah',
+      userImg: require('../assets/users/user-1.jpg'),
+      postTime: '4 mins ago',
+      postText:
+        'a pancakes 3 boxes. after a big party. we have these pancakes left, delicious pancakes that we made by pancakes lovers hands.',
+      postImg: require('../assets/posts/post-img-7.jpg'),
+      postCategories: 'milky',
+      postDate: 'Today - 13:50 AM',
+      postDistance: '0.8 KM',
+    },
+    {
+      id: '2',
+      userName: 'John Doe',
+      userImg: require('../assets/users/user-2.jpg'),
+      postTime: '2 hours ago',
+      postText:
+        'a large plate of pizza.',
+      postImg: require('../assets/posts/post-img-1.jpg'),
+      postCategories: 'milky',
+      postDate: 'Today - 12:55 AM',
+      postDistance: '14 KM',
+    },
+    {
+      id: '3',
+      userName: 'Ken William',
+      userImg: require('../assets/users/user-4.jpg'),
+      postTime: '1 hours ago',
+      postText:
+        'a four delicious sweets tupperware boxes. after a big party. we have these sweets left that no one has touched, clean and tasty.',
+      postImg: require('../assets/posts/post-img-3.jpg'),
+      postCategories: 'milky',
+      postDate: 'Today - 11:00 PM',
+      postDistance: '5.4 KM',
+    },
+    {
+      id: '4',
+      userName: 'Selina Paul',
+      userImg: require('../assets/users/user-6.jpg'),
+      postTime: '1 day ago',
+      postText:
+        'a delicious salat tupperware boxes. after a big party. we have these salats left that no one has touched, clean and tasty.',
+      postImg: require('../assets/posts/post-img-2.jpg'),
+      postCategories: 'vegetables',
+      postDate: 'yesterday - 08:45 AM',
+      postDistance: '3 KM',
+    },
+    {
+      id: '5',
+      userName: 'Christy Alex',
+      userImg: require('../assets/users/user-7.jpg'),
+      postTime: '1 day ago',
+      postText:
+      'a pancakes 1 boxe. after a big party.',
+      postImg: require('../assets/posts/post-img-5.jpg'),
+      postCategories: 'milky',
+      postDate: 'yesterday - 17:30 AM',
+      postDistance: '1 KM',
+    },
+    {
+        id: '6',
+        userName: 'Christy Alex',
+        userImg: require('../assets/users/user-7.jpg'),
+        postTime: '1 day ago',
+        postText:
+        'a large plate of stackes and meats on BBQ.',
+        postImg: require('../assets/posts/post-img-4.jpg'),
+        postCategories: 'meat',
+        postDate: 'yesterday - 17:30 AM',
+        postDistance: '1 KM',
+      },
+      {
+        id: '7',
+        userName: 'Ken William',
+        userImg: require('../assets/users/user-4.jpg'),
+        postTime: '1 hours ago',
+        postText:
+          'box of sushi',
+        postImg: 'none',
+        postCategories: 'fish',
+        postDate: 'Today - 11:00 PM',
+        postDistance: '5.4 KM',
+      },
+  ];
 
 const HomeScreen = () => {
     const {user,logout} = useContext(AuthContext);
     return (
         <Container>
-            <Card>
-                <View style={{
-                        
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                    }}>
-                            <UserInfo>
-                        <UserImg source={require('../assets/users/user-1.jpg')}/>
-                        <UserInfoText>
-                            <UserName>mohammad salah</UserName>
-                            <PostTime>4 hours ago</PostTime>
-                        </UserInfoText>
-                        </UserInfo>
-                        <TouchableOpacity style={{
-                            paddingTop:25,
-                            paddingRight:20}}>
-                            <SimpleLineIcons
-                            name="options"
-                            size={24}
-                            />
-                        </TouchableOpacity>
-                        
-                                         
-                </View>
-
-                <PostImg source={require('../assets/posts/post-img-7.jpg')}/>
-                <InteractionWrapper>
+            <FlatList 
+                data={Posts}
+                renderItem={({item}) => <PostCard item={item}/>}
+                keyExtractor={item => item.id}
+                showsVerticalScrollIndicator={false}
                     
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                        name="cupcake"
-                        size={22}
-                        />  
-                        <Text style={styles.text}>milky</Text>                  
-                    </View>
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                        name="clock"
-                        size={22}
-                        />  
-                        <Text style={styles.text}>Today - 13:50 AM</Text>                  
-                    </View>
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                        name="map-marker"
-                        size={22}
-                        />  
-                        <Text style={styles.text}>0.8 KM </Text>                  
-                    </View>
-                </InteractionWrapper>
-                <PostText>a pancakes 3 boxes. after a big party. we have these pancakes left,
-                          delicious pancakes that we made by pancakes lovers hands.
-                </PostText>
-            </Card>
-            <Card>
-                <View style={{
-                        
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                    }}>
-                            <UserInfo>
-                        <UserImg source={require('../assets/users/user-1.jpg')}/>
-                        <UserInfoText>
-                            <UserName>mohammad salah</UserName>
-                            <PostTime>4 hours ago</PostTime>
-                        </UserInfoText>
-                        </UserInfo>
-                        <TouchableOpacity style={{
-                            paddingTop:25,
-                            paddingRight:20}}>
-                            <SimpleLineIcons
-                            name="options"
-                            size={24}
-                            />
-                        </TouchableOpacity>
-                        
-                                         
-                </View>
-                <Divider></Divider>
-                {/* <PostImg source={require('../assets/posts/post-img-7.jpg')}/> */}
-                <InteractionWrapper>
-                    
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                        name="cupcake"
-                        size={22}
-                        />  
-                        <Text style={styles.text}>milky</Text>                  
-                    </View>
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                        name="clock"
-                        size={22}
-                        />  
-                        <Text style={styles.text}>Today - 13:50 AM</Text>                  
-                    </View>
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                        name="map-marker"
-                        size={22}
-                        />  
-                        <Text style={styles.text}>0.8 KM</Text>                  
-                    </View>
-                </InteractionWrapper>
-                <PostText>a pancakes 3 boxes. after a big party. we have these pancakes left,
-                          delicious pancakes that we made by pancakes lovers hands.
-                </PostText>
-            </Card>
-            <FormButton buttonTitle='Logout' onPress={() => logout()} />
+            />
+           <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
         
     );

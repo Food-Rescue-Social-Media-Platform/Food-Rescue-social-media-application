@@ -95,9 +95,9 @@ const DATA = [
 
 
 const SingleChat = ({navigation}) => {
-    const route = useRoute();
-    const receiverId = route.params?.receiverId || '';
-    console.log('receiverId: ', receiverId);
+    // const route = useRoute();
+    // const receiverId = route.params?.receiverId || '';
+    const receiverId = 'uNwhQOcidogqWCR5FU2Y6Wo003t1';
     const sender = useSelector(state => state.user.userData);
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
@@ -105,9 +105,32 @@ const SingleChat = ({navigation}) => {
     const [ chatData, setChatData] = useState('');
     const [ roomId, setRoomId ] = useState('');
     const [ isLoaded, setIsLoaded ] = useState(false);
+    console.log('allMessages: ', allMessages);
 
     useEffect(() => {
-        const fetchData = async () => {
+        
+        fetchData();
+
+        // // Attach an asynchronous callback to read the data at our posts reference
+         const docRef = ref(db, "messages/" + roomId);
+         onValue(docRef, (snapshot) =>
+          {
+             const data = snapshot.val();
+             if(!data) return console.log('No messages found');
+             console.log('A new node has been added', Object.values(data));
+
+            // setAllMessages(Object.values(data));
+            setAllMessages(Object.values(data));
+            // setAllMessages(Object.values(data));
+            console.log('allMessages: ', allMessages);
+            setIsLoaded(true);
+        });
+        
+        // return () => database().ref('/messages'+ chatData.roomId).off('child_added', onChildAdd);
+    }, [receiverId]);
+
+
+    const fetchData = async () => {
         try {     
             const docRef = doc(database, "users", receiverId);
             const docSnap = await getDoc(docRef);
@@ -126,8 +149,9 @@ const SingleChat = ({navigation}) => {
                        createNewChat(receiverTemp);
                        return;
                    };
-                   console.log('data: ', data);
+                //    console.log('data: ', data);
                    setChatData(data);
+                   setRoomId(data.roomID);
                 });
             } else {
              console.log("No such user!");
@@ -136,19 +160,6 @@ const SingleChat = ({navigation}) => {
              console.error("Error fetching document:", error);
         
         }}
-
-        fetchData();
-        // Attach an asynchronous callback to read the data at our posts reference
-        // const docRef = ref(db, "messages/" + roomId);
-        // onValue(docRef, (snapshot) => {
-        //     const data = snapshot.val();
-        //     if(!data) return console.log('No messages found');
-        //     console.log('A new node has been added', Object.values(data));
-
-        //     setAllMessages((state) => [Object.values(data), ...state ]);
-        //     setIsLoaded(true);
-        // });
-    }, [receiverId])
     
 
     const createNewChat = (receiverData) => {
@@ -190,42 +201,42 @@ const SingleChat = ({navigation}) => {
         let msgData = {
             message: msg,
             from: sender.id,
-           to: receiver?.id || chatData.id,
-           sentTime: moment().format(),
-           msgType: 'text',
+            to: receiver?.id || chatData.id,
+            sentTime: moment().format(),
+            msgType: 'text',
         }
-        console.log('msg: ', msgData);
         
         // Get a key for a new Message.
         const newPostKey = push(child(ref(db), 'messages')).key;
         msgData.id = newPostKey;
-        
-        set(ref(db, 'messages/' + roomId + '/' + newPostKey),
-        ( msgData)).then(() => {
-            const updateChat = {
-                lastMsg: msg,
-                sendTime: msgData.sentTime,
-            }
-            update(ref(db, 'chatsList/' + sender.id + '/' + chatData.id),
-            ( updateChat))
-            update(ref(db, 'chatsList/' +  chatData.id + '/' + sender.id ),
-            (updateChat));      
-          }).catch((error) => {
-            console.error("Error adding document: ", error);
-          }
-          );
 
-        setMsg('');
+        const updates = {};
+        updates['/messages/' + roomId + '/' + newPostKey] = msgData;    
+      
+        update(ref(db), updates).then(() => {
+                console.log('Message sent successfully');
+                 const updateChat = {
+                   lastMsg: msg,
+                   sendTime: msgData.sentTime,
+                  }
+                update(ref(db, 'chatsList/' + sender.id + '/' + chatData.id),( updateChat))
+                update(ref(db, 'chatsList/' +  chatData.id + '/' + sender.id ),(updateChat)); 
+         }).catch((error) => { 
+            console.error("Error adding document: ", error);
+         }); 
+
+          setMsg('')
     }
     
 
-    const renderItem = ({ item }) => {
-        console.log('item: ', item);
-      return (
+    const renderItem = ({ item  }) => {
+        console.log('\nitem: ', item);
+
+       return (
         <View style={styles.msg}>
         <MsgComponent
           sender={item.sender}
-          message={item.massage}
+          message={item.from}
           item={item}
           sendTime={'20:34'}
         />
@@ -237,12 +248,12 @@ const SingleChat = ({navigation}) => {
     return (
         <View>
             <View style={styles.container} >
-            { isLoaded ? (<FlatList
+           <FlatList
                 data={allMessages}
                 renderItem={renderItem}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={(item) => item.id}
-             /> ): null} 
+                keyExtractor={(item, index) => {return index}}
+             /> 
             </View>
            
             <View  style={styles.containerFooter}>  

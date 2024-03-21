@@ -13,7 +13,7 @@ import { onValue } from '@firebase/database';
 
 const HomeScreen = () => {
     const {user,logout} = useContext(AuthContext);
-
+    
     return (
         <View style={styles.container}>
         <Chat/>

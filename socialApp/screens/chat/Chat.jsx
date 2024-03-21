@@ -60,9 +60,9 @@ const Chat = () => {
     //     }
     // }
    
+    // <Button title='Chat' onPress={handleClickChat}/>
     return (
         <View style={styles.container}>
-        <Button title='Chat' onPress={handleClickChat}/>
         <Button title='Create Chat' onPress={createChat}/>
         </View>
     );

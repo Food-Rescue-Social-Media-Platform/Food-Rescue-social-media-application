@@ -101,7 +101,7 @@ const getChatList = async () => {
       const data = snapshot.val();
       if(!data) return console.log('-No data found');
       console.log('data: ', Object.values(snapshot.val()));
-      setListChats(Object.values(snapshot.val()));
+      setListChats(Object.values(snapshot.val()));//todo
    });
   } catch (error){
     console.log('Error fetching document: ', error);

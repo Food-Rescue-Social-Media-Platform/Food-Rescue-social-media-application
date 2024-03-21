@@ -8,9 +8,9 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import HomeChat from '../screens/chat/HomeChat';
 import SingleChat from '../screens/chat/SingleChat';
 import HomeScreen from '../screens/HomeScreen';
-import ChatScreen from '../screens/ChatScreen ';
+// import ChatScreen from '../screens/ChatScreen ';
 import ProfileScreen from '../screens/ProfileScreen';
-import MessagesScreen from '../screens/MessagesScreen';
+// import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
 
 const Stack = createStackNavigator();
@@ -61,28 +61,13 @@ const FeedStack = ({navigation}) => (
 
 const MessageStack = ({navigation}) => (
   <Stack.Navigator>
-    <Stack.Screen 
-      name="Messages" 
-      component={MessagesScreen} 
-      options={{
-        headerTitleAlign: 'center',
-        headerTitleStyle: { // Blue color for the title
-          color: '#2e64e5',
-        },
-        headerStyle: {
-          backgroundColor: '#f9fafd', // Set background color here
-          shadowColor: '#fff',
-          elevation: 0,
-        },
-      }} 
-    />
-    <Stack.Screen
+  <Stack.Screen
       name="Chat"
-      component={ChatScreen}
+      component={HomeChat}
       options={({route}) => ({
         headerTitleAlign: 'center',
-        title: route.params.userName,
-        headerBackTitleVisible: false,
+        // title: route.params.userName,
+        headerBackTitleVisible: true,
         headerTitleStyle: { // Blue color for the title
           color: '#2e64e5',
         },
@@ -93,11 +78,27 @@ const MessageStack = ({navigation}) => (
         },
       }
       )}
-    />
-  </Stack.Navigator>
-);
+      />
+      <Stack.Screen 
+        name="SingleChat" 
+        component={SingleChat} 
+        options={({route}) => ({
+          // title: route.params.userName,
+          headerTitleAlign: 'center',
+          headerTitleStyle: { // Blue color for the title
+            color: '#2e64e5',
+          },
+          headerStyle: {
+            backgroundColor: '#f9fafd', // Set background color here
+            shadowColor: '#fff',
+            elevation: 0,
+          },
+        })} 
+      />
+      </Stack.Navigator>
+    );
 
-const ProfileStack = ({navigation}) => (
+    const ProfileStack = ({navigation}) => (
   <Stack.Navigator>
     <Stack.Screen
       name="Profile"
@@ -198,7 +199,7 @@ return (
 
     <Tab.Screen
         name="MessagesTab"
-        component={HomeChat}
+        component={MessageStack}
         options={({route}) => ({
         tabBarLabel: 'Messages',
         tabBarVisible: getTabBarVisibility(route),
@@ -213,6 +214,8 @@ return (
             size={25}
             />
         ),
+        tabBarVisible: true,
+
         })}
     />
     <Tab.Screen

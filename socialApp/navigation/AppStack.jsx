@@ -66,11 +66,7 @@ const MessageStack = ({navigation}) => (
       component={HomeChat}
       options={({route}) => ({
         headerTitleAlign: 'center',
-        // title: route.params.userName,
         headerBackTitleVisible: true,
-        headerTitleStyle: { // Blue color for the title
-          color: '#2e64e5',
-        },
         headerStyle: {
           backgroundColor: '#f9fafd', // Set background color here
           shadowColor: '#fff',
@@ -83,16 +79,14 @@ const MessageStack = ({navigation}) => (
         name="SingleChat" 
         component={SingleChat} 
         options={({route}) => ({
-          // title: route.params.userName,
+          title: route.params.userName,
           headerTitleAlign: 'center',
-          headerTitleStyle: { // Blue color for the title
-            color: '#2e64e5',
-          },
           headerStyle: {
             backgroundColor: '#f9fafd', // Set background color here
             shadowColor: '#fff',
             elevation: 0,
           },
+          tabBarVisible: false,
         })} 
       />
       </Stack.Navigator>
@@ -178,6 +172,7 @@ return (
             size={25}
             />
         ),
+        tabBarVisible: false,
         })}
     />
 
@@ -205,7 +200,6 @@ return (
         tabBarVisible: getTabBarVisibility(route),
         // Or Hide tabbar when push!
         // https://github.com/react-navigation/react-navigation/issues/7677
-        // tabBarVisible: route.state && route.state.index === 0,
         // tabBarLabel: 'Home',
         tabBarIcon: ({color, size}) => (
             <Ionicons
@@ -235,6 +229,14 @@ return (
 );
 };
   
+const CustomTabBar = ({navigation}) => {
+  return (
+    <View style={{backgroundColor: 'white'}}>
+      {/* הצג את כותרת המסך */}
+      <Text style={{fontSize: 18, fontWeight: 'bold'}}>{navigation.state.routeName}</Text>
+    </View>
+  );
+};
 const styles = StyleSheet.create({})
 
 export default AppStack;

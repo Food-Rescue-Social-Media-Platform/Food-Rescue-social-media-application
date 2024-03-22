@@ -100,7 +100,7 @@ const getChatList = async () => {
    onValue(docRef, (snapshot) => {
       const data = snapshot.val();
       if(!data) return console.log('-No data found');
-      console.log('data: ', Object.values(snapshot.val()));
+      console.log('chatList: ', Object.values(data));
       setListChats(Object.values(snapshot.val()));//todo
    });
   } catch (error){
@@ -113,7 +113,7 @@ const renderItem = ({ item }) => (
   <ListItem
     bottomDivider
     containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
-    onPress={() => navigation.navigate('SingleChat', {chatData: item, receiverId:''} )}
+    onPress={() => navigation.navigate('SingleChat', {chatData: item, receiverId:'', userName:item.receiver} )}
   >
     <Avatar
       source={{ uri: item.image }}

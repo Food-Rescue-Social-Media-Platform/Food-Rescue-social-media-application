@@ -1,6 +1,5 @@
 
 import { View, Text, StyleSheet } from 'react-native';
-import TimeDelivery from "./TimeDelivery";
 import {COLORS} from '../../styles/colors';
 import { useSelector } from 'react-redux';
 import moment from 'moment';

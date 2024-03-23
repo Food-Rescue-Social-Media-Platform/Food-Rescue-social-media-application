@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {View, StatusBar,StyleSheet, FlatList, TextInput} from "react-native";
+import {View, StatusBar,StyleSheet, FlatList, TextInput, Text} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
@@ -102,35 +102,32 @@ const SingleChat = ({navigation}) => {
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
     const [ msg, setMsg] = useState('');
+
     const [ chatData, setChatData] = useState('');
     const [ roomId, setRoomId ] = useState('');
     const [ isLoaded, setIsLoaded ] = useState(false);
-    console.log('allMessages: ', allMessages);
 
     useEffect(() => {
-        
-        fetchData();
-
-        // // Attach an asynchronous callback to read the data at our posts reference
-         const docRef = ref(db, "messages/" + roomId);
-         onValue(docRef, (snapshot) =>
-          {
-             const data = snapshot.val();
-             if(!data) return console.log('No messages found');
-             console.log('A new node has been added', Object.values(data));
-
-            // setAllMessages(Object.values(data));
-            setAllMessages(Object.values(data));
-            // setAllMessages(Object.values(data));
-            console.log('allMessages: ', allMessages);
-            setIsLoaded(true);
-        });
-        
-        // return () => database().ref('/messages'+ chatData.roomId).off('child_added', onChildAdd);
-    }, [receiverId]);
+        if(roomId === '') {
+            fetchChat();
+        }
+        try{
+            if(roomId !== ''){
+            const docRef = ref(db, "messages/" + roomId);
+            onValue(docRef, (snapshot) => {
+               const data = Object.values(snapshot.val());
+               if(!data) return console.log('-No data found');
+               setAllMessages((prevState) => [...prevState, ...data]);
+               console.log("allMessages: ", data);
+            });
+            }
+        } catch (error){
+             console.log('Error fetching document: ', error);
+           }  
+    }, [roomId, receiverId]);
 
 
-    const fetchData = async () => {
+    const fetchChat = async () => {
         try {     
             const docRef = doc(database, "users", receiverId);
             const docSnap = await getDoc(docRef);
@@ -159,7 +156,8 @@ const SingleChat = ({navigation}) => {
         } catch (error) {
              console.error("Error fetching document:", error);
         
-        }}
+        }
+    }
     
 
     const createNewChat = (receiverData) => {
@@ -206,38 +204,29 @@ const SingleChat = ({navigation}) => {
             msgType: 'text',
         }
         
-        // Get a key for a new Message.
         const newPostKey = push(child(ref(db), 'messages')).key;
-        msgData.id = newPostKey;
-
         const updates = {};
-        updates['/messages/' + roomId + '/' + newPostKey] = msgData;    
-      
+        updates['messages/' + roomId + '/' + newPostKey] = msgData;
         update(ref(db), updates).then(() => {
-                console.log('Message sent successfully');
-                 const updateChat = {
-                   lastMsg: msg,
-                   sendTime: msgData.sentTime,
-                  }
-                update(ref(db, 'chatsList/' + sender.id + '/' + chatData.id),( updateChat))
-                update(ref(db, 'chatsList/' +  chatData.id + '/' + sender.id ),(updateChat)); 
-         }).catch((error) => { 
+            console.log('Message sent successfully');
+            const updateChat = {
+                lastMsg: msg,
+                sendTime: msgData.sentTime,
+            }
+            update(ref(db, 'chatsList/' + sender.id + '/' + receiverId),( updateChat))
+            update(ref(db, 'chatsList/' +  receiverId + '/' + sender.id ),(updateChat)); 
+            setMsg('');
+        }).catch((error) => {
             console.error("Error adding document: ", error);
-         }); 
-
-          setMsg('')
+        });
     }
     
-
-    const renderItem = ({ item  }) => {
-        console.log('\nitem: ', item);
-
+    const renderItem = ({  item  }) => {      
        return (
         <View style={styles.msg}>
-        <MsgComponent
+        <MsgComponent     
           sender={item.sender}
-          message={item.from}
-          item={item}
+          message={item.message}
           sendTime={'20:34'}
         />
         </View>
@@ -246,17 +235,14 @@ const SingleChat = ({navigation}) => {
 
 
     return (
-        <View>
-            <View style={styles.container} >
-           <FlatList
-                data={allMessages}
-                renderItem={renderItem}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={(item, index) => {return index}}
-             /> 
-            </View>
+           <View style={styles.container} >
+            <FlatList
+               keyExtractor={(item, index) => {item.id}}
+               data={allMessages}
+               renderItem={renderItem}
+             />
            
-            <View  style={styles.containerFooter}>  
+            <View style={styles.containerFooter}>  
                 <Octicons name="smiley" size={24} style={styles.smiley}/> 
                 <MaterialIcons name="attach-file" size={24} style={styles.attachment}/>            
                     <View style={styles.windowSend} >
@@ -280,10 +266,13 @@ const styles = StyleSheet.create({
       marginTop:  5,
       marginLeft: windowWidth/14,
       marginRight: windowWidth/14,
-      height: windowHeight - StatusBar.currentHeight - windowHeight / 11 - windowHeight / 12,
+      // delete -80
+      height: windowHeight - StatusBar.currentHeight - windowHeight / 11 - windowHeight / 12 - 80,
+      backgroundColor: 'blue',
     },
     containerFooter :{
-        height: windowHeight / 12,
+        height: windowHeight /12,
+        // height: windowHeight /20,
         flexDirection: 'row',
         padding: 10,
         backgroundColor: COLORS.headerChat,

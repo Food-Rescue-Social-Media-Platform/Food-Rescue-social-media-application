@@ -2,17 +2,20 @@
 import { View, Text, StyleSheet } from 'react-native';
 import TimeDelivery from "./TimeDelivery";
 import {COLORS} from '../../styles/colors';
-
-
+import { useSelector } from 'react-redux';
+import moment from 'moment';
 
 const MsgComponent = (props) => {
     const { sender, message, item, sendTime } = props;
+    const userData = useSelector(state => state.user.userData);
+    console.log('sentTime: ', sendTime);
+
     return (
         <View 
-        style= {[styles.msgBox, sender === 'me'? styles.right : styles.left ]}
+        style= {[styles.msgBox, sender === userData.id ? styles.right : styles.left ]}
         >
         <Text >{message}</Text>
-        <Text style={styles.timeText}>{sendTime}</Text>
+        <Text style={styles.timeText}>{moment(sendTime).format('LT')}</Text>
         </View>
         )
     }

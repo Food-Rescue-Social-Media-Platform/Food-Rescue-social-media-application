@@ -186,7 +186,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontFamily: 'Roboto',
     fontSize: 28,
     marginBottom: 5,
     color: '#051d5f',
@@ -224,7 +223,6 @@ const styles = StyleSheet.create({
   color_textPrivate: {
     fontSize: 13,
     fontWeight: '400',
-    fontFamily: 'Roboto',
     color: 'grey',
   },
   SocialButtonContainer: {

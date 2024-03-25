@@ -50,6 +50,8 @@ export const AuthProvider = ({ children }) => {
                             isAdmin: false,
                             postsNum: 0,
                             createdAt: serverTimestamp(),
+                            followingUsersId: [],
+                            followersUsersId: [],
                             ...userInfo // Merge with provided userInfo
                         };
 

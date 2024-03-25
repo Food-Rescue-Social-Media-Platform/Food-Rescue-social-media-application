@@ -41,7 +41,7 @@ const PostCard = ({item}) => {
                 name="cupcake"
                 size={22}
                 />  
-                <Text style={styles.text}>{item.postCategories}</Text>                  
+                <Text style={styles.text}>{item.category}</Text>                  
             </View>
             <View style={styles.iconsWrapper}>
                 <MaterialCommunityIcons

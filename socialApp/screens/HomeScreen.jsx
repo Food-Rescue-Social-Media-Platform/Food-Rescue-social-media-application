@@ -16,7 +16,7 @@ const Posts = [
       postText:
         'a pancakes 3 boxes. after a big party. we have these pancakes left, delicious pancakes that we made by pancakes lovers hands.',
       postImg: require('../assets/posts/post-img-7.jpg'),
-      postCategories: 'milky',
+      category: 'milky',
       postDate: 'Today - 13:50 AM',
       postDistance: '0.8 KM',
     },
@@ -28,7 +28,7 @@ const Posts = [
       postText:
         'a large plate of pizza.',
       postImg: require('../assets/posts/post-img-1.jpg'),
-      postCategories: 'milky',
+      category: 'milky',
       postDate: 'Today - 12:55 AM',
       postDistance: '14 KM',
     },
@@ -40,7 +40,7 @@ const Posts = [
       postText:
         'a four delicious sweets tupperware boxes. after a big party. we have these sweets left that no one has touched, clean and tasty.',
       postImg: require('../assets/posts/post-img-3.jpg'),
-      postCategories: 'milky',
+      category: 'milky',
       postDate: 'Today - 11:00 PM',
       postDistance: '5.4 KM',
     },
@@ -52,7 +52,7 @@ const Posts = [
       postText:
         'a delicious salat tupperware boxes. after a big party. we have these salats left that no one has touched, clean and tasty.',
       postImg: require('../assets/posts/post-img-2.jpg'),
-      postCategories: 'vegetables',
+      category: 'vegetables',
       postDate: 'yesterday - 08:45 AM',
       postDistance: '3 KM',
     },
@@ -64,7 +64,7 @@ const Posts = [
       postText:
       'a pancakes 1 boxe. after a big party.',
       postImg: require('../assets/posts/post-img-5.jpg'),
-      postCategories: 'milky',
+      category: 'milky',
       postDate: 'yesterday - 17:30 AM',
       postDistance: '1 KM',
     },
@@ -76,7 +76,7 @@ const Posts = [
         postText:
         'a large plate of stackes and meats on BBQ.',
         postImg: require('../assets/posts/post-img-4.jpg'),
-        postCategories: 'meat',
+        category: 'meat',
         postDate: 'yesterday - 17:30 AM',
         postDistance: '1 KM',
       },
@@ -88,7 +88,7 @@ const Posts = [
         postText:
           'box of sushi',
         postImg: 'none',
-        postCategories: 'fish',
+        category: 'fish',
         postDate: 'Today - 11:00 PM',
         postDistance: '5.4 KM',
       },

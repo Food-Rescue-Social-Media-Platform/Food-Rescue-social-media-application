@@ -1,13 +1,13 @@
 import React, { createContext, useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut} from 'firebase/auth'; // Import Firebase functions
 import { auth, database } from '../firebase'; // Import 'auth' from firebase.js
-import { setDoc, doc } from 'firebase/firestore'; // Import setDoc and doc functions from Firestore
+import { setDoc, doc, serverTimestamp } from 'firebase/firestore'; // Import setDoc and doc functions from Firestore
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    
+
     return (
         <AuthContext.Provider 
             value={{
@@ -37,9 +37,24 @@ export const AuthProvider = ({ children }) => {
 
                         // Get the user's UID
                         const uid = userCredential.user.uid;
+                        
+                        // Additional user information
+                        const additionalUserInfo = {
+                            location: "",
+                            profileImg: "",
+                            profileCover: "",
+                            bio: "",
+                            rating: 0,
+                            earningPoints: 0,
+                            postsId: [],
+                            isAdmin: false,
+                            postsNum: 0,
+                            createdAt: serverTimestamp(),
+                            ...userInfo // Merge with provided userInfo
+                        };
 
                         // Save user info to Firestore under 'users' collection with the UID as the document ID
-                        await setDoc(doc(database, 'users', uid), userInfo);
+                        await setDoc(doc(database, 'users', uid), additionalUserInfo);
                         }
                     } catch (e) {
                         console.log(e);

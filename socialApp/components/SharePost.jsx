@@ -18,7 +18,7 @@ const SharePost = () => {
             <Text style={styles.mainText}>Share food...</Text>
             </TouchableOpacity>
             
-            <View style={styles.iconsWrapper}>
+            <TouchableOpacity style={styles.iconsWrapper}>
                 <TouchableOpacity>
                  <FontAwesome6 name="images" size={21} color="black" style={styles.icon}/>
                 </TouchableOpacity>
@@ -34,7 +34,7 @@ const SharePost = () => {
                 <TouchableOpacity>
                     <MaterialIcons name="category" size={21} color="black" style={styles.icon}/>
                 </TouchableOpacity>
-                </View>
+                </TouchableOpacity>
             </View>
       </View>
     );

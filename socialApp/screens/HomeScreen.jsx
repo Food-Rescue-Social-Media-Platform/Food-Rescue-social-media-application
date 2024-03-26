@@ -1,8 +1,15 @@
 import React,{useContext} from 'react';
-import {View, StyleSheet,Text} from 'react-native';
+import {View, StyleSheet, TouchableOpacity, FlatList} from 'react-native';
 import FormButton from '../components/FormButton';
 import Chat from './chat/Chat';
 import { AuthContext } from '../navigation/AuthProvider';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import { Container} from '../styles/feedStyles';
+import PostCard from '../components/PostCard';
+import { windowHeight, windowWidth } from '../utils/Dimentions';
+import  SharePost from '../components/SharePost';
+import { COLORS } from '../styles/colors';
 
 const Posts = [
   {
@@ -97,30 +104,33 @@ const HomeScreen = () => {
     
     return (
       <Container>
+      <SharePost/>
+      <View style={{height:windowHeight/17,  borderRadius:2, borderColor:'black'}}></View>
       <FlatList 
-          data={Posts}
-          renderItem={({item}) => <PostCard item={item}/>}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-              
+        data={Posts}
+        renderItem={({item}) => <PostCard item={item}/>}
+        keyExtractor={item => item.id}
+        showsVerticalScrollIndicator={false}   
       />
-     <FormButton buttonTitle='Logout' onPress={() => logout()} />
-  </Container>
+      <FormButton buttonTitle='Logout' onPress={() => logout()} />
+      </Container>
     );
 }
 
-export default HomeScreen;
-
 const styles = StyleSheet.create({
+    mainContainer:{
+      width: windowWidth,
+    },
     text: {
         fontSize: 12,
         color: "black"
     },
-
     iconsWrapper: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
     }
 });
+
+export default HomeScreen;
 

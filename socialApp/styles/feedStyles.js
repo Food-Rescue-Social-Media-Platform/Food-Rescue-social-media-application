@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.View`
-  flex: 1;
-  ${'' /* justify-content: center; */}
+  ${'' /* justify-content: center; flex:1; */}
   align-items: center;
   background-color: #f9fafd;
   padding: 20px;

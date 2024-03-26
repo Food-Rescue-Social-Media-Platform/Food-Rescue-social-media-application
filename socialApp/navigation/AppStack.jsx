@@ -114,7 +114,7 @@ const MessageStack = ({navigation}) => (
 );
 
 const MapStack = ({navigation}) => (
-  <Stack.Navigator>
+  <Stack.Navigator>zz
     <Stack.Screen
       name="Map"
       component={MapScreen}

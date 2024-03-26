@@ -10,11 +10,7 @@ const ModalAddPost = ({ show }) => {
         console.log('Show modal: ', show);
     },[show]);
 
-    const handlePost = () => {
-        console.log('Post');
-    }
-
-    const handleClose = () => {
+    const handleCloseAddPost = () => {
         setShowModal(false);
     }
     

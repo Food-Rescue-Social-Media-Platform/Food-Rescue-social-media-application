@@ -8,8 +8,9 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { Container} from '../styles/feedStyles';
 import PostCard from '../components/PostCard';
 import { windowHeight, windowWidth } from '../utils/Dimentions';
-import  SharePost from '../components/SharePost';
 import { COLORS } from '../styles/colors';
+import AddPostScreen from './AddPostScreen';
+import AddPostCard from '../components/AddPostCard';
 
 const Posts = [
   {
@@ -104,7 +105,7 @@ const HomeScreen = () => {
     
     return (
       <Container>
-      <SharePost/>
+      <AddPostCard/>
       <View style={{height:windowHeight/17,  borderRadius:2, borderColor:'black'}}></View>
       <FlatList 
         data={Posts}

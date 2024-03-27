@@ -12,6 +12,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 // import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
+import AddPostScreen from '../screens/AddPostScreen';
 
 const Stack = createStackNavigator();
 const Tab = createMaterialBottomTabNavigator();
@@ -33,6 +34,20 @@ const FeedStack = ({navigation}) => (
           elevation: 0,
         },
       }}
+    />
+    <Stack.Screen
+    name="AddPost"
+    component={AddPostScreen}
+    options={{
+      title: 'Create Post',
+      tabBarVisible: false,
+      headerTitleAlign: 'center',
+      headerStyle: {
+        backgroundColor: '#2e64e515',
+        shadowColor: '#2e64e515',
+        elevation: 0,
+      }
+    }}
     />
     <Stack.Screen
       name="ProfileScreen"
@@ -114,7 +129,7 @@ const MessageStack = ({navigation}) => (
 );
 
 const MapStack = ({navigation}) => (
-  <Stack.Navigator>zz
+  <Stack.Navigator>
     <Stack.Screen
       name="Map"
       component={MapScreen}

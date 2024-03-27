@@ -17,6 +17,8 @@ const HomeScreen = () => {
             try {
                 const querySnapshot = await getDocs(collection(database, "postsTest"));
                 const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort the posts by creation time
+                data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
                 setPosts(data);
             } catch (error) {
                 console.error("Error fetching data:", error);

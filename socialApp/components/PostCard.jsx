@@ -3,11 +3,15 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../styles/feedStyles';
+import moment from 'moment';
 
 const PostCard = ({ item }) => {
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
+
+    const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
+    const postDate = moment(item.postDate.toDate()).calendar();
 
     return (
         <Card>
@@ -24,7 +28,7 @@ const PostCard = ({ item }) => {
                     )}
                     <UserInfoText>
                         <UserName>{item.userName}</UserName>
-                        <PostTime>{item.postTime}</PostTime>
+                        <PostTime>{createdAt}</PostTime>
                     </UserInfoText>
                 </UserInfo>
                 <TouchableOpacity style={{
@@ -62,7 +66,7 @@ const PostCard = ({ item }) => {
                         name="clock"
                         size={22}
                     />
-                    <Text style={styles.text}>{item.postDate}</Text>
+                    <Text style={styles.text}>{postDate}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons

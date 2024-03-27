@@ -1,14 +1,19 @@
 import React from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Button} from 'react-native';
 
-const MessagesScreen = () => {
+const MessagesScreen = ({ navigation }) => {
+    const handleChatPress = () => {
+        navigation.navigate('Chat');
+    };
+
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Welcome to Messages screen</Text>
+        <Text style={styles.text}>Welcome to Messages screen</Text>
+        <Button title="Start Chat" onPress={handleChatPress} />
         </View>
     );
-}
-
+};
+  
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#f9fafd',

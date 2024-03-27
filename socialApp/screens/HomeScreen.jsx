@@ -1,113 +1,43 @@
-import React,{useContext} from 'react';
-import {View, StyleSheet,Text,TouchableOpacity, FlatList} from 'react-native';
+// HomeScreen.jsx
+import React, { useState, useEffect, useContext } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image } from 'react-native';
 import FormButton from '../components/FormButton';
 import { AuthContext } from '../navigation/AuthProvider';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import { Container} from '../styles/feedStyles';
+import { Container } from '../styles/feedStyles';
 import PostCard from '../components/PostCard';
-
-const Posts = [
-    {
-      id: '1',
-      userName: 'Mohammad Salah',
-      userImg: require('../assets/users/user-1.jpg'),
-      postTime: '4 mins ago',
-      postText:
-        'a pancakes 3 boxes. after a big party. we have these pancakes left, delicious pancakes that we made by pancakes lovers hands.',
-      postImg: require('../assets/posts/post-img-7.jpg'),
-      category: 'milky',
-      postDate: 'Today - 13:50 AM',
-      postDistance: '0.8 KM',
-    },
-    {
-      id: '2',
-      userName: 'John Doe',
-      userImg: require('../assets/users/user-2.jpg'),
-      postTime: '2 hours ago',
-      postText:
-        'a large plate of pizza.',
-      postImg: require('../assets/posts/post-img-1.jpg'),
-      category: 'milky',
-      postDate: 'Today - 12:55 AM',
-      postDistance: '14 KM',
-    },
-    {
-      id: '3',
-      userName: 'Ken William',
-      userImg: require('../assets/users/user-4.jpg'),
-      postTime: '1 hours ago',
-      postText:
-        'a four delicious sweets tupperware boxes. after a big party. we have these sweets left that no one has touched, clean and tasty.',
-      postImg: require('../assets/posts/post-img-3.jpg'),
-      category: 'milky',
-      postDate: 'Today - 11:00 PM',
-      postDistance: '5.4 KM',
-    },
-    {
-      id: '4',
-      userName: 'Selina Paul',
-      userImg: require('../assets/users/user-6.jpg'),
-      postTime: '1 day ago',
-      postText:
-        'a delicious salat tupperware boxes. after a big party. we have these salats left that no one has touched, clean and tasty.',
-      postImg: require('../assets/posts/post-img-2.jpg'),
-      category: 'vegetables',
-      postDate: 'yesterday - 08:45 AM',
-      postDistance: '3 KM',
-    },
-    {
-      id: '5',
-      userName: 'Christy Alex',
-      userImg: require('../assets/users/user-7.jpg'),
-      postTime: '1 day ago',
-      postText:
-      'a pancakes 1 boxe. after a big party.',
-      postImg: require('../assets/posts/post-img-5.jpg'),
-      category: 'milky',
-      postDate: 'yesterday - 17:30 AM',
-      postDistance: '1 KM',
-    },
-    {
-        id: '6',
-        userName: 'Christy Alex',
-        userImg: require('../assets/users/user-7.jpg'),
-        postTime: '1 day ago',
-        postText:
-        'a large plate of stackes and meats on BBQ.',
-        postImg: require('../assets/posts/post-img-4.jpg'),
-        category: 'meat',
-        postDate: 'yesterday - 17:30 AM',
-        postDistance: '1 KM',
-      },
-      {
-        id: '7',
-        userName: 'Ken William',
-        userImg: require('../assets/users/user-4.jpg'),
-        postTime: '1 hours ago',
-        postText:
-          'box of sushi',
-        postImg: 'none',
-        category: 'fish',
-        postDate: 'Today - 11:00 PM',
-        postDistance: '5.4 KM',
-      },
-  ];
+import { database } from '../firebase'; // Import the Firestore instance from firebase.js
+import { collection, getDocs } from "firebase/firestore";
 
 const HomeScreen = () => {
-    const {user,logout} = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
+    const [posts, setPosts] = useState([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const querySnapshot = await getDocs(collection(database, "postsTest"));
+                const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Sort the posts by creation time
+                data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
+                setPosts(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+    }, []); // Empty dependency array to fetch data only once when component mounts
+
     return (
         <Container>
-            <FlatList 
-                data={Posts}
-                renderItem={({item}) => <PostCard item={item}/>}
+            <FlatList
+                data={posts} // Use fetched data instead of the hardcoded `Posts` array
+                renderItem={({ item }) => <PostCard item={item} />}
                 keyExtractor={item => item.id}
                 showsVerticalScrollIndicator={false}
-                    
             />
-           <FormButton buttonTitle='Logout' onPress={() => logout()} />
+            <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
-        
     );
 }
 
@@ -118,11 +48,9 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: "black"
     },
-
     iconsWrapper: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
     }
 });
-

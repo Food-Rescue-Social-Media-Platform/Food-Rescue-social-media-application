@@ -2,8 +2,44 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../styles/feedStyles';
 import moment from 'moment';
+
+const getCategoryIcon = (category) => {
+    switch (category) {
+        case 'Bread':
+            return <FontAwesome6 name="bread-slice" size={22} />;
+        case 'Cooked':
+            return <MaterialCommunityIcons name="food-takeout-box" size={22} />;
+        case 'Chicken':
+            return <MaterialCommunityIcons name="food-turkey" size={22} />;
+        case 'Fast Food':
+            return <MaterialCommunityIcons name="food" size={22} />;
+        case 'Rice':
+            return <MaterialCommunityIcons name="rice" size={22} />;
+        case 'Milky':
+            return <MaterialCommunityIcons name="cow" size={22} />;
+        case 'Meat':
+            return <MaterialCommunityIcons name="food-steak" size={22} />;
+        case 'Sweets':
+            return <MaterialCommunityIcons name="cupcake" size={22} />;
+        case 'Seafood':
+            return <Ionicons name="fish" size={22} />;
+        case 'Vegetables':
+            return <FontAwesome5 name="carrot" size={22} />;
+        case 'Fruites':
+            return <MaterialCommunityIcons name="food-apple" size={22} />;
+        case 'Drinks':
+            return <MaterialCommunityIcons name="bottle-wine" size={22} />;
+        default:
+            return <MaterialIcons name="category" size={22} />;
+    }
+};
 
 const PostCard = ({ item }) => {
     // Check if userImg and postImg are available
@@ -55,10 +91,7 @@ const PostCard = ({ item }) => {
             )}
             <InteractionWrapper>
                 <View style={styles.iconsWrapper}>
-                    <MaterialCommunityIcons
-                        name="cupcake"
-                        size={22}
-                    />
+                    {getCategoryIcon(item.category)}
                     <Text style={styles.text}>{item.category}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>

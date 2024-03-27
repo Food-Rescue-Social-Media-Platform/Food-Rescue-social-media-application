@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
@@ -13,7 +13,7 @@ import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
 
 const Stack = createStackNavigator();
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 const FeedStack = ({navigation}) => (
   <Stack.Navigator>
@@ -123,6 +123,7 @@ const MapStack = ({navigation}) => (
       name="Map"
       component={MapScreen}
       options={{
+
         headerTitleAlign: 'center',
         headerTitleStyle: {
           color: '#2e64e5',
@@ -141,34 +142,18 @@ const MapStack = ({navigation}) => (
 
 
 const AppStack = () => {
-const getTabBarVisibility = (route) => {
-    const routeName = route.state
-    ? route.state.routes[route.state.index].name
-    : '';
-
-    if (routeName === 'Chat') {
-    return false;
-    }
-    return true;
-};
 
 return (
     <Tab.Navigator
-    initialRouteName="Home"
-  activeColor="black"
-  inactiveColor="black"
-  theme={{colors: {secondaryContainer: '#CEF0D3'}}}
-
-  barStyle={{ backgroundColor: '#f9fafd' }}
-    tabBarOptions={{
-        activeTintColor: '#2e64e5',
-    }}>
+    initialRouteName="Home">
+    
     <Tab.Screen
+        screenOptions={{headerShown:false}}
         name="HomeTab"
         component={FeedStack}
         options={({route}) => ({
         tabBarLabel: 'Home',
-        // tabBarVisible: route.state && route.state.index === 0,
+        headerShown: false ,
         tabBarIcon: ({color, size}) => (
             <MaterialCommunityIcons
             name="home-outline"
@@ -184,6 +169,7 @@ return (
       component={MapStack}
       options={{
         tabBarLabel: 'Map',
+        headerShown: false ,
         tabBarIcon: ({color, size}) => (
           <MaterialCommunityIcons
             name="map-marker-outline"
@@ -200,11 +186,8 @@ return (
         component={MessageStack}
         options={({route}) => ({
         tabBarLabel: 'Messages',
-        tabBarVisible: getTabBarVisibility(route),
-        // Or Hide tabbar when push!
-        // https://github.com/react-navigation/react-navigation/issues/7677
-        // tabBarVisible: route.state && route.state.index === 0,
-        // tabBarLabel: 'Home',
+        headerShown: false ,
+
         tabBarIcon: ({color, size}) => (
             <Ionicons
             name="chatbox-ellipses-outline"
@@ -217,15 +200,18 @@ return (
     <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
-        options={{
+        options={({route}) => ({
         tabBarLabel: 'Profile',
+        headerShown: false ,
+        tabBarStyle: {display: 'none'},
+        
         tabBarIcon: ({color, size}) => (
             <Ionicons name="person-outline" 
-            color='black' 
+            color={color}
             size={25}
             />
         ),
-        }}
+        })}
     />
     </Tab.Navigator>
 );

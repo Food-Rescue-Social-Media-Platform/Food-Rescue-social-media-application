@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import HomeScreen from '../screens/HomeScreen';
 import ChatScreen from '../screens/ChatScreen';
@@ -75,6 +76,26 @@ const ProfileStack = () => (
   </Stack.Navigator>
 );
 
+const MessageStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Messages"
+      component={MessagesScreen}
+      options={{
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          color: '#2e64e5',
+        },
+        headerStyle: {
+          backgroundColor: '#f9fafd',
+          shadowColor: '#fff',
+          elevation: 0,
+        },
+      }}
+    />
+  </Stack.Navigator>
+);
+
 const MapStack = () => (
   <Stack.Navigator>
     <Stack.Screen
@@ -97,36 +118,47 @@ const MapStack = () => (
 
 const AppStack = () => {
   return (
-    <Tab.Navigator initialRouteName="Home"
-    screenOptions={{
-      elevation: 0,
-      
-      tabBarStyle: {
-        backgroundColor: '#f9fafd',
+    <Tab.Navigator 
+      initialRouteName="Home"
+      screenOptions={{
         elevation: 0,
-        height:55,
-        borderTopWidth: 0,
-
-      },
-      tabBarItemStyle:{
-      marginBottom:10,
-    },
-      activeTintColor: 'green',
-      inactiveTintColor: '#000',
-    }}>
+        tabBarStyle: {
+          backgroundColor: '#f9fafd',
+          elevation: 0,
+          height:55,
+          borderTopWidth: 0,
+        },
+        tabBarItemStyle:{
+          marginBottom:5,
+          paddingBottom:5,
+          marginLeft:12,
+          marginRight:12,
+          borderRadius:30,
+          height:52,
+          width:20,
+        },
+        tabBarActiveTintColor: '#000',
+        tabBarInactiveTintColor: '#000',
+        tabBarActiveBackgroundColor:'#CEF0D3',
+        
+      }}>
       <Tab.Screen
         name="HomeTab"
         component={FeedStack}
         options={({ route }) => ({
           tabBarLabel: 'Home',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
           headerShown: false ,
-          tabBarActiveTintColor: 'green',
+          tabBarActiveTintColor: '#000',
           tabBarInactiveTintColor: '#000',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="home-outline"
               color={color}
-              size={25}
+              size={28}
             />
           ),
         })}
@@ -136,31 +168,39 @@ const AppStack = () => {
         component={MapStack}
         options={({ route }) => ({
           tabBarLabel: 'Map',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
           headerShown: false ,
-          tabBarActiveTintColor: 'green',
+          tabBarActiveTintColor: '#000',
           tabBarInactiveTintColor: '#000',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="map-marker-outline"
               color={color}
-              size={25}
+              size={28}
             />
           ),
         })}
       />
       <Tab.Screen
         name="MessagesTab"
-        component={MessagesScreen}
+        component={MessageStack}
         options={({ route }) => ({
           tabBarLabel: 'Messages',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
           headerShown: false ,
-          tabBarActiveTintColor: 'green',
+          tabBarActiveTintColor: '#000',
           tabBarInactiveTintColor: '#000',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons
-              name="chatbox-ellipses-outline"
+            <MaterialCommunityIcons
+              name="message-processing-outline"
               color={color}
-              size={25}
+              size={28}
             />
           ),
         })}
@@ -171,11 +211,15 @@ const AppStack = () => {
         component={ProfileStack}
         options={({ route }) => ({
           tabBarLabel: 'Profile',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
           headerShown: false ,
-          tabBarActiveTintColor: 'green',
+          tabBarActiveTintColor: '#000',
           tabBarInactiveTintColor: '#000',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={25} />
+            <MaterialIcons name="person-outline" color={color} size={28}/>
           ),
         })}
       />

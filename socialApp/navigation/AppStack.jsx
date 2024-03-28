@@ -39,8 +39,8 @@ const FeedStack = ({navigation}) => (
     name="AddPost"
     component={AddPostScreen}
     options={{
-      title: 'Create Post',
-      tabBarVisible: false,
+      title: '',
+      // headerShown: false,
       headerTitleAlign: 'center',
       headerStyle: {
         backgroundColor: '#2e64e515',

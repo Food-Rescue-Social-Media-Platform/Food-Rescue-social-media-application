@@ -11,6 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import {Camera} from 'expo-camera'
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImages } from '../helpers/UplaodImges';
+import { OpenGalereAndSelectImages } from '../helpers/OpeningComponents';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -27,23 +28,30 @@ const AddPostScreen = () => {
         console.log('Camera');
     }
     
-    const handleAddImages = async () => {
-      console.log('Images');
-      const s = await ImagePicker.getCameraPermissionsAsync();
-      // No permissions request is necessary for launching the image library
-       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        // aspect: [4, 3],
-        quality: 1,
-      });
-    
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-        console.log("uri: ", result.assets[0].uri);
-        await uploadImages(result.assets[0].uri, 'postsImges/');
-      }
+    const handleAddImages = () =>{
+        console.log('Images');
+        OpenGalereAndSelectImages(setImage);
     }
+
+    // const handleAddImages = async () => {
+    //   console.log('Images');
+    //   const s = await ImagePicker.getCameraPermissionsAsync();
+    //   // No permissions request is necessary for launching the image library
+    //    let result = await ImagePicker.launchImageLibraryAsync({
+    //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //     allowsEditing: true,
+    //     // aspect: [4, 3],
+    //     quality: 1,
+    //   });
+    
+    //   if (!result.canceled) {
+    //     setImage(result.assets[0].uri);
+    //     console.log("uri: ", result.assets[0].uri);
+    //     await uploadImages(result.assets[0].uri, 'postsImges/');
+    //   }
+    // }
+
+    // await uploadImages(result.assets[0].uri, 'postsImges/');
 
     const handleAddLocation = () => {
         console.log('Location');

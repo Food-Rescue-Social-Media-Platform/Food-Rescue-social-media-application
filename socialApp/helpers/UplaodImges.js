@@ -1,9 +1,7 @@
 import {ref, getDownloadURL, uploadBytesResumable} from 'firebase/storage';
 import {storage} from '../firebase.js';
 
-
-
-
+// Upload images to firebase storage
 export const uploadImages = async (uri, path, type) => {
     if(uri == null) {
       return null;

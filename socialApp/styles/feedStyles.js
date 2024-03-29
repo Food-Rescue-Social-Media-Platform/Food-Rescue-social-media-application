@@ -76,7 +76,7 @@ export const InteractionWrapper = styled.View`
     padding: 15px;
     background-color: #A7EAAE;
     border-radius: 50px;
-    margin-right:8px;
+    margin-right:12px;
     margin-left:8px;
 `;
 

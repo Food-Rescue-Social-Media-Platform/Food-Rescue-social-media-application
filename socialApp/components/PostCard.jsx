@@ -41,6 +41,7 @@ const getCategoryIcon = (category) => {
     }
 };
 
+
 const PostCard = ({ item }) => {
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
@@ -49,6 +50,19 @@ const PostCard = ({ item }) => {
     const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
     const postDate = moment(item.postDate.toDate()).calendar();
 
+    let statusColor;
+    switch (item.status) {
+        case 'rescued':
+            statusColor = 'green';
+            break;
+        case 'wasted':
+            statusColor = 'red';
+            break;
+        default:
+            statusColor = 'gray';
+            break;
+    }
+    
     return (
         <Card>
             <View style={{
@@ -67,9 +81,10 @@ const PostCard = ({ item }) => {
                         <PostTime>{createdAt}</PostTime>
                     </UserInfoText>
                 </UserInfo>
+                <Text style={{ color: statusColor, fontSize:21, marginTop:20, fontWeight:500}}>{item.status}</Text>
                 <TouchableOpacity style={{
                     paddingTop: 25,
-                    paddingRight: 20
+                    paddingRight:17
                 }}>
                     <SimpleLineIcons
                         name="options"
@@ -97,17 +112,36 @@ const PostCard = ({ item }) => {
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="clock"
-                        size={22}
+                        size={21}
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="map-marker"
-                        size={22}
+                        size={21}
                     />
                     <Text style={styles.text}>{item.postDistance}</Text>
                 </View>
+            </InteractionWrapper>
+            <Text></Text>
+            
+            <InteractionWrapper>
+                <View style={styles.iconsWrapper}>
+                    <MaterialCommunityIcons
+                        name="phone"
+                        size={21}
+                    />
+                    <Text style={styles.text}>{item.phoneNumber}</Text>
+                </View>
+                <View style={styles.iconsWrapper}>
+                    <MaterialCommunityIcons
+                        name="bus-clock"
+                        size={21}
+                    />
+                    <Text style={styles.text}>{item.deliveryRange}</Text>
+                </View>
+                
             </InteractionWrapper>
             <PostText>{item.postText}</PostText>
         </Card>
@@ -132,7 +166,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
     },
     postImage: {
-        width: '100%',
+        width: '98%',
         height: 200, // Adjust height as needed
         resizeMode: 'cover', // Or use 'contain' for other resizing options
     },

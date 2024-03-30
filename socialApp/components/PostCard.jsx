@@ -81,16 +81,18 @@ const PostCard = ({ item }) => {
                         <PostTime>{createdAt}</PostTime>
                     </UserInfoText>
                 </UserInfo>
-                <Text style={{ color: statusColor, fontSize:21, marginTop:20, fontWeight:500}}>{item.status}</Text>
-                <TouchableOpacity style={{
-                    paddingTop: 25,
-                    paddingRight:17
-                }}>
-                    <SimpleLineIcons
-                        name="options"
-                        size={24}
-                    />
-                </TouchableOpacity>
+                <UserInfoText>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <TouchableOpacity style={{ paddingRight: 24 }}>
+                            <SimpleLineIcons
+                                name="options"
+                                size={23}
+                            />
+                        </TouchableOpacity>
+                        <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
+                    </View>
+                </UserInfoText>
+
             </View>
 
             {/* Conditional rendering for post image */}
@@ -112,14 +114,14 @@ const PostCard = ({ item }) => {
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="clock"
-                        size={21}
+                        size={22}
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="map-marker"
-                        size={21}
+                        size={22}
                     />
                     <Text style={styles.text}>{item.postDistance}</Text>
                 </View>
@@ -130,14 +132,14 @@ const PostCard = ({ item }) => {
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="phone"
-                        size={21}
+                        size={22}
                     />
                     <Text style={styles.text}>{item.phoneNumber}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="bus-clock"
-                        size={21}
+                        size={22}
                     />
                     <Text style={styles.text}>{item.deliveryRange}</Text>
                 </View>
@@ -166,7 +168,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
     },
     postImage: {
-        width: '98%',
+        width: '100%',
         height: 200, // Adjust height as needed
         resizeMode: 'cover', // Or use 'contain' for other resizing options
     },

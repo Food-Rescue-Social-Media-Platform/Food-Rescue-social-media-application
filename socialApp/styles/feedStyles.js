@@ -63,7 +63,7 @@ export const PostImg = styled.Image`
 export const Divider = styled.View`
     border-bottom-color: #A7EAAE;
     border-bottom-width: 1px;
-    width: 90%;
+    width: 91%;
     align-self: center;
     margin-bottom: 15px;
     margin-top: -10px;

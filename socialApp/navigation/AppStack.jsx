@@ -1,23 +1,21 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createMaterialBottomTabNavigator } from 'react-native-paper/react-navigation';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import HomeChat from '../screens/chat/HomeChat';
-import SingleChat from '../screens/chat/SingleChat';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
 import HomeScreen from '../screens/HomeScreen';
-// import ChatScreen from '../screens/ChatScreen ';
+import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 // import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
 import AddPostScreen from '../screens/AddPostScreen';
 
 const Stack = createStackNavigator();
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
-const FeedStack = ({navigation}) => (
+const FeedStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="HomePage"
@@ -26,7 +24,6 @@ const FeedStack = ({navigation}) => (
         headerTitleAlign: 'center',
         headerTitleStyle: {
           color: '#2e64e5', // Blue color
-          // fontSize: 18,
         },
         headerStyle: {
           backgroundColor: '#f9fafd', // Set background color here
@@ -62,11 +59,11 @@ const FeedStack = ({navigation}) => (
         },
         headerBackTitleVisible: false,
         headerBackImage: () => (
-          <View style={{marginLeft: 15}}>
+          <View style={{ marginLeft: 15 }}>
             <Ionicons name="arrow-back" size={25} color="#2e64e5" />
           </View>
         ),
-        headerTitleStyle: { // Blue color for the title
+        headerTitleStyle: {
           color: '#2e64e5',
         },
       }}
@@ -74,52 +71,18 @@ const FeedStack = ({navigation}) => (
   </Stack.Navigator>
 );
 
-const MessageStack = ({navigation}) => (
-  <Stack.Navigator>
-  <Stack.Screen
-      name="Chat"
-      component={HomeChat}
-      options={({route}) => ({
-        headerTitleAlign: 'center',
-        headerBackTitleVisible: true,
-        headerStyle: {
-          backgroundColor: '#f9fafd', // Set background color here
-          shadowColor: '#fff',
-          elevation: 0,
-        },
-      }
-      )}
-      />
-      <Stack.Screen 
-        name="SingleChat" 
-        component={SingleChat} 
-        options={({route}) => ({
-          title: route.params.userName,
-          headerTitleAlign: 'center',
-          headerStyle: {
-            backgroundColor: '#f9fafd', // Set background color here
-            shadowColor: '#fff',
-            elevation: 0,
-          },
-          tabBarVisible: false,
-        })} 
-      />
-      </Stack.Navigator>
-    );
-
-    const ProfileStack = ({navigation}) => (
+const ProfileStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="Profile"
       component={ProfileScreen}
       options={{
         headerTitleAlign: 'center',
-        // headerShown: false,
-        headerTitleStyle: { // Blue color for the title
+        headerTitleStyle: {
           color: '#2e64e5',
         },
         headerStyle: {
-          backgroundColor: '#f9fafd', // Set background color here
+          backgroundColor: '#f9fafd',
           shadowColor: '#fff',
           elevation: 0,
         },
@@ -128,7 +91,27 @@ const MessageStack = ({navigation}) => (
   </Stack.Navigator>
 );
 
-const MapStack = ({navigation}) => (
+const MessageStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Messages"
+      component={MessagesScreen}
+      options={{
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          color: '#2e64e5',
+        },
+        headerStyle: {
+          backgroundColor: '#f9fafd',
+          shadowColor: '#fff',
+          elevation: 0,
+        },
+      }}
+    />
+  </Stack.Navigator>
+);
+
+const MapStack = () => (
   <Stack.Navigator>
     <Stack.Screen
       name="Map"
@@ -139,119 +122,133 @@ const MapStack = ({navigation}) => (
           color: '#2e64e5',
         },
         headerStyle: {
-          backgroundColor: '#f9fafd', // Set background color here
+          backgroundColor: '#f9fafd',
           shadowColor: '#fff',
           elevation: 0,
         },
-        
       }}
     />
   </Stack.Navigator>
 );
 
-
-
 const AppStack = () => {
-const getTabBarVisibility = (route) => {
-    const routeName = route.state
-    ? route.state.routes[route.state.index].name
-    : '';
-
-    if (routeName === 'Chat') {
-    return false;
-    }
-    return true;
-};
-
-return (
-    <Tab.Navigator
-    initialRouteName="Home"
-  activeColor="black"
-  inactiveColor="black"
-  theme={{colors: {secondaryContainer: '#CEF0D3'}}}
-
-  barStyle={{ backgroundColor: '#f9fafd' }}
-    tabBarOptions={{
-        activeTintColor: '#2e64e5',
-    }}>
-    <Tab.Screen
+  return (
+    <Tab.Navigator 
+      initialRouteName="Home"
+      screenOptions={{
+        elevation: 0,
+        tabBarStyle: {
+          backgroundColor: '#f9fafd',
+          elevation: 0,
+          height:55,
+          borderTopWidth: 0,
+        },
+        tabBarItemStyle:{
+          marginBottom:5,
+          paddingBottom:5,
+          marginLeft:12,
+          marginRight:12,
+          borderRadius:30,
+          height:52,
+          width:20,
+        },
+        tabBarActiveTintColor: '#000',
+        tabBarInactiveTintColor: '#000',
+        tabBarActiveBackgroundColor:'#CEF0D3',
+        
+      }}>
+      <Tab.Screen
         name="HomeTab"
         component={FeedStack}
-        options={({route}) => ({
-        tabBarLabel: 'Home',
-        // tabBarVisible: route.state && route.state.index === 0,
-        tabBarIcon: ({color, size}) => (
+        options={({ route }) => ({
+          tabBarLabel: 'Home',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
+          headerShown: false ,
+          tabBarActiveTintColor: '#000',
+          tabBarInactiveTintColor: '#000',
+          tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
-            name="home-outline"
-            color={color}
-            size={25}
+              name="home-outline"
+              color={color}
+              size={28}
             />
-        ),
-        tabBarVisible: false,
+          ),
         })}
-    />
-
-    <Tab.Screen
-      name="MapTab"
-      component={MapStack}
-      options={{
-        tabBarLabel: 'Map',
-        tabBarIcon: ({color, size}) => (
-          <MaterialCommunityIcons
-            name="map-marker-outline"
-            color={color}
-            size={25}
-          />
-        ),
-        
-      }}
-    />
-
-    <Tab.Screen
+      />
+      <Tab.Screen
+        name="MapTab"
+        component={MapStack}
+        options={({ route }) => ({
+          tabBarLabel: 'Map',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
+          headerShown: false ,
+          tabBarActiveTintColor: '#000',
+          tabBarInactiveTintColor: '#000',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="map-marker-outline"
+              color={color}
+              size={28}
+            />
+          ),
+        })}
+      />
+      <Tab.Screen
         name="MessagesTab"
         component={MessageStack}
-        options={({route}) => ({
-        tabBarLabel: 'Messages',
-        tabBarVisible: getTabBarVisibility(route),
-        // Or Hide tabbar when push!
-        // https://github.com/react-navigation/react-navigation/issues/7677
-        // tabBarLabel: 'Home',
-        tabBarIcon: ({color, size}) => (
-            <Ionicons
-            name="chatbox-ellipses-outline"
-            color={color}
-            size={25}
+        options={({ route }) => ({
+          tabBarLabel: 'Messages',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
+          headerShown: false ,
+          tabBarActiveTintColor: '#000',
+          tabBarInactiveTintColor: '#000',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons
+              name="message-processing-outline"
+              color={color}
+              size={28}
             />
-        ),
-        tabBarVisible: true,
-
+          ),
         })}
-    />
-    <Tab.Screen
+      />
+
+      <Tab.Screen
         name="ProfileTab"
         component={ProfileStack}
-        options={{
-        tabBarLabel: 'Profile',
-        tabBarIcon: ({color, size}) => (
-            <Ionicons name="person-outline" 
-            color='black' 
-            size={25}
-            />
-        ),
-        }}
-    />
+        options={({ route }) => ({
+          tabBarLabel: 'Profile',
+          tabBarLabelStyle: {
+            fontWeight:'bold',
+            fontSize:12,
+          },
+          headerShown: false ,
+          tabBarActiveTintColor: '#000',
+          tabBarInactiveTintColor: '#000',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="person-outline" color={color} size={28}/>
+          ),
+        })}
+      />
     </Tab.Navigator>
-);
-};
-  
-const CustomTabBar = ({navigation}) => {
-  return (
-    <View style={{backgroundColor: 'white'}}>
-      {/* הצג את כותרת המסך */}
-      <Text style={{fontSize: 18, fontWeight: 'bold'}}>{navigation.state.routeName}</Text>
-    </View>
   );
 };
-const styles = StyleSheet.create({})
 
-export default AppStack;
+const RootStack = createStackNavigator();
+
+const RootStackScreen = () => (
+  <RootStack.Navigator>
+    <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
+    <RootStack.Screen name="Chat" component={ChatScreen} />
+  </RootStack.Navigator>
+);
+
+export default RootStackScreen;

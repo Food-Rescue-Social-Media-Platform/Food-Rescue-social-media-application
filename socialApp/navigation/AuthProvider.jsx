@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }) => {
                         
                         // Additional user information
                         const additionalUserInfo = {
+                            userName: userInfo.firstName + ' ' + userInfo.lastName,
                             location: "",
                             profileImg: "",
                             profileCover: "",
@@ -76,6 +77,8 @@ export const AuthProvider = ({ children }) => {
                             createdAt: serverTimestamp(),
                             followingUsersId: [],
                             followersUsersId: [],
+                            followingNum: 0,
+                            followersNum: 0,
                             ...userInfo // Merge with provided userInfo
                         };
 

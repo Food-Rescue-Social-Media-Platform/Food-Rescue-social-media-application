@@ -61,15 +61,21 @@ const ProfileScreen = () => {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.container}>
-          <View style={styles.header}>
-              <Image source={{ uri: userData?.profileCover }} style={styles.coverImage} />
+        {userData && (
+            <View style={styles.header}>
+              <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../assets/Images/cover.png')} 
+                style={styles.coverImage} 
+              />              
               <View style={styles.overlay}>
-                  <View style={styles.avatarContainer}>
-                      <Image source={{ uri: userData?.profileImg }} style={styles.avatar} />
-                  </View>
-                  <Text style={styles.name}>{userData?.userName}</Text>
+                <View style={styles.avatarContainer}>
+                  <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../assets/Images/avatar.png')} 
+                    style={styles.avatar} 
+                  />
+                </View>
+                <Text style={styles.name}>{userData?.userName}</Text>
               </View>
-          </View>
+            </View>
+          )}
           <View style={styles.profileInfo}>
               <View style={styles.stats}>
                   <View style={styles.starsStats}>

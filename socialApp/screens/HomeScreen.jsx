@@ -20,6 +20,7 @@ const HomeScreen = () => {
                 // Sort the posts by creation time
                 data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
                 setPosts(data);
+                // console.log(data[1].userId);
             } catch (error) {
                 console.error("Error fetching data:", error);
             }

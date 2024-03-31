@@ -70,14 +70,18 @@ const PostCard = ({ item }) => {
                 justifyContent: "space-between",
             }}>
                 <UserInfo>
-                    {/* Conditional rendering for user image */}
-                    {isUserImgAvailable ? (
-                        <Image source={{ uri: item.userImg }} style={styles.image} />
-                    ) : (
-                        <View style={styles.placeholderImage} />
-                    )}
+                    <TouchableOpacity onPress={null}>
+                        {/* Conditional rendering for user image */}
+                        {isUserImgAvailable ? (
+                            <Image source={{ uri: item.userImg }} style={styles.image} />
+                        ) : (
+                            <View style={styles.placeholderImage} />
+                        )}
+                    </TouchableOpacity>
                     <UserInfoText>
-                        <UserName>{item.userName}</UserName>
+                        <TouchableOpacity onPress={null}>
+                            <UserName>{item.userName}</UserName>
+                        </TouchableOpacity>
                         <PostTime>{createdAt}</PostTime>
                     </UserInfoText>
                 </UserInfo>

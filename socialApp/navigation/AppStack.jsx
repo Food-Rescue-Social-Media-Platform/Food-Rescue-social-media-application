@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import HomeScreen from '../screens/HomeScreen';
-import ChatScreen from '../screens/ChatScreen';
+import HomeChat from '../screens/chat/HomeChat';
 import ProfileScreen from '../screens/ProfileScreen';
 // import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
@@ -91,11 +91,11 @@ const ProfileStack = () => (
   </Stack.Navigator>
 );
 
-const MessageStack = () => (
+const ChatStack = () => (
   <Stack.Navigator>
     <Stack.Screen
-      name="Messages"
-      component={MessagesScreen}
+      name="Chat"
+      component={HomeChat}
       options={{
         headerTitleAlign: 'center',
         headerTitleStyle: {
@@ -200,10 +200,10 @@ const AppStack = () => {
         })}
       />
       <Tab.Screen
-        name="MessagesTab"
-        component={MessageStack}
+        name="chatTab"
+        component={ChatStack}
         options={({ route }) => ({
-          tabBarLabel: 'Messages',
+          tabBarLabel: 'Chat',
           tabBarLabelStyle: {
             fontWeight:'bold',
             fontSize:12,
@@ -247,7 +247,7 @@ const RootStack = createStackNavigator();
 const RootStackScreen = () => (
   <RootStack.Navigator>
     <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
-    <RootStack.Screen name="Chat" component={ChatScreen} />
+    <RootStack.Screen name="Chat" component={HomeChat} />
   </RootStack.Navigator>
 );
 

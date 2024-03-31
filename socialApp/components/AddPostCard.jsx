@@ -45,7 +45,8 @@ const AddPostCard = () => {
        width: '100%',
        height: windowHeight/7,
        backgroundColor: COLORS.secondaryTheme,
-       flexDirection: 'row',      
+       flexDirection: 'row',
+       marginBottom: 20, 
     },
     sharePostWrapper:{
         width: '100%', 

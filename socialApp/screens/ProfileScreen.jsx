@@ -78,35 +78,41 @@ const ProfileScreen = () => {
           )}
           <View style={styles.profileInfo}>
               <View style={styles.stats}>
-                  <View style={styles.starsStats}>
-                      <MaterialCommunityIcons name={'star'} size={22} color="#000" />
+                  <View style={styles.userInfoContainer}>
+                    <View style={styles.iconContainer}>
+                    <MaterialCommunityIcons name={'star'} size={22} color="#000" />
                       <MaterialCommunityIcons name={'star'} size={22} color="#000" />
                       <MaterialCommunityIcons name={'star'} size={22} color="#000" />
                       <MaterialCommunityIcons name={'star-half-full'} size={22} color="#000" />
                       <MaterialCommunityIcons name={'star-outline'} size={22} color="#000" />
-                  </View>
-                  
-                  <View style={styles.followingStats}>
-                      <MaterialCommunityIcons name={'heart'} size={22} color="#000" />
-                      <Text style={styles.statNumValue}>{userData?.followingNum || 0}</Text>
-                  </View>
-                  
-                  <View style={styles.followersStats}>
-                      <MaterialCommunityIcons name={'account-group'} size={22} color="#000" />
-                      <Text style={styles.statNumValue}>{userData?.followersNum || 0}</Text>
-                  </View>
-                  
-                  <View style={styles.postsStats}>
-                      <MaterialCommunityIcons name={'send'} size={22} color="#000" />
-                      <Text style={styles.statNumValue}>{userData?.postsNum || 0}</Text>
+                    </View>
+                    <Text style={styles.wordStat}>Rating</Text>
                   </View>
 
-              </View>
-              <View style={styles.stats}>
-                  <Text style={styles.RatingStat}>Rating</Text>
-                  <Text style={styles.FollowingStat}>Following</Text>
-                  <Text style={styles.FollowersStat}>Followers</Text>
-                  <Text style={styles.PostsStat}>Posts</Text>
+                  <View style={styles.userInfoContainer}>
+                    <View style={styles.iconContainer}>
+                      <MaterialCommunityIcons name={'heart'} size={22} color="#000" />
+                      <Text style={styles.statNumValue}>{userData?.followingNum || 0}</Text>
+                    </View>
+                    <Text style={styles.wordStat}>Following</Text>
+                  </View>
+
+                  <View style={styles.userInfoContainer}>
+                    <View style={styles.iconContainer}>
+                      <MaterialCommunityIcons name={'account-group'} size={22} color="#000" />
+                      <Text style={styles.statNumValue}>{userData?.followersNum || 0}</Text>
+                    </View>
+                    <Text style={styles.wordStat}>Followers</Text>
+                  </View>
+                  
+                  <View style={styles.userInfoContainer}>
+                    <View style={styles.iconContainer}>
+                      <MaterialCommunityIcons name={'send'} size={22} color="#000" />
+                      <Text style={styles.statNumValue}>{userData?.postsNum || 0}</Text>
+                    </View>
+                    <Text style={styles.wordStat}>Posts</Text>
+                  </View>
+
               </View>
           </View>
           <View style={styles.buttons}>
@@ -186,32 +192,31 @@ const styles = StyleSheet.create({
     marginTop:-10,
     marginLeft:14,
   },
+  userInfoContainer: {
+    alignItems: 'center',
+    marginRight: '8%', // Adjust this percentage as needed for spacing
+
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statNumValue: {
+    marginLeft: 4, // Adjust this value as needed for spacing
+  },
+  wordStat: {
+    marginTop: 4, // Adjust this value as needed for spacing
+    color: '#000', // or any color you desire
+  },
   stats: {
     flexDirection: 'row',
     width: '100%',
-    gap:1,
   },
-  stat: {
-    fontSize: 13,
-    fontWeight: 'bold',
+  statNumValue: {
+  fontSize: 16,
+  paddingLeft:4,
   },
-  RatingStat: {
-    fontSize: 13,
-    marginLeft: 40,
-  },
-  FollowingStat: {
-    fontSize: 13,
-    marginLeft: 60,
-  },
-  FollowersStat: {
-    fontSize: 13,
-    marginLeft: 33,
-  },
-  PostsStat: {
-    fontSize: 13,
-    marginLeft: 47,
-  },
-
+  
   earningsPoints: {
     fontSize: 17,
     fontWeight: 'bold', // Apply bold font weight
@@ -226,26 +231,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
   },
-  statNumValue: {
-    fontSize: 16,
-    paddingLeft:4,
-  },
-  starsStats: {
-    flexDirection: 'row',
-    marginHorizontal: 5, // Reduced margin here
-  },
-  followingStats: {
-    flexDirection: 'row',
-    marginHorizontal: 17, // Reduced margin here
-  },
-  followersStats: {
-    flexDirection: 'row',
-    marginHorizontal: 17, // Reduced margin here
-  },
-  postsStats: {
-    flexDirection: 'row',
-    marginHorizontal: 17, // Reduced margin here
-  },
+  
   buttons: {
     flexDirection: 'row',
     gap:10,

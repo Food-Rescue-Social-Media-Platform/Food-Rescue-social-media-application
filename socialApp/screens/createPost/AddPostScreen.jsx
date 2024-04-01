@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View, Modal, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
+import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -15,10 +15,11 @@ import {Post, addPost} from '../../FirebaseFunctions/collections/post';
 import { windowHeight } from '../../utils/Dimentions';
 import { Button } from 'react-native-elements';
 import * as Location from 'expo-location';
-
+import { useSelector } from 'react-redux';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
+    const userData = useSelector(state => state.user.userData);
     const [postInput, setPostInput] = useState('');
     const [category, setCategory] = useState('');
     const [location, setLocation] = useState('');
@@ -63,13 +64,14 @@ const AddPostScreen = () => {
     const handleAddImages = () =>{
         console.log('Images');
         OpenGalereAndSelectImages(setImage);
+        console.log('Image uri', image);
     }
 
     const handleAddLocation = async () => {
         console.log('Location', location);
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            setErrorMsg('Permission to access location was denied');
+            console.log('Permission to access location was denied');
             return;
         }
 
@@ -78,10 +80,6 @@ const AddPostScreen = () => {
         console.log('Location', location);
         setShowLocationModel(showLocationModel? false: true);     
     }
-
-    const handelAddClock = () => {
-        console.log('Clock');
-    }   
 
     const handelAddPhone = () => {
         console.log('Phone');
@@ -94,26 +92,32 @@ const AddPostScreen = () => {
     }
 
     const handleAddPost = async () => {
+        // 0. save image in storage
         await uploadImages(image, 'postsImges/', 'image', setImageUrl );
         console.log("text", postInput);
         console.log("time", timeInput);
         console.log("phone", phoneNumber);
         console.log("category", category);
         console.log("image", imageUrl);
+        // set images to show in page
+
         // 1. check if have more without text
 
         // 2. if have image save in storage
 
         // 3. send request to fireStore to save post
-        const newPost = new Post("lRAXw44INLTbWgLn0C5imegQR7T2", postInput, timeInput, category, location, phoneNumber, imageUrl);
+        const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imageUrl);
         console.log('Post', newPost);  
         await addPost(newPost);
         // 4. set space to empty
         setPhoneNumber('');
         setPostInput('');
         setImage(null);
+        setLocation('');
+        setCategory('');
+        setTimeInput('');
         // 5. navigate to home page
-        // navigation.navigate('HomePage');
+        navigation.navigate('HomePage');
     }
 
     const handleCheck = (option) => {
@@ -126,143 +130,122 @@ const AddPostScreen = () => {
     
     return (      
             <View style={styles.container} >
-            <ScrollView>
-                    <View style={styles.modalView}>
-                        <View style={styles.header}>
-                        <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
-                            <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
-                        </TouchableOpacity>
-                            <Text style={{fontSize: 18, paddingHorizontal: '27%'}}>Create Post</Text>
-                        <TouchableOpacity style={styles.button} onPress={handleAddPost}>
-                            <Text style={{fontSize:16}}>Post</Text>
-                        </TouchableOpacity>              
-                        </View>
-                        <View style={styles.input_images}>
-                            <TextInput
-                                value={postInput}
-                                onChangeText={(text)=>setPostInput(text)}
-                                style={styles.postInput}
-                                placeholder="What's on your mind?"
-                                multiline
-                            />
-                            <Text>What are the delivery times?</Text>
-                            <TextInput
-                                value={timeInput}
-                                onChangeText={(text)=>setTimeInput(text)}
-                                style={styles.timeInput}
-                                placeholder="What's on your mind?"
-                                multiline
-                            />
-                            <Text>{timeInput.length}/30</Text>
-                            <View>
-                            <Text>Images</Text>
-                            </View>
-                         </View>
-                         <View style={styles.iconsWrapper}>
-                            <TouchableOpacity>
-                            <Entypo name="camera" size={22} color='black' onPress={handleOpenCamera} style={styles.icon}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                            <FontAwesome6 name="images" size={22} color='black' onPress={handleAddImages} style={styles.icon}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Entypo name="location-pin"  size={22} color='black' onPress={handleAddLocation} style={styles.icon}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity >
-                                <Fontisto name="clock"  size={22} color='black' onPress={handelAddClock} style={styles.icon}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity >
-                                <Entypo name="phone"  size={22} color='black' onPress={handelAddPhone} style={styles.icon}/>
-                            </TouchableOpacity>
-                            <TouchableOpacity >
-                                <MaterialIcons name="category"  size={22} color='black' onPress={handelAddCategory} style={styles.icon}/>
-                            </TouchableOpacity>
-                            </View>
-                            </View>
-                                <Modal
-                                    animationType="slide"
-                                    transparent={true}
-                                    visible={modalVisible}
-                                    onRequestClose={() => {
-                                        console.log('close modal');
-                                    }}
-                                    >   
-                                <View 
-                                style={{ height:'30%', marginTop:'50%', width:'100%', backgroundColor: 'red', border:1, borderColor: 'black'}}
-                                >
-                                <Text style={{fontSize:20, padding:10}}>Would you like to post your number 0527225789 ?</Text>
-                                <View style={{flexDirection:'row'}}>
-                                    <Button title="Yes" onPress={()=>{setModalVisible(false); setPhoneNumber('052111111')}}/>
-                                    <Button title="No" onPress={()=>{setModalVisible(false)}}/>
-                                </View>
-                                </View>
-                        </Modal>
-
-                        <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={categoryModalVisible}
-                            >
-                        <View style={styles.categoryModal}>
-                            <Text style={styles.modalText}>Select options:</Text>
-
-                            {options.map((option) => (
-                                <CheckBox
-                                  style={styles.checkboxWrapper}
-                                  key={option.value}
-                                  title={option.value}
-                                  checked={selectedOptions.includes(option.value)}
-                                  onPress={() => handleCheck(option)}
-                                />
-                              ))}
-                         <Button title="Done" onPress={handleCloseCategoryModal} />
-                        </View>
-                        </Modal>
-                        <Modal 
-                        animationType="slide"
-                        transparent={true}
-                        visible={showLocationModel}
-                        >
-                          <View style={styles.locationModal}>
-                          <Text>Should you add your current location to the post?</Text>
-                          <Button title="Yes" onPress={handleAddLocation}/>
-                          <Button title="No" onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}/>
+                    <View style={styles.header}>
+                      <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
+                          <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
+                      </TouchableOpacity>
+                          <Text style={{fontSize: 18, paddingHorizontal: '27%'}}>Create Post</Text>
+                      <TouchableOpacity style={styles.button} onPress={handleAddPost}>
+                          <Text style={{fontSize:16}}>Post</Text>
+                      </TouchableOpacity>              
+                      
+                      </View>
+                      <View style={styles.input_images}>
                           <TextInput
-                           placeholder='Enter a different address'>
-                          </TextInput>
+                              value={postInput}
+                              onChangeText={(text)=>setPostInput(text)}
+                              style={styles.postInput}
+                              placeholder="What's on your mind?"
+                              multiline
+                          />
+                          <Text>What are the delivery times?</Text>
+                          <TextInput
+                              value={timeInput}
+                              onChangeText={(text)=>setTimeInput(text)}
+                              style={styles.timeInput}
+                              placeholder="What's on your mind?"
+                              multiline
+                          />
+                          <Text>{timeInput.length}/30</Text>
+                          <View style={{ width:'50px', backgroundColor:'yellow', margin:10}}>
+                          <Image style={{ width:100, height:100 }} source={{uri: image}} />
                           </View>
-                        </Modal>
-                        </ScrollView>            
-                    </View>
-    );
-  }
+                       </View>
+                       <View style={styles.iconsWrapper}>
+                          <TouchableOpacity>
+                          <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                          <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
+                          </TouchableOpacity>
+                          <TouchableOpacity>
+                              <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
+                          </TouchableOpacity>
+                          <TouchableOpacity >
+                              <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
+                          </TouchableOpacity>
+                          <TouchableOpacity >
+                              <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
+                          </TouchableOpacity>
+                          </View>
+                              <Modal
+                                  animationType="slide"
+                                  transparent={true}
+                                  visible={modalVisible}
+                                  onRequestClose={() => {
+                                      console.log('close modal');
+                                  }}
+                                  >   
+                              <View 
+                              style={{  marginTop:'50%', width:'100%', backgroundColor: 'red', border:1, borderColor: 'black'}}
+                              >
+                              <Text style={{fontSize:20, padding:10}}>Would you like to post your number 0527225789 ?</Text>
+                              <View style={{flexDirection:'row'}}>
+                                  <Button title="Yes" onPress={()=>{setModalVisible(false); setPhoneNumber('052111111')}}/>
+                                  <Button title="No" onPress={()=>{setModalVisible(false)}}/>
+                              </View>
+                              </View>
+                      </Modal>
+    
+                      <Modal
+                          animationType="slide"
+                          transparent={true}
+                          visible={categoryModalVisible}
+                          >
+                      <View style={styles.categoryModal}>
+                          <Text style={styles.modalText}>Select options:</Text>
+    
+                          {options.map((option) => (
+                              <CheckBox
+                                style={styles.checkboxWrapper}
+                                key={option.value}
+                                title={option.value}
+                                checked={selectedOptions.includes(option.value)}
+                                onPress={() => handleCheck(option)}
+                              />
+                            ))}
+                       <Button title="Done" onPress={handleCloseCategoryModal} />
+                      </View>
+                      </Modal>
+                      <Modal 
+                      animationType="slide"
+                      transparent={true}
+                      visible={showLocationModel}
+                      >
+                        <View style={styles.locationModal}>
+                        <Text>Should you add your current location to the post?</Text>
+                        <Button title="Yes" onPress={handleAddLocation}/>
+                        <Button title="No" onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}/>
+                        <TextInput
+                         placeholder='Enter a different address'>
+                        </TextInput>
+                        </View>
+                      </Modal>
+            </View>
+            );
+        }
 
-  const ModelCustom = (showModal) => {
-    return(
-        <View style={{height:'50%', width:'50%',  flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 22}}>
-        <Modal 
-        animationType="slide"
-        transparent={true}
-        visible={false}
-        onRequestClose={()=>{
-            console.log('close modal');    
-        }}
-        />
-        </View>
-    )
-  }
 
   const styles = StyleSheet.create({
     container: {
-          flex: 1,
           width: '100%',
-          height: '80%',
+          height: '100%',
+
           // justifyContent: 'center',
           // alignItems: 'center',
           marginTop: 15,
+          padding: 20,
+
           backgroundColor: 'rgba(0,0,0,0.5)',
     },
     header:{
@@ -270,44 +253,41 @@ const AddPostScreen = () => {
         // spaceBetween: 'space-between',
         flexDirection:'row',
         // backgroundColor: COLORS.secondaryTheme,
-        width:'100%'
+        width:'100%',
+        height:'8%',
     },  
     iconsWrapper:{
+        position: 'absolute',
         flexDirection: 'row',
         justifyContent: 'start',
         marginLeft: 15,
+        backgroundColor: 'blue',
+        height: 50,
+        width: '100%',
+        bottom:0,
     },
     icon:{
         marginHorizontal: 4,
     },
-    modalView: {
-        flex: 1,
-        width: '100%',
-        height: windowHeight/1.1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        backgroundColor: 'white',
-        padding: 20,
-    },
     input_images:{
-        flex:1,
         flexDirection: 'column',
+        backgroundColor:'red',
+        height:'92%'
     },
     postInput: {
-        flex: 2,
         borderWidth: 1,
-        width: '100%',
-        height: '10%',
-        // borderColor: 'gray',
+        // width: '100%',
+        // height: '200px',
+        borderColor: 'gray',
         padding: 10,
         marginVertical: 14,
     },
     timeInput:{
-        // flex: 1,
         borderWidth: 1,
-        width: '100%',
-        height: '10%',
+        // width: '100%',
+        // height: '20%',
         padding: 10,
+        borderColor: 'gray',
         marginVertical: 14,
     },
     images: {
@@ -323,7 +303,7 @@ const AddPostScreen = () => {
     categoryModal:{
         backgroundColor: COLORS.secondaryBackground,
         position: 'absolute',
-        height: '40%',
+        // height: '40%',
         width: '100%',
         marginTop:'72%'
     },
@@ -339,7 +319,7 @@ const AddPostScreen = () => {
       locationModal:{
         backgroundColor: COLORS.secondaryBackground,
         position: 'absolute',
-        height: '40%',
+        // height: '40%',
         width: '100%',
         marginTop:'50%'
       }

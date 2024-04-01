@@ -33,21 +33,6 @@ const FeedStack = () => (
       }}
     />
     <Stack.Screen
-    name="AddPost"
-    component={AddPostScreen}
-    options={{
-      title: '',
-      headerShown: false,
-      headerTitleAlign: 'center',
-      tabBarVisible: false, 
-      headerStyle: {
-        backgroundColor: '#2e64e515',
-        shadowColor: '#2e64e515',
-        elevation: 0,
-      }
-    }}
-    />
-    <Stack.Screen
       name="ProfileScreen"
       component={ProfileScreen}
       options={{
@@ -247,8 +232,9 @@ const RootStack = createStackNavigator();
 
 const RootStackScreen = () => (
   <RootStack.Navigator>
-    <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
-    <RootStack.Screen name="Chat" component={HomeChat} />
+    <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false}}/>
+    <RootStack.Screen name="Chat" component={HomeChat}/>
+    <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false}} />
   </RootStack.Navigator>
 );
 

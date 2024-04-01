@@ -130,7 +130,7 @@ const ProfileScreen = ({ navigation, route }) => {
         
         { postUserId==user.uid?
             <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]} onPress={() => navigation.navigate('Edit Profile')}>
                 <Text style={styles.buttonText}>Edit Profile</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]} onPress={logout}>

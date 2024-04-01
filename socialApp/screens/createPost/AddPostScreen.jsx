@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
-    const userData = useSelector(state => state.user.userData);
+    const userId = 'lRAXw44INLTbWgLn0C5imegQR7T2';
     const [postInput, setPostInput] = useState('');
     const [category, setCategory] = useState('');
     const [location, setLocation] = useState('');
@@ -92,31 +92,24 @@ const AddPostScreen = () => {
     }
 
     const handleAddPost = async () => {
-        // 0. save image in storage
         await uploadImages(image, 'postsImges/', 'image', setImageUrl );
         console.log("text", postInput);
         console.log("time", timeInput);
         console.log("phone", phoneNumber);
         console.log("category", category);
         console.log("image", imageUrl);
-        // set images to show in page
-
-        // 1. check if have more without text
-
-        // 2. if have image save in storage
-
-        // 3. send request to fireStore to save post
-        const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imageUrl);
+ 
+        const newPost = new Post(userId, postInput, timeInput, category, location, phoneNumber, imageUrl);
         console.log('Post', newPost);  
         await addPost(newPost);
-        // 4. set space to empty
+
         setPhoneNumber('');
         setPostInput('');
         setImage(null);
         setLocation('');
         setCategory('');
         setTimeInput('');
-        // 5. navigate to home page
+
         navigation.navigate('HomePage');
     }
 
@@ -140,27 +133,27 @@ const AddPostScreen = () => {
                       </TouchableOpacity>              
                       
                       </View>
-                      <View style={styles.input_images}>
-                          <TextInput
-                              value={postInput}
-                              onChangeText={(text)=>setPostInput(text)}
-                              style={styles.postInput}
-                              placeholder="What's on your mind?"
-                              multiline
-                          />
-                          <Text>What are the delivery times?</Text>
-                          <TextInput
-                              value={timeInput}
-                              onChangeText={(text)=>setTimeInput(text)}
-                              style={styles.timeInput}
-                              placeholder="What's on your mind?"
-                              multiline
-                          />
-                          <Text>{timeInput.length}/30</Text>
-                          <View style={{ width:'50px', backgroundColor:'yellow', margin:10}}>
-                          <Image style={{ width:100, height:100 }} source={{uri: image}} />
-                          </View>
-                       </View>
+                      <ScrollView>
+                        <View style={styles.input_images}>
+                            <TextInput
+                                value={postInput}
+                                onChangeText={(text)=>setPostInput(text)}
+                                style={styles.postInput}
+                                placeholder="What's on your mind?"
+                                multiline
+                            />
+                            <Text>What are the delivery times?</Text>
+                            <TextInput
+                                value={timeInput}
+                                onChangeText={(text)=>setTimeInput(text)}
+                                style={styles.timeInput}
+                                placeholder="What's on your mind?"
+                                multiline
+                            />
+                            <Text>{timeInput.length}/30</Text>
+                            <Image style={{ width:100, height:100 }} source={{uri: image}} />
+                        </View>
+                       </ScrollView>
                        <View style={styles.iconsWrapper}>
                           <TouchableOpacity>
                           <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
@@ -240,19 +233,12 @@ const AddPostScreen = () => {
     container: {
           width: '100%',
           height: '100%',
-
-          // justifyContent: 'center',
-          // alignItems: 'center',
           marginTop: 15,
           padding: 20,
-
-          backgroundColor: 'rgba(0,0,0,0.5)',
     },
     header:{
         alignItems: 'center',
-        // spaceBetween: 'space-between',
         flexDirection:'row',
-        // backgroundColor: COLORS.secondaryTheme,
         width:'100%',
         height:'8%',
     },  
@@ -261,37 +247,33 @@ const AddPostScreen = () => {
         flexDirection: 'row',
         justifyContent: 'start',
         marginLeft: 15,
-        backgroundColor: 'blue',
         height: 50,
         width: '100%',
         bottom:0,
+        backgroundColor: 'white'
     },
     icon:{
         marginHorizontal: 4,
     },
     input_images:{
         flexDirection: 'column',
-        backgroundColor:'red',
-        height:'92%'
+        height: '100%',
+        width:'100%'
     },
     postInput: {
+        flex: 2,
         borderWidth: 1,
-        // width: '100%',
-        // height: '200px',
         borderColor: 'gray',
         padding: 10,
         marginVertical: 14,
+        // minHeight:'70%'
     },
     timeInput:{
+        flex: 1,
         borderWidth: 1,
-        // width: '100%',
-        // height: '20%',
         padding: 10,
         borderColor: 'gray',
         marginVertical: 14,
-    },
-    images: {
-        backgroundColor: 'red',
     },
     button: {
         backgroundColor: COLORS.secondaryBackground,
@@ -303,7 +285,6 @@ const AddPostScreen = () => {
     categoryModal:{
         backgroundColor: COLORS.secondaryBackground,
         position: 'absolute',
-        // height: '40%',
         width: '100%',
         marginTop:'72%'
     },
@@ -319,7 +300,6 @@ const AddPostScreen = () => {
       locationModal:{
         backgroundColor: COLORS.secondaryBackground,
         position: 'absolute',
-        // height: '40%',
         width: '100%',
         marginTop:'50%'
       }

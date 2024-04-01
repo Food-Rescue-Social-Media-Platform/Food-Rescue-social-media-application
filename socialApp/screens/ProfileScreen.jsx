@@ -14,7 +14,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userPosts, setUserPosts] = useState([]);
   const [userData, setUserData] = useState(null);
   const postUserId = route.params ? route.params.postUserId : user.uid;
-
+  // console.log(user.uid)
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -127,14 +127,27 @@ const ProfileScreen = ({ navigation, route }) => {
 
           </View>
         </View>
-        <View style={styles.buttons}>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
-            <Text style={styles.buttonText}>Chat</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
-            <Text style={styles.buttonText}>Follow</Text>
-          </TouchableOpacity>
-        </View>
+        
+        { postUserId==user.uid?
+            <View style={styles.buttons}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
+                <Text style={styles.buttonText}>Edit Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]} onPress={logout}>
+                <Text style={styles.buttonText}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+            :
+            <View style={styles.buttons}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
+                <Text style={styles.buttonText}>Chat</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
+                <Text style={styles.buttonText}>Follow</Text>
+              </TouchableOpacity>
+            </View>    
+        }
+
         <View>
           <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
         </View>

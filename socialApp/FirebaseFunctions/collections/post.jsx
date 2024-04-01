@@ -3,7 +3,7 @@ import { database } from '../../firebase.js';
 
 // Post constructor
 export class Post {
-    constructor(body, userIid, category="other", location="", phoneNumber="") {
+    constructor(body, userIid, category="other", location="", phoneNumber="", images=[]) {
         // Set default values (if applicable)
         if(!body || !userIid) {
            throw new Error("body and userIid are required for a new post!");
@@ -12,7 +12,7 @@ export class Post {
         this.body = body;
         this.userIid = userIid;
         this.category = category;
-        this.image = []; // Initialize image as an empty array
+        this.image = images; 
         this.status = "active";
         this.location = location ;
         this.phoneNumber = phoneNumber ;

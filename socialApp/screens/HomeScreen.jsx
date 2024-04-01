@@ -9,7 +9,7 @@ import PostCard from '../components/PostCard';
 import { database } from '../firebase'; // Import the Firestore instance from firebase.js
 import { collection, getDocs } from "firebase/firestore";
 import { windowWidth } from '../utils/Dimentions';
-import AddPostScreen from './AddPostScreen';
+import AddPostScreen from './createPost/AddPostScreen';
 import AddPostCard from '../components/AddPostCard';
 
 

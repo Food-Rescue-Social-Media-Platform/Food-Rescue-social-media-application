@@ -10,7 +10,7 @@ import HomeChat from '../screens/chat/HomeChat';
 import ProfileScreen from '../screens/ProfileScreen';
 // import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
-import AddPostScreen from '../screens/AddPostScreen';
+import AddPostScreen from '../screens/createPost/AddPostScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,8 +37,9 @@ const FeedStack = () => (
     component={AddPostScreen}
     options={{
       title: '',
-      // headerShown: false,
+      headerShown: false,
       headerTitleAlign: 'center',
+      tabBarVisible: false, 
       headerStyle: {
         backgroundColor: '#2e64e515',
         shadowColor: '#2e64e515',

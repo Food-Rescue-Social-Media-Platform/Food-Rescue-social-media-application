@@ -1,4 +1,3 @@
-// HomeScreen.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image } from 'react-native';
 import FormButton from '../components/FormButton';
@@ -7,10 +6,12 @@ import { Container } from '../styles/feedStyles';
 import PostCard from '../components/PostCard';
 import { database } from '../firebase'; // Import the Firestore instance from firebase.js
 import { collection, getDocs } from "firebase/firestore";
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const HomeScreen = () => {
     const { user, logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
+    const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
 
     useEffect(() => {
         const fetchData = async () => {
@@ -20,12 +21,13 @@ const HomeScreen = () => {
                 // Sort the posts by creation time
                 data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
                 setPosts(data);
-                // console.log(data[1].userId);
+                // console.log("Posts data:", data);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-
+            
         fetchData();
     }, []); // Empty dependency array to fetch data only once when component mounts
 
@@ -33,7 +35,9 @@ const HomeScreen = () => {
         <Container>
             <FlatList
                 data={posts} // Use fetched data instead of the hardcoded `Posts` array
-                renderItem={({ item }) => <PostCard item={item} />}
+                renderItem={({ item }) => ( 
+                    <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />
+                )}
                 keyExtractor={item => item.id}
                 showsVerticalScrollIndicator={false}
             />

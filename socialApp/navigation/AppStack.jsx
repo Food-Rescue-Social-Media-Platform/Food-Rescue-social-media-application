@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { View} from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
 import ChatScreen from '../screens/ChatScreen';
@@ -32,7 +33,7 @@ const FeedStack = () => (
       }}
     />
     <Stack.Screen
-      name="ProfileScreen"
+      name="HomeProfile"
       component={ProfileScreen}
       options={{
         title: '',

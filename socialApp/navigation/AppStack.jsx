@@ -4,12 +4,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { View} from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
 import ChatScreen from '../screens/ChatScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import MapScreen from '../screens/MapScreen';
+import EditProfile from '../screens/EditProfile';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -32,7 +34,7 @@ const FeedStack = () => (
       }}
     />
     <Stack.Screen
-      name="ProfileScreen"
+      name="HomeProfile"
       component={ProfileScreen}
       options={{
         title: '',
@@ -233,6 +235,8 @@ const RootStackScreen = () => (
   <RootStack.Navigator>
     <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
     <RootStack.Screen name="Chat" component={ChatScreen} />
+    <RootStack.Screen name="Edit Profile" component={EditProfile} />
+
   </RootStack.Navigator>
 );
 

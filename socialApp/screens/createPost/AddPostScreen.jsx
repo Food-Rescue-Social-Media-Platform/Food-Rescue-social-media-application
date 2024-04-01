@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
 import { View, Modal, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity } from 'react-native';
 import { CheckBox } from 'react-native-elements';
-import { AntDesign } from '@expo/vector-icons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome5';
 import {COLORS} from '../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
 import {Camera} from 'expo-camera'
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
@@ -16,9 +14,8 @@ import { OpenGalereAndSelectImages } from '../../FirebaseFunctions/OpeningCompon
 import {Post, addPost} from '../../FirebaseFunctions/collections/post';
 import { windowHeight } from '../../utils/Dimentions';
 import { Button } from 'react-native-elements';
-import { set } from 'firebase/database';
-// import Button from 'react-bootstrap/Button';
-// import Modal from 'react-bootstrap/Modal';
+import * as Location from 'expo-location';
+
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -37,21 +34,18 @@ const AddPostScreen = () => {
     const [ imageUrl, setImageUrl] = useState('');
     const [options, setOptions] = useState([
         {
-          label: 'Option 1',
-          value: 'option1',
+          value: 'Fast food',
         },
         {
-          label: 'Option 2',
-          value: 'option2',
+          value: 'Vagen',
         },
         {
-          label: 'Option 3',
-          value: 'option3',
+          value: 'other',
         },
       ]);
       const [selectedOptions, setSelectedOptions] = useState([]);
 
-    const handleClose = () => {
+     const handleClose = () => {
         console.log('Close');
         // to do: add a modal to ask if the user wants to leave the page
         navigation.navigate('HomePage');
@@ -71,9 +65,18 @@ const AddPostScreen = () => {
         OpenGalereAndSelectImages(setImage);
     }
 
-    const handleAddLocation = () => {
-        console.log('Location');
-        setShowLocationModel(true);     
+    const handleAddLocation = async () => {
+        console.log('Location', location);
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+        console.log('Location', location);
+        setShowLocationModel(showLocationModel? false: true);     
     }
 
     const handelAddClock = () => {
@@ -102,9 +105,9 @@ const AddPostScreen = () => {
         // 2. if have image save in storage
 
         // 3. send request to fireStore to save post
-        // const newPost = new Post(text, timeInput, 'fastFood', '1.23232', phoneNumber, imageUrl);
-        // console.log('Post', newPost);  
-        // await addPost(newPost);
+        const newPost = new Post("lRAXw44INLTbWgLn0C5imegQR7T2", postInput, timeInput, category, location, phoneNumber, imageUrl);
+        console.log('Post', newPost);  
+        await addPost(newPost);
         // 4. set space to empty
         setPhoneNumber('');
         setPostInput('');
@@ -207,7 +210,7 @@ const AddPostScreen = () => {
                                 <CheckBox
                                   style={styles.checkboxWrapper}
                                   key={option.value}
-                                  title={option.label}
+                                  title={option.value}
                                   checked={selectedOptions.includes(option.value)}
                                   onPress={() => handleCheck(option)}
                                 />
@@ -223,7 +226,7 @@ const AddPostScreen = () => {
                           <View style={styles.locationModal}>
                           <Text>Should you add your current location to the post?</Text>
                           <Button title="Yes" onPress={handleAddLocation}/>
-                          <Button title="No" onPress={handleAddLocation}/>
+                          <Button title="No" onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}/>
                           <TextInput
                            placeholder='Enter a different address'>
                           </TextInput>

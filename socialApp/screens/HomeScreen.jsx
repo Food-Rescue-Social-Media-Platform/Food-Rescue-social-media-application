@@ -1,4 +1,3 @@
-// HomeScreen.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image } from 'react-native';
 import FormButton from '../components/FormButton';
@@ -12,10 +11,12 @@ import { windowWidth } from '../utils/Dimentions';
 import AddPostScreen from './createPost/AddPostScreen';
 import AddPostCard from '../components/AddPostCard';
 
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const HomeScreen = () => {
     const { user, logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
+    const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,24 +26,28 @@ const HomeScreen = () => {
                 // Sort the posts by creation time
                 data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
                 setPosts(data);
+                // console.log("Posts data:", data);
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             }
         };
-        
+            
         fetchData();
     }, []); // Empty dependency array to fetch data only once when component mounts
     
     return (
         <Container>
-        <AddPostCard/>
-        <FlatList
-            data={posts} // Use fetched data instead of the hardcoded `Posts` array
-            renderItem={({ item }) => <PostCard item={item} />}
-            keyExtractor={item => item.id}
-            showsVerticalScrollIndicator={false}
-        />
-        <FormButton buttonTitle='Logout' onPress={() => logout()} />
+            <AddPostCard/>
+            <FlatList
+                data={posts} // Use fetched data instead of the hardcoded `Posts` array
+                renderItem={({ item }) => ( 
+                    <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />
+                )}
+                keyExtractor={item => item.id}
+                showsVerticalScrollIndicator={false}
+            />
+            <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
     );
 }

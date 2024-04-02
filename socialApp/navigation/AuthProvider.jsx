@@ -8,7 +8,8 @@ import { setUserData, removerUserData } from '../redux/reducer/user';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    
+    const dispatch = useDispatch(); // Get the dispatch function from react-redux
+
     const [user, setUser] = useState(null);
     
     return (

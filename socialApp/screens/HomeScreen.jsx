@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image } from 'react-native';
 import FormButton from '../components/FormButton';
+import Chat from './chat/Chat';
 import { AuthContext } from '../navigation/AuthProvider';
 import { Container } from '../styles/feedStyles';
 import PostCard from '../components/PostCard';
 import { database } from '../firebase'; // Import the Firestore instance from firebase.js
 import { collection, getDocs } from "firebase/firestore";
+import { windowWidth } from '../utils/Dimentions';
+import AddPostScreen from './createPost/AddPostScreen';
+import AddPostCard from '../components/AddPostCard';
+
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const HomeScreen = () => {
@@ -30,9 +35,10 @@ const HomeScreen = () => {
             
         fetchData();
     }, []); // Empty dependency array to fetch data only once when component mounts
-
+    
     return (
         <Container>
+            <AddPostCard/>
             <FlatList
                 data={posts} // Use fetched data instead of the hardcoded `Posts` array
                 renderItem={({ item }) => ( 
@@ -46,9 +52,13 @@ const HomeScreen = () => {
     );
 }
 
+
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+    mainContainer:{
+      width: windowWidth,
+    },
     text: {
         fontSize: 12,
         color: "black"

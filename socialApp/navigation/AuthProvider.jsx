@@ -1,13 +1,17 @@
 import React, { createContext, useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut} from 'firebase/auth'; // Import Firebase functions
 import { auth, database } from '../firebase'; // Import 'auth' from firebase.js
-import { setDoc, doc, serverTimestamp } from 'firebase/firestore'; // Import setDoc and doc functions from Firestore
+import { getDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore'; // Import setDoc and doc functions from Firestore
+import { useDispatch } from 'react-redux';
+import { setUserData, removerUserData } from '../redux/reducer/user';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const dispatch = useDispatch(); // Get the dispatch function from react-redux
 
+    const [user, setUser] = useState(null);
+    
     return (
         <AuthContext.Provider 
             value={{
@@ -16,7 +20,28 @@ export const AuthProvider = ({ children }) => {
 
                 login: async (email, password) => {
                     try {
-                        await signInWithEmailAndPassword(auth, email, password);
+                        await signInWithEmailAndPassword(auth, email, password).then(async (userCredential) => {
+                            // Signed in
+                            const user = userCredential.user;
+                            // Get user info from Firestore
+                            const docRef = doc(database, 'users', user.uid);
+                            await getDoc(docRef).then((doc) => {
+                                if (doc.exists()) {
+                                    // Save user info to redux
+                                    let userData = doc.data();
+                                    userData.id = user.uid;
+                                    dispatch(setUserData(userData));
+                                } else {
+                                    // doc.data() will be undefined in this case
+                                    console.log("No such document!");
+                                }
+                            }).catch((error) => {
+                                console.log("Error getting document:", error);
+                            });
+                        
+                        }).catch((error) => {
+                            console.log(error);
+                        });
                     } catch (e) {
                         console.log(e);
                     }
@@ -59,9 +84,10 @@ export const AuthProvider = ({ children }) => {
                         };
 
                         // Save user info to Firestore under 'users' collection with the UID as the document ID
-                        await setDoc(doc(database, 'users', uid), additionalUserInfo);
+                        await setDoc(doc(database, 'users', uid), userInfo);
                         }
                     } catch (e) {
+                        dispatch(removerUserData());
                         console.log(e);
                     }
                 },
@@ -77,7 +103,10 @@ export const AuthProvider = ({ children }) => {
                 logout: async () => {
                     try {
                         await signOut(auth);
+                        dispatch(removerUserData());
+                        console.log("logout");
                     } catch (e) {
+                        dispatch(removerUserData());
                         console.log(e);
                     }
                 },

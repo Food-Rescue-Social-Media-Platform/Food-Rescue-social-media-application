@@ -8,7 +8,6 @@ import PostCard from '../components/PostCard';
 import { database } from '../firebase'; // Import the Firestore instance from firebase.js
 import { collection, getDocs } from "firebase/firestore";
 import { windowWidth } from '../utils/Dimentions';
-import AddPostScreen from './createPost/AddPostScreen';
 import AddPostCard from '../components/AddPostCard';
 
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
@@ -37,7 +36,7 @@ const HomeScreen = () => {
     }, []); // Empty dependency array to fetch data only once when component mounts
     
     return (
-        <Container>
+        <Container style={styles.container}>
             <AddPostCard/>
             <FlatList
                 data={posts} // Use fetched data instead of the hardcoded `Posts` array
@@ -46,6 +45,7 @@ const HomeScreen = () => {
                 )}
                 keyExtractor={item => item.id}
                 showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.flatListContent}
             />
             <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
@@ -56,6 +56,16 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        paddingTop: 5, // Adjust as needed
+        paddingBottom: 5, // Space for the logout button
+    },
+    flatListContent: {
+        flexGrow: 1, // Allow content to grow within the container
+        paddingBottom: 5, // Adjust as needed to prevent content from hiding behind the logout button
+    },
     mainContainer:{
       width: windowWidth,
     },
@@ -68,4 +78,5 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center"
     }
+    
 });

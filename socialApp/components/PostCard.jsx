@@ -7,6 +7,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import Popover from 'react-native-popover-view';
+import { Entypo } from "@expo/vector-icons";
 
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../styles/feedStyles';
 import moment from 'moment';
@@ -103,12 +105,40 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                 </UserInfo>
                 <UserInfoText>
                     <View style={{ alignItems: 'flex-end' }}>
-                        <TouchableOpacity style={{ paddingRight: 24 }}>
-                            <SimpleLineIcons
-                                name="options"
-                                size={23}
-                            />
-                        </TouchableOpacity>
+                        <Popover
+                            from={(
+                                <TouchableOpacity style={{ paddingRight: 11 }}>
+                                    <SimpleLineIcons
+                                        name="options"
+                                        size={23}
+                                    />
+                                </TouchableOpacity>
+                            )}
+                            verticalOffset={-35} // Adjust the vertical offset as needed
+                            horizontalOffset={-50} // Adjust the horizontal offset as needed 
+                            >
+                            <View style={styles.menu}>
+                                <TouchableOpacity style={styles.optionButton}>
+                                    <MaterialIcons name="edit" size={20} color="black" />
+                                    <Text style={{ paddingLeft:4}}>Edit</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.optionButton}>
+                                    <Entypo name="block" size={20} color="black" />
+                                    <Text style={{ paddingLeft:4}}>block</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.optionButton}>
+                                    <MaterialIcons name="report" size={20} color="black" />
+                                    <Text style={{ paddingLeft:4}}>Report</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.optionButton}>
+                                    <MaterialCommunityIcons name="share-variant" size={20} color="black" />
+                                    <Text style={{ paddingLeft:4}}>Share</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </Popover>
                         <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
                     </View>
                 </UserInfoText>
@@ -197,5 +227,18 @@ const styles = StyleSheet.create({
         height: 50,
         backgroundColor: 'lightgray', // Placeholder color
         borderRadius: 25,
+    },
+    optionButton: {
+        flexDirection: "row",
+        marginRight: 10,
+        marginLeft:10,
+        marginTop:10,
+        marginBottom:5,
+    },
+    menu: {
+        marginRight: 6,
+        marginLeft:2,
+        marginBottom:5,
+
     }
 });

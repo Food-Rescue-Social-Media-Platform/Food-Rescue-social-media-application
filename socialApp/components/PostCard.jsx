@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../styles/feedStyles';
 import moment from 'moment';
@@ -42,14 +43,15 @@ const getCategoryIcon = (category) => {
 };
 
 
-const PostCard = ({ item }) => {
+const PostCard = ({ item , postUserId, isProfilePage}) => {
+    const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
+
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
 
     const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
     const postDate = moment(item.postDate.toDate()).calendar();
-
     let statusColor;
     switch (item.status) {
         case 'rescued':
@@ -62,7 +64,21 @@ const PostCard = ({ item }) => {
             statusColor = 'gray';
             break;
     }
-    
+    // console.log(isProfilePage);
+    const handleUserPress = () => {
+        if (isProfilePage === undefined) {
+            // If isProfilePage is undefined, return null to disable onPress action
+            return null;
+        }
+        
+        if (!isProfilePage) {
+            // Navigate to ProfileScreen with the postUserId
+            navigation.navigate('HomeProfile', { postUserId: postUserId });
+        } else {
+            // Do nothing if it's the profile page
+            return null;
+        }
+    };
     return (
         <Card>
             <View style={{
@@ -70,14 +86,18 @@ const PostCard = ({ item }) => {
                 justifyContent: "space-between",
             }}>
                 <UserInfo>
-                    {/* Conditional rendering for user image */}
-                    {isUserImgAvailable ? (
-                        <Image source={{ uri: item.userImg }} style={styles.image} />
-                    ) : (
-                        <View style={styles.placeholderImage} />
-                    )}
+                <TouchableOpacity onPress={handleUserPress}>
+                        {/* Conditional rendering for user image */}
+                        {isUserImgAvailable ? (
+                            <Image source={{ uri: item.userImg }} style={styles.image} />
+                        ) : (
+                            <View style={styles.placeholderImage} />
+                        )}
+                    </TouchableOpacity>
                     <UserInfoText>
-                        <UserName>{item.userName}</UserName>
+                    <TouchableOpacity onPress={handleUserPress}>
+                            <UserName>{item.userName}</UserName>
+                        </TouchableOpacity>
                         <PostTime>{createdAt}</PostTime>
                     </UserInfoText>
                 </UserInfo>

@@ -19,7 +19,7 @@ import { useSelector } from 'react-redux';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
-    const userId = 'lRAXw44INLTbWgLn0C5imegQR7T2';
+    const userData = useSelector(state => state.user.userData);
     const [postInput, setPostInput] = useState('');
     const [category, setCategory] = useState('');
     const [location, setLocation] = useState('');
@@ -28,7 +28,7 @@ const AddPostScreen = () => {
     const [image, setImage] = useState(null);
     const [uploading, setUploading] = useState(false);
     const [transferred, setTransferred] = useState(0);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [modalPhoneVisible, setModalPhoneVisible] = useState(false);
     const [categoryModalVisible, setCategoryModalVisible] = useState(false);
     const [isCategorySelected, setCategorySelected] = useState(false);
     const [showLocationModel, setShowLocationModel] = useState(false);
@@ -58,7 +58,7 @@ const AddPostScreen = () => {
     }
 
     const handleOpenCamera = async () => {
-        console.log('Camera');
+        console.log('Camera not work yet');
     }
     
     const handleAddImages = () =>{
@@ -83,7 +83,7 @@ const AddPostScreen = () => {
 
     const handelAddPhone = () => {
         console.log('Phone');
-        setModalVisible(true)
+        setModalPhoneVisible(true)
     }
 
     const handelAddCategory = () => {
@@ -92,24 +92,31 @@ const AddPostScreen = () => {
     }
 
     const handleAddPost = async () => {
+        // 0. save image in storage
         await uploadImages(image, 'postsImges/', 'image', setImageUrl );
         console.log("text", postInput);
         console.log("time", timeInput);
         console.log("phone", phoneNumber);
         console.log("category", category);
         console.log("image", imageUrl);
- 
-        const newPost = new Post(userId, postInput, timeInput, category, location, phoneNumber, imageUrl);
+        // set images to show in page
+
+        // 1. check if have more without text
+
+        // 2. if have image save in storage
+
+        // 3. send request to fireStore to save post
+        const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imageUrl);
         console.log('Post', newPost);  
         await addPost(newPost);
-
+        // 4. set space to empty
         setPhoneNumber('');
         setPostInput('');
         setImage(null);
         setLocation('');
         setCategory('');
         setTimeInput('');
-
+        // 5. navigate to home page
         navigation.navigate('HomePage');
     }
 
@@ -127,33 +134,35 @@ const AddPostScreen = () => {
                       <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
                           <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
                       </TouchableOpacity>
-                          <Text style={{fontSize: 18, paddingHorizontal: '27%'}}>Create Post</Text>
+                          <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
                       <TouchableOpacity style={styles.button} onPress={handleAddPost}>
-                          <Text style={{fontSize:16}}>Post</Text>
+                          <Text style={{fontSize:15}}>Post</Text>
                       </TouchableOpacity>              
-                      
                       </View>
                       <ScrollView>
-                        <View style={styles.input_images}>
-                            <TextInput
-                                value={postInput}
-                                onChangeText={(text)=>setPostInput(text)}
-                                style={styles.postInput}
-                                placeholder="What's on your mind?"
-                                multiline
-                            />
-                            <Text>What are the delivery times?</Text>
-                            <TextInput
-                                value={timeInput}
-                                onChangeText={(text)=>setTimeInput(text)}
-                                style={styles.timeInput}
-                                placeholder="What's on your mind?"
-                                multiline
-                            />
-                            <Text>{timeInput.length}/30</Text>
-                            <Image style={{ width:100, height:100 }} source={{uri: image}} />
-                        </View>
+                      <View style={styles.input_images}>
+                          <TextInput
+                              value={postInput}
+                              onChangeText={(text)=>setPostInput(text)}
+                              style={styles.postInput}
+                              placeholder="What's on your mind?"
+                              multiline
+                          />
+                          <Text>What are the delivery times?</Text>
+                          <TextInput
+                              value={timeInput}
+                              onChangeText={(text)=>setTimeInput(text)}
+                              style={styles.timeInput}
+                              placeholder="What's on your mind?"
+                              multiline
+                          />
+                          <Text>{timeInput.length}/30</Text>
+                          <View style={{ width:'50px', margin:10}}>
+                          <Image style={{ width:100, height:100 }} source={{uri: image}} />
+                          </View>
+                       </View>
                        </ScrollView>
+
                        <View style={styles.iconsWrapper}>
                           <TouchableOpacity>
                           <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
@@ -171,21 +180,21 @@ const AddPostScreen = () => {
                               <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
                           </TouchableOpacity>
                           </View>
-                              <Modal
+                              <Modal                                
                                   animationType="slide"
                                   transparent={true}
-                                  visible={modalVisible}
+                                  visible={modalPhoneVisible}
                                   onRequestClose={() => {
                                       console.log('close modal');
                                   }}
                                   >   
                               <View 
-                              style={{  marginTop:'50%', width:'100%', backgroundColor: 'red', border:1, borderColor: 'black'}}
+                              style={{  marginTop:'50%', width:'100%', backgroundColor: COLORS.white, border:1, borderColor: 'black'}}
                               >
-                              <Text style={{fontSize:20, padding:10}}>Would you like to post your number 0527225789 ?</Text>
+                              <Text style={{fontSize:20, padding:10}}>Would you like to post your number {userData.phoneNumber} ?</Text>
                               <View style={{flexDirection:'row'}}>
-                                  <Button title="Yes" onPress={()=>{setModalVisible(false); setPhoneNumber('052111111')}}/>
-                                  <Button title="No" onPress={()=>{setModalVisible(false)}}/>
+                                  <Button title="Yes" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false); setPhoneNumber('052111111')}}/>
+                                  <Button title="No" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false)}}/>
                               </View>
                               </View>
                       </Modal>
@@ -240,36 +249,34 @@ const AddPostScreen = () => {
         alignItems: 'center',
         flexDirection:'row',
         width:'100%',
-        height:'8%',
+        marginBottom: 10,
+        // height:'8%',
     },  
     iconsWrapper:{
         position: 'absolute',
         flexDirection: 'row',
         justifyContent: 'start',
         marginLeft: 15,
+        backgroundColor: COLORS.secondaryBackground,
         height: 50,
         width: '100%',
         bottom:0,
-        backgroundColor: 'white'
     },
     icon:{
         marginHorizontal: 4,
     },
     input_images:{
         flexDirection: 'column',
-        height: '100%',
-        width:'100%'
+        height:'92%'
     },
     postInput: {
-        flex: 2,
+        height:'50%',    
         borderWidth: 1,
         borderColor: 'gray',
         padding: 10,
         marginVertical: 14,
-        // minHeight:'70%'
     },
     timeInput:{
-        flex: 1,
         borderWidth: 1,
         padding: 10,
         borderColor: 'gray',
@@ -278,7 +285,7 @@ const AddPostScreen = () => {
     button: {
         backgroundColor: COLORS.secondaryBackground,
         padding: 10,
-        marginTop: 10,
+        marginTop: 8,
         borderRadius: 5,
         alignItems: 'center',
     },
@@ -296,6 +303,13 @@ const AddPostScreen = () => {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
+      },
+      modalButton:{
+        backgroundColor: 'COLORS.secondaryBackground',
+        padding: 10,
+        marginTop: 10,
+        borderRadius: 5,
+        alignItems: 'center',
       },
       locationModal:{
         backgroundColor: COLORS.secondaryBackground,

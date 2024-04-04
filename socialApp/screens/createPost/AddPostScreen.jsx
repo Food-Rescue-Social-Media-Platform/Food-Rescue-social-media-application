@@ -93,20 +93,14 @@ const AddPostScreen = () => {
 
     const handleAddPost = async () => {
         // 0. save image in storage
-        await uploadImages(image, 'postsImges/', 'image', setImageUrl );
+        const imagesUrl = await uploadImages(image, 'postsImges/', 'image');
         console.log("text", postInput);
         console.log("time", timeInput);
         console.log("phone", phoneNumber);
         console.log("category", category);
-        console.log("image", imageUrl);
-        // set images to show in page
-
-        // 1. check if have more without text
-
-        // 2. if have image save in storage
-
-        // 3. send request to fireStore to save post
-        const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imageUrl);
+        console.log("image", imagesUrl);
+       
+        const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imagesUrl);
         console.log('Post', newPost);  
         await addPost(newPost);
         // 4. set space to empty
@@ -157,9 +151,7 @@ const AddPostScreen = () => {
                               multiline
                           />
                           <Text>{timeInput.length}/30</Text>
-                          <View style={{ width:'50px', margin:10}}>
                           <Image style={{ width:100, height:100 }} source={{uri: image}} />
-                          </View>
                        </View>
                        </ScrollView>
 
@@ -267,7 +259,8 @@ const AddPostScreen = () => {
     },
     input_images:{
         flexDirection: 'column',
-        height:'92%'
+        height:'92%',
+        minHeight: windowHeight - 200,
     },
     postInput: {
         height:'50%',    
@@ -305,7 +298,7 @@ const AddPostScreen = () => {
         marginBottom: 10,
       },
       modalButton:{
-        backgroundColor: 'COLORS.secondaryBackground',
+        backgroundColor: COLORS.secondaryBackground,
         padding: 10,
         marginTop: 10,
         borderRadius: 5,

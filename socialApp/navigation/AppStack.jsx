@@ -5,16 +5,13 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { View} from 'react-native';
-
-import HomeScreen from '../screens/HomeScreen';
-import HomeChat from '../screens/chat/HomeChat';
-import ProfileScreen from '../screens/ProfileScreen';
-// import MessagesScreen from '../screens/MessagesScreen';
-import MapScreen from '../screens/MapScreen';
-import AddPostScreen from '../screens/createPost/AddPostScreen';
-import EditProfile from '../screens/EditProfile';
-import SingleChat from '../screens/chat/SingleChat';
-import ChatScreen from '../screens/ChatScreen';
+import HomeScreen from '../screens/homeScreen/HomeScreen';
+import HomeChat from '../screens/chatScreen/HomeChat';
+import ProfileScreen from '../screens/profileScreen/ProfileScreen';
+import MapScreen from '../screens/mapScreen/MapScreen';
+import AddPostScreen from '../screens/createPostScreen/AddPostScreen';
+import EditProfile from '../screens/profileScreen/EditProfile';
+import SingleChat from '../screens/chatScreen/SingleChat';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import {Camera} from 'expo-camera'
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
-import { OpenGalereAndSelectImages } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
 import {Post, addPost} from '../../FirebaseFunctions/collections/post';
 import { windowHeight } from '../../utils/Dimentions';
 import { Button } from 'react-native-elements';
@@ -58,12 +58,12 @@ const AddPostScreen = () => {
     }
 
     const handleOpenCamera = async () => {
-        console.log('Camera not work yet');
+        openCameraAndTakePicture(setImages);
     }
     
     const handleAddImages = () =>{
         console.log('Images');
-        OpenGalereAndSelectImages(setImages);
+        openGalereAndSelectImages(setImages);
         console.log('Images uri', images);
     }
 

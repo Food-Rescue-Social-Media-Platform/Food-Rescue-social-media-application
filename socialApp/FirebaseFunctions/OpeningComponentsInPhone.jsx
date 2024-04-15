@@ -1,8 +1,8 @@
 import * as ImagePicker from 'expo-image-picker';
 
 // the function below is used to select images from the gallery
-// and set the image to the state setImage
-export const OpenGalereAndSelectImages = async (setImage) => {
+// and set the image to the state setImage[]
+export const openGalereAndSelectImages = async (setImages) => {
     const s = await ImagePicker.getCameraPermissionsAsync();
     // No permissions request is necessary for launching the image library
      let result = await ImagePicker.launchImageLibraryAsync({
@@ -15,11 +15,19 @@ export const OpenGalereAndSelectImages = async (setImage) => {
   
     if (!result.canceled) {
       console.log("result: ", result);
-      // setImage(result.assets.map(element => {
-      //   return element.url;
-      // }));
-      setImage([result.assets[0].uri]);
-      // console.log("uri: ", result.assets[0].uri);
-      // console.log("uri: ", result.assets[0].uri);
+      setImages( oldImages => [...oldImages, result.assets[0].uri] );
     }
   }
+
+// the function below is used to take a picture from the camera
+export const openCameraAndTakePicture = async (setImages) =>{
+    const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        aspect: [4, 3],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        console.log("result: ", result);
+        setImages( oldImages => [...oldImages, result.assets[0].uri] );
+      }
+};

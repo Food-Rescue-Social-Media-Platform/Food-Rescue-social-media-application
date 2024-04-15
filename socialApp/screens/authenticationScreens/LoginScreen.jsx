@@ -4,6 +4,7 @@ import FormInput from '../../components/formButtonsAndInput/FormInput';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
+import {COLORS} from '../../styles/colors';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -66,7 +67,7 @@ const LoginScreen = ({ navigation }) => {
             />
         </View>
         <View style={styles.createAccountContainer}>
-          <Text style={{ color: '#000', fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
+          <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
           <TouchableOpacity>
             <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>Sign up</Text>
           </TouchableOpacity>
@@ -85,8 +86,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0, // Add bottom border
     borderRightWidth: 0,
     borderLeftWidth: 0,
-    borderColor: '#fff', // Border color
-    shadowColor: '#000', // Shadow color
+    borderColor: COLORS.white, // Border color
+    shadowColor: COLORS.black, // Shadow color
     shadowOffset: {
       width: 3,
       height: 3,

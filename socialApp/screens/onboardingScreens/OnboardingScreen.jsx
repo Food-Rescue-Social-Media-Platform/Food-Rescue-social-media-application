@@ -2,12 +2,13 @@ import React from 'react';
 import {View, Text, Button, Image, TouchableOpacity, StyleSheet} from 'react-native';
 
 import Onboarding from 'react-native-onboarding-swiper';
+import {COLORS} from '../../styles/colors';
 
 const Done = ({... props}) => (
     <TouchableOpacity 
         style={{marginHorizontal:8}}
         {... props}
-    ><Text style={{fontSize:16, marginHorizontal:8, color:'#000000'}}>Done</Text></TouchableOpacity>
+    ><Text style={{fontSize:16, marginHorizontal:8, color: COLORS.black }}>Done</Text></TouchableOpacity>
 );
 
 const OnboardingScreen = ({navigation}) => {
@@ -43,7 +44,7 @@ const OnboardingScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      backgroundColor: COLORS.white,
       alignItems: 'center',
       justifyContent: 'center',
     },

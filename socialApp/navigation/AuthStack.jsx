@@ -3,6 +3,7 @@ import { Platform, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {COLORS} from '../styles/colors';
 
 import LoginScreen from '../screens/authenticationScreens/LoginScreen';
 import SignUpScreen from '../screens/authenticationScreens/SignUpScreen';
@@ -88,7 +89,7 @@ export default AuthStack;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
   },

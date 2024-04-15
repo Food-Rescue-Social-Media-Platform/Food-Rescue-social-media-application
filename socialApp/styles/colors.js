@@ -11,5 +11,7 @@ export const COLORS = {
     messageNotME: '#E5E5E5',
     searchChat: '#6BB178',
     navBar: '#56D06B',
-    headerChat: '#A7EAAE'
+    headerChat: '#A7EAAE',
+    blueHeaderText: '#2e64e5',
+    appBackGroundColor: '#f9fafd'
 }

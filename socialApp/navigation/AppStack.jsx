@@ -3,10 +3,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { View} from 'react-native';
 import {COLORS} from '../styles/colors';
 
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { View} from 'react-native';
 import HomeScreen from '../screens/homeScreens/HomeScreen';
 import HomeChat from '../screens/chatScreens/HomeChat';
 import ProfileScreen from '../screens/profileScreens/ProfileScreen';

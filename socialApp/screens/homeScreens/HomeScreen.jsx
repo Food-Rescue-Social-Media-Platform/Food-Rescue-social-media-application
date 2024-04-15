@@ -50,8 +50,8 @@ const HomeScreen = () => {
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
-            />
-            {/* <FormButton buttonTitle='Logout' onPress={() => logout()} /> */}
+                />
+                <FormButton buttonTitle='Logout' onPress={() => logout()} /> 
         </Container>
     );
 }

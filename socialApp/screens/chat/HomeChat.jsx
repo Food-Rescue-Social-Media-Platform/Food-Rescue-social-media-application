@@ -1,4 +1,3 @@
-// import {Container} from 'native-base';
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, TextInput } from 'react-native';
 import {ListItem, Avatar} from 'react-native-elements';
@@ -109,7 +108,7 @@ const getChatList = async () => {
 };
 
 
-const renderItem = ({ item }) => (
+const renderItem = ({ item })=> (
   <ListItem
     bottomDivider
     containerStyle={{ paddingVertical: 7, marginVertical: 2 }}

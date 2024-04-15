@@ -18,7 +18,8 @@ import MsgComponent from "../../components/chat/MsgComponent";
 const SingleChat = ({navigation}) => {
     // const route = useRoute();
     // const receiverId = route.params?.receiverId || '';
-    const receiverId = 'uNwhQOcidogqWCR5FU2Y6Wo003t1';
+    const receiverId = '2YzEk9svzTNpvFlYKfSNAes5I1x1';
+    console.log('receiverId: ', receiverId);    
     const sender = useSelector(state => state.user.userData);
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
@@ -185,11 +186,10 @@ const SingleChat = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
       marginTop:  5,
-      marginLeft: windowWidth/14,
-      marginRight: windowWidth/14,
+    //   marginLeft: windowWidth/14,
+    //   marginRight: windowWidth/14,
       // delete -80
-      height: windowHeight - StatusBar.currentHeight - windowHeight / 11 - windowHeight / 12 - 80,
-      backgroundColor: 'blue',
+      height: windowHeight - StatusBar.currentHeight - windowHeight / 11  ,
     },
     containerFooter :{
         height: windowHeight /12,

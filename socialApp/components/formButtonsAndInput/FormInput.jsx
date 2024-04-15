@@ -3,6 +3,7 @@ import {View, TextInput, StyleSheet} from 'react-native';
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
+import {COLORS} from '../../styles/colors';
 
 const FormInput = ({labelValue, placeHolderText, iconType, ...rest}) => {
     return (
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
       borderWidth: 0.8,
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#fff',
+      backgroundColor: COLORS.white,
     },
     iconStyle: {
       padding: 10,

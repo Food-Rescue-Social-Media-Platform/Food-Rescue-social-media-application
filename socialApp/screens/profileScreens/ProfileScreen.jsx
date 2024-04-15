@@ -6,6 +6,7 @@ import { database } from '../../firebase'; // Import the Firestore instance from
 import { doc, getDoc } from "firebase/firestore";
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
+import {COLORS} from '../../styles/colors';
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
@@ -92,18 +93,18 @@ const ProfileScreen = ({ navigation, route }) => {
           <View style={styles.stats}>
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'star'} size={22} color="#000" />
-                <MaterialCommunityIcons name={'star'} size={22} color="#000" />
-                <MaterialCommunityIcons name={'star'} size={22} color="#000" />
-                <MaterialCommunityIcons name={'star-half-full'} size={22} color="#000" />
-                <MaterialCommunityIcons name={'star-outline'} size={22} color="#000" />
+                <MaterialCommunityIcons name={'star'} size={22} color={COLORS.black} />
+                <MaterialCommunityIcons name={'star'} size={22} color={COLORS.black} />
+                <MaterialCommunityIcons name={'star'} size={22} color={COLORS.black} />
+                <MaterialCommunityIcons name={'star-half-full'} size={22} color={COLORS.black} />
+                <MaterialCommunityIcons name={'star-outline'} size={22} color={COLORS.black} />
               </View>
               <Text style={styles.wordStat}>Rating</Text>
             </View>
 
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'heart'} size={22} color="#000" />
+                <MaterialCommunityIcons name={'heart'} size={22} color={COLORS.black} />
                 <Text style={styles.statNumValue}>{userData?.followingNum || 0}</Text>
               </View>
               <Text style={styles.wordStat}>Following</Text>
@@ -111,7 +112,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'account-group'} size={22} color="#000" />
+                <MaterialCommunityIcons name={'account-group'} size={22} color={COLORS.black} />
                 <Text style={styles.statNumValue}>{userData?.followersNum || 0}</Text>
               </View>
               <Text style={styles.wordStat}>Followers</Text>
@@ -119,7 +120,7 @@ const ProfileScreen = ({ navigation, route }) => {
             
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'send'} size={22} color="#000" />
+                <MaterialCommunityIcons name={'send'} size={22} color={COLORS.black} />
                 <Text style={styles.statNumValue}>{userData?.postsNum || 0}</Text>
               </View>
               <Text style={styles.wordStat}>Posts</Text>
@@ -130,19 +131,19 @@ const ProfileScreen = ({ navigation, route }) => {
         
         { postUserId==user.uid?
             <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]} onPress={() => navigation.navigate('Edit Profile')}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile')}>
                 <Text style={styles.buttonText}>Edit Profile</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]} onPress={logout}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
                 <Text style={styles.buttonText}>Logout</Text>
               </TouchableOpacity>
             </View>
             :
             <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
                 <Text style={styles.buttonText}>Chat</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#CEF0D3' }]}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
                 <Text style={styles.buttonText}>Follow</Text>
               </TouchableOpacity>
             </View>    
@@ -168,7 +169,7 @@ const ProfileScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafd',
+    backgroundColor: COLORS.appBackGroundColor,
   },
   header: {
     position: 'relative',
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     width: 69,
     height: 69,
     borderRadius: 35,
-    backgroundColor: '#fff',
+    backgroundColor: COLORS.white,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#000',
+    color: COLORS.black,
     marginTop: 24,
   },
   profileInfo: {
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
   },
   wordStat: {
     marginTop: 4,
-    color: '#000',
+    color: COLORS.black,
   },
   stats: {
     flexDirection: 'row',
@@ -236,7 +237,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     marginHorizontal: 20,
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     height: 45,
     width:372,
     justifyContent: 'center',
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     padding: 13,
     borderRadius: 10,
     width: '44%',
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     marginHorizontal: 20,
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     width:372,
     justifyContent: 'center',
     alignItems: 'left',

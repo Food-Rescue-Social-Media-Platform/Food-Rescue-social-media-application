@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {COLORS} from '../../styles/colors';
 
 
 const EditProfile = () => {
@@ -37,13 +38,13 @@ const EditProfile = () => {
                       <Icon
                         name="camera"
                         size={35}
-                        color="#fff"
+                        color= {COLORS.white}
                         style={{
                           opacity: 0.7,
                           alignItems: 'center',
                           justifyContent: 'center',
                           borderWidth: 1,
-                          borderColor: '#fff',
+                          borderColor: COLORS.white,
                           borderRadius: 10,
                         }}
                       />
@@ -145,11 +146,11 @@ const EditProfile = () => {
 const styles = StyleSheet.create({
     container: {
     flex: 1,
-    backgroundColor: '#f9fafd',
+    backgroundColor: COLORS.appBackGroundColor,
 
   },
   commandButton: {
-    backgroundColor: '#A7EAAE',
+    backgroundColor: COLORS.secondaryBackground,
     padding: 13,
     borderRadius: 10,
     width: '90%',
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
   },
   panel: {
     padding: 20,
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     paddingTop: 20,
     // borderTopLeftRadius: 20,
     // borderTopRightRadius: 20,
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
     // shadowOpacity: 0.4,
   },
   header: {
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     shadowColor: '#333333',
     shadowOffset: {width: -1, height: -3},
     shadowRadius: 2,
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     marginBottom: 10,
   },
   panelTitle: {
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
   panelButton: {
     padding: 13,
     borderRadius: 10,
-    backgroundColor: '#CEF0D3',
+    backgroundColor: COLORS.secondaryTheme,
     alignItems: 'center',
     marginVertical: 7,
   },

@@ -3,6 +3,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {COLORS} from '../styles/colors';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { View} from 'react-native';
 import HomeScreen from '../screens/homeScreens/HomeScreen';
@@ -24,11 +26,11 @@ const FeedStack = () => (
       options={{
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          color: '#2e64e5', // Blue color
+          color: COLORS.blueHeaderText, // Blue color
         },
         headerStyle: {
-          backgroundColor: '#f9fafd', // Set background color here
-          shadowColor: '#fff',
+          backgroundColor: COLORS.appBackGroundColor, // Set background color here
+          shadowColor: COLORS.white,
           elevation: 0,
         },
       }}
@@ -40,18 +42,18 @@ const FeedStack = () => (
         title: '',
         headerTitleAlign: 'center',
         headerStyle: {
-          backgroundColor: '#f9fafd', // Set background color here
-          shadowColor: '#fff',
+          backgroundColor: COLORS.appBackGroundColor, // Set background color here
+          shadowColor: COLORS.white,
           elevation: 0,
         },
         headerBackTitleVisible: false,
         headerBackImage: () => (
           <View style={{ marginLeft: 15 }}>
-            <Ionicons name="arrow-back" size={25} color="#2e64e5" />
+            <Ionicons name="arrow-back" size={25} color= {COLORS.blueHeaderText} />
           </View>
         ),
         headerTitleStyle: {
-          color: '#2e64e5',
+          color: COLORS.blueHeaderText,
         },
       }}
     />
@@ -66,11 +68,11 @@ const ProfileStack = () => (
       options={{
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          color: '#2e64e5',
+          color: COLORS.blueHeaderText,
         },
         headerStyle: {
-          backgroundColor: '#f9fafd',
-          shadowColor: '#fff',
+          backgroundColor: COLORS.appBackGroundColor,
+          shadowColor: COLORS.white,
           elevation: 0,
         },
       }}
@@ -86,11 +88,11 @@ const ChatStack = () => (
       options={{
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          color: '#2e64e5',
+          color: COLORS.blueHeaderText,
         },
         headerStyle: {
-          backgroundColor: '#f9fafd',
-          shadowColor: '#fff',
+          backgroundColor: COLORS.appBackGroundColor,
+          shadowColor: COLORS.white,
           elevation: 0,
         },
       }}
@@ -107,11 +109,11 @@ const MapStack = () => (
       options={{
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          color: '#2e64e5',
+          color: COLORS.white,
         },
         headerStyle: {
-          backgroundColor: '#f9fafd',
-          shadowColor: '#fff',
+          backgroundColor: COLORS.appBackGroundColor,
+          shadowColor: COLORS.white,
           elevation: 0,
         },
       }}
@@ -126,7 +128,7 @@ const AppStack = () => {
       screenOptions={{
         elevation: 0,
         tabBarStyle: {
-          backgroundColor: '#f9fafd',
+          backgroundColor: COLORS.appBackGroundColor,
           elevation: 0,
           height:55,
           borderTopWidth: 0,
@@ -140,9 +142,9 @@ const AppStack = () => {
           height:52,
           width:20,
         },
-        tabBarActiveTintColor: '#000',
-        tabBarInactiveTintColor: '#000',
-        tabBarActiveBackgroundColor:'#CEF0D3',
+        tabBarActiveTintColor: COLORS.black,
+        tabBarInactiveTintColor: COLORS.black,
+        tabBarActiveBackgroundColor: COLORS.secondaryTheme,
         
       }}>
       <Tab.Screen
@@ -155,8 +157,8 @@ const AppStack = () => {
             fontSize:12,
           },
           headerShown: false ,
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#000',
+          tabBarActiveTintColor: COLORS.black,
+          tabBarInactiveTintColor: COLORS.black,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="home-outline"
@@ -176,8 +178,8 @@ const AppStack = () => {
             fontSize:12,
           },
           headerShown: false ,
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#000',
+          tabBarActiveTintColor: COLORS.black,
+          tabBarInactiveTintColor: COLORS.black,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="map-marker-outline"
@@ -197,8 +199,8 @@ const AppStack = () => {
             fontSize:12,
           },
           headerShown: false ,
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#000',
+          tabBarActiveTintColor: COLORS.black,
+          tabBarInactiveTintColor: COLORS.black,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="message-processing-outline"
@@ -219,8 +221,8 @@ const AppStack = () => {
             fontSize:12,
           },
           headerShown: false ,
-          tabBarActiveTintColor: '#000',
-          tabBarInactiveTintColor: '#000',
+          tabBarActiveTintColor: COLORS.black,
+          tabBarInactiveTintColor: COLORS.black,
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="person-outline" color={color} size={28}/>
           ),

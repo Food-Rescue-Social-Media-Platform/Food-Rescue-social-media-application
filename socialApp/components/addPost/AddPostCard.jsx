@@ -7,8 +7,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome5';
-import {COLORS} from '../styles/colors';
-import {windowHeight, windowWidth} from '../utils/Dimentions';
+import {COLORS} from '../../styles/colors';
+import {windowHeight, windowWidth} from '../../utils/Dimentions';
 import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -22,7 +22,7 @@ const AddPostCard = () => {
 
     return (
         <View style={styles.container}> 
-            <Image style={styles.profileImage} source={require('../assets/users/user-1.jpg')} />
+            <Image style={styles.profileImage} source={require('../../assets/users/user-1.jpg')} />
             <View>
                 <TouchableOpacity style={styles.sharePostWrapper} onPress={openShareFoodScreen}>
                 <Text style={styles.mainText}>Share food...</Text>

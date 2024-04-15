@@ -6,14 +6,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { View} from 'react-native';
 
-import HomeScreen from '../screens/HomeScreen';
-import HomeChat from '../screens/chat/HomeChat';
-import ProfileScreen from '../screens/ProfileScreen';
-// import MessagesScreen from '../screens/MessagesScreen';
-import MapScreen from '../screens/MapScreen';
-import AddPostScreen from '../screens/createPost/AddPostScreen';
-import EditProfile from '../screens/EditProfile';
-import ChatScreen from '../screens/ChatScreen';
+import HomeScreen from '../screens/homeScreens/HomeScreen';
+import HomeChat from '../screens/chatScreens/HomeChat';
+import ProfileScreen from '../screens/profileScreens/ProfileScreen';
+import MapScreen from '../screens/mapScreens/MapScreen';
+import AddPostScreen from '../screens/createPostScreens/AddPostScreen';
+import EditProfile from '../screens/profileScreens/EditProfile';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -236,7 +234,6 @@ const RootStack = createStackNavigator();
 const RootStackScreen = () => (
   <RootStack.Navigator>
     <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
-    <RootStack.Screen name="Chat" component={ChatScreen} />
     <RootStack.Screen name="Edit Profile" component={EditProfile} />
     <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false}} />
 

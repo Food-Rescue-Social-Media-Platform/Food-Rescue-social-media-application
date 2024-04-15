@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Keyboard, Alert} from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
-import SocialButton from '../components/SocialButton';
-import { AuthContext } from '../navigation/AuthProvider';
+import FormInput from '../../components/formButtonsAndInput/FormInput';
+import FormButton from '../../components/formButtonsAndInput/FormButton';
+import SocialButton from '../../components/formButtonsAndInput/SocialButton';
+import { AuthContext } from '../../navigation/AuthProvider';
 
 const SignUpScreen = ({ navigation }) => {
   const[firstName, setFirstName] = useState('');

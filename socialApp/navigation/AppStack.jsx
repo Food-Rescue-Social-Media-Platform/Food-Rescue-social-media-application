@@ -13,8 +13,8 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MapScreen from '../screens/MapScreen';
 import AddPostScreen from '../screens/createPost/AddPostScreen';
 import EditProfile from '../screens/EditProfile';
-import ChatScreen from '../screens/ChatScreen';
 import SingleChat from '../screens/chat/SingleChat';
+import ChatScreen from '../screens/ChatScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -238,7 +238,6 @@ const RootStack = createStackNavigator();
 const RootStackScreen = () => (
   <RootStack.Navigator>
     <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
-    <RootStack.Screen name="Chat" component={ChatScreen} />
     <RootStack.Screen name="Edit Profile" component={EditProfile} />
     <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false}} />
     <RootStack.Screen name="SingleChat" component={SingleChat}  />

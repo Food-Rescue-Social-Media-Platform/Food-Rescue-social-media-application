@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
-import { AuthContext } from '../navigation/AuthProvider';
+import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { database } from '../firebase'; // Import the Firestore instance from firebase.js
+import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { doc, getDoc } from "firebase/firestore";
-import PostCard from '../components/PostCard';
-import { Container } from '../styles/feedStyles';
+import PostCard from '../../components/postCard/PostCard';
+import { Container } from '../../styles/feedStyles';
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
@@ -79,10 +79,10 @@ const ProfileScreen = ({ navigation, route }) => {
       <View style={styles.container}>
       {userData && (
           <View style={styles.header}>
-            <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../assets/Images/cover.png')} style={styles.coverImage} />              
+            <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/cover.png')} style={styles.coverImage} />              
             <View style={styles.overlay}>
               <View style={styles.avatarContainer}>
-                <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../assets/Images/avatar.png')} style={styles.avatar} />
+                <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../../assets/Images/avatar.png')} style={styles.avatar} />
               </View>
               <Text style={styles.name}>{userData?.userName}</Text>
             </View>

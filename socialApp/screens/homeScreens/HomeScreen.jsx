@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image } from 'react-native';
-import FormButton from '../components/FormButton';
-import Chat from './chat/Chat';
-import { AuthContext } from '../navigation/AuthProvider';
-import { Container } from '../styles/feedStyles';
-import PostCard from '../components/PostCard';
-import { database } from '../firebase'; // Import the Firestore instance from firebase.js
+import FormButton from '../../components/formButtonsAndInput/FormButton';
+import Chat from '../chatScreens/Chat';
+import { AuthContext } from '../../navigation/AuthProvider';
+import { Container } from '../../styles/feedStyles';
+import PostCard from '../../components/postCard/PostCard';
+import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { collection, getDocs } from "firebase/firestore";
-import { windowWidth } from '../utils/Dimentions';
-import AddPostCard from '../components/AddPostCard';
+import { windowWidth } from '../../utils/Dimentions';
+import AddPostCard from '../../components/addPost/AddPostCard';
 
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
@@ -24,7 +24,7 @@ const HomeScreen = () => {
                 const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 // Sort the posts by creation time
                 data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
-                setPosts(data);
+                setPosts([{}, ...data]); // Add an empty object as the first item
                 // console.log("Posts data:", data);
 
             } catch (error) {
@@ -37,17 +37,21 @@ const HomeScreen = () => {
     
     return (
         <Container style={styles.container}>
-            <AddPostCard/>
+            
             <FlatList
                 data={posts} // Use fetched data instead of the hardcoded `Posts` array
-                renderItem={({ item }) => ( 
-                    <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />
-                )}
-                keyExtractor={item => item.id}
+                renderItem={({ item, index }) => {
+                    if (index === 0) {
+                        return <AddPostCard />;
+                    } else {
+                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />;
+                    }
+                }}
+                keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
             />
-            <FormButton buttonTitle='Logout' onPress={() => logout()} />
+            {/* <FormButton buttonTitle='Logout' onPress={() => logout()} /> */}
         </Container>
     );
 }

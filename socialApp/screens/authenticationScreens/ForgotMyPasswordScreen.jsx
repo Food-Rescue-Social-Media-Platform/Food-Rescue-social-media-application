@@ -1,8 +1,8 @@
 import React, { useState,useContext } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
-import { AuthContext } from '../navigation/AuthProvider';
+import FormInput from '../../components/formButtonsAndInput/FormInput';
+import FormButton from '../../components/formButtonsAndInput/FormButton';
+import { AuthContext } from '../../navigation/AuthProvider';
 
 
 const ForgotMyPasswordScreen = ({ navigation }) => {
@@ -13,7 +13,7 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
     <View style={styles.outerContainer}>
       <View style={styles.container}>
         <Image
-          source={require('../assets/Images/PhoneAuthLogo.png')}
+          source={require('../../assets/Images/PhoneAuthLogo.png')}
           style={styles.logo}
         />
         <Text style={styles.text}>Forgot My Password</Text>

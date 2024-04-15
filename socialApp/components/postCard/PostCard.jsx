@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native'; // Import useNavigatio
 import Popover from 'react-native-popover-view';
 import { Entypo } from "@expo/vector-icons";
 
-import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../styles/feedStyles';
+import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 
 const getCategoryIcon = (category) => {

@@ -14,8 +14,12 @@ export const OpenGalereAndSelectImages = async (setImage) => {
     });
   
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
-      console.log("uri: ", result.assets[0].uri);
+      console.log("result: ", result);
+      // setImage(result.assets.map(element => {
+      //   return element.url;
+      // }));
+      setImage([result.assets[0].uri]);
+      // console.log("uri: ", result.assets[0].uri);
       // console.log("uri: ", result.assets[0].uri);
     }
   }

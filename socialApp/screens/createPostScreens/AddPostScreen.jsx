@@ -25,7 +25,7 @@ const AddPostScreen = () => {
     const [location, setLocation] = useState('');
     const [timeInput , setTimeInput] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [image, setImage] = useState(null);
+    const [image, setImage] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [transferred, setTransferred] = useState(0);
     const [modalPhoneVisible, setModalPhoneVisible] = useState(false);
@@ -64,7 +64,7 @@ const AddPostScreen = () => {
     const handleAddImages = () =>{
         console.log('Images');
         OpenGalereAndSelectImages(setImage);
-        console.log('Image uri', image);
+        console.log('Images uri', image);
     }
 
     const handleAddLocation = async () => {

@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
 export const Container = styled.View`
-  flex: 1;
-  ${'' /* justify-content: center; */}
+  ${'' /* justify-content: center; flex:1; */}
   align-items: center;
   background-color: #f9fafd;
   padding: 20px;
@@ -64,7 +63,7 @@ export const PostImg = styled.Image`
 export const Divider = styled.View`
     border-bottom-color: #A7EAAE;
     border-bottom-width: 1px;
-    width: 90%;
+    width: 91%;
     align-self: center;
     margin-bottom: 15px;
     margin-top: -10px;

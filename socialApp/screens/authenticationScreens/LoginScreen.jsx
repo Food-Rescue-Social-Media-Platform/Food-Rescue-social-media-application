@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import FormInput from '../components/FormInput';
-import FormButton from '../components/FormButton';
-import SocialButton from '../components/SocialButton';
-import { AuthContext } from '../navigation/AuthProvider';
+import FormInput from '../../components/formButtonsAndInput/FormInput';
+import FormButton from '../../components/formButtonsAndInput/FormButton';
+import SocialButton from '../../components/formButtonsAndInput/SocialButton';
+import { AuthContext } from '../../navigation/AuthProvider';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -14,7 +14,7 @@ const LoginScreen = ({ navigation }) => {
     <View style={styles.outerContainer}>
       <View style={styles.container}>
         <Image
-          source={require('../assets/Images/PhoneAuthLogo.png')}
+          source={require('../../assets/Images/PhoneAuthLogo.png')}
           style={styles.logo}
         />
         <Text style={styles.text}>Sign in</Text>
@@ -105,7 +105,6 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   text: {
-    fontFamily: 'Roboto',
     fontSize: 28,
     marginBottom: 10,
     color: '#051d5f',

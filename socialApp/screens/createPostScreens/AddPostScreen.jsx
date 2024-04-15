@@ -25,7 +25,7 @@ const AddPostScreen = () => {
     const [location, setLocation] = useState('');
     const [timeInput , setTimeInput] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [image, setImage] = useState([]);
+    const [images, setImages] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [transferred, setTransferred] = useState(0);
     const [modalPhoneVisible, setModalPhoneVisible] = useState(false);
@@ -63,8 +63,8 @@ const AddPostScreen = () => {
     
     const handleAddImages = () =>{
         console.log('Images');
-        OpenGalereAndSelectImages(setImage);
-        console.log('Images uri', image);
+        OpenGalereAndSelectImages(setImages);
+        console.log('Images uri', images);
     }
 
     const handleAddLocation = async () => {
@@ -93,7 +93,7 @@ const AddPostScreen = () => {
 
     const handleAddPost = async () => {
         // 0. save image in storage
-        const imagesUrl = await uploadImages(image, 'postsImges/', 'image');
+        const imagesUrl = await uploadImages(images, 'postsImges/', 'image');
         console.log("text", postInput);
         console.log("time", timeInput);
         console.log("phone", phoneNumber);
@@ -106,7 +106,7 @@ const AddPostScreen = () => {
         // 4. set space to empty
         setPhoneNumber('');
         setPostInput('');
-        setImage(null);
+        setImages(null);
         setLocation('');
         setCategory('');
         setTimeInput('');
@@ -151,7 +151,15 @@ const AddPostScreen = () => {
                               multiline
                           />
                           <Text>{timeInput.length}/30</Text>
-                          <Image style={{ width:100, height:100 }} source={{uri: image}} />
+                          <View>
+                            {images.map( image => (
+
+                                <Image 
+                                    key={image}
+                                    style={{ width:100, height:100 }}
+                                    source={{uri: image}}/>
+                            ))}
+                          </View>
                        </View>
                        </ScrollView>
 

@@ -13,6 +13,7 @@ import ProfileScreen from '../screens/profileScreens/ProfileScreen';
 import MapScreen from '../screens/mapScreens/MapScreen';
 import AddPostScreen from '../screens/createPostScreens/AddPostScreen';
 import EditProfile from '../screens/profileScreens/EditProfile';
+import SingleChat from '../screens/chatScreens/SingleChat';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();

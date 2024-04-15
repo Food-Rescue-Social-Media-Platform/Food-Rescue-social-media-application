@@ -24,7 +24,7 @@ const HomeScreen = () => {
                 const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 // Sort the posts by creation time
                 data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
-                setPosts(data);
+                setPosts([{}, ...data]); // Add an empty object as the first item
                 // console.log("Posts data:", data);
 
             } catch (error) {
@@ -37,17 +37,21 @@ const HomeScreen = () => {
     
     return (
         <Container style={styles.container}>
-            <AddPostCard/>
+            
             <FlatList
                 data={posts} // Use fetched data instead of the hardcoded `Posts` array
-                renderItem={({ item }) => ( 
-                    <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />
-                )}
-                keyExtractor={item => item.id}
+                renderItem={({ item, index }) => {
+                    if (index === 0) {
+                        return <AddPostCard />;
+                    } else {
+                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />;
+                    }
+                }}
+                keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
             />
-            <FormButton buttonTitle='Logout' onPress={() => logout()} />
+            {/* <FormButton buttonTitle='Logout' onPress={() => logout()} /> */}
         </Container>
     );
 }

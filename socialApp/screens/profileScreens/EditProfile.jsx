@@ -1,19 +1,97 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet} from 'react-native';
+import { AuthContext } from '../../navigation/AuthProvider';
 import {useTheme} from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {COLORS} from '../../styles/colors';
+import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
+import { doc, updateDoc } from "firebase/firestore";
 
+const EditProfile = ({ navigation, route }) => {
+    const {colors} = useTheme();   
+    const { userData } = route.params;
+    const { user, logout } = useContext(AuthContext);
+    const [userProfileCover, setUserProfileCover] = useState(userData?.profileCover || require('../../assets/Images/cover.png'));
+    const [userProfileImage, setUserProfileImage] = useState(userData?.profileImg || require('../../assets/Images/avatar.png'));
+    const [firstName, setFirstName] = useState(userData?.firstName || '');
+    const [lastName, setLastName] = useState(userData?.lastName || '');
+    const [phone, setPhone] = useState(userData?.phoneNumber || '');
+    const [email, setEmail] = useState(userData?.email || '');
+    const [location, setLocation] = useState(userData?.location || '');
+    const [userName, setUserName] = useState(userData?.userName || '');
 
-const EditProfile = () => {
-    const [image, setImage] = useState('https://scontent.fhfa2-2.fna.fbcdn.net/v/t1.6435-9/107040286_4536588449688229_5150338046413976048_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=5f2048&_nc_ohc=B44krh_9eD0AX-hxEvB&_nc_ht=scontent.fhfa2-2.fna&oh=00_AfAShR8PEumQeOhDDfTzp6Xvepoq-Gq4z31tJ7eviuK50A&oe=66320A4E');
-    const {colors} = useTheme();    
+    const updateUserProfile = async () => {
+      try {
+          const userDocRef = doc(database, "users", user.uid);
+          await updateDoc(userDocRef, {
+              ...userData,
+              firstName: firstName,
+              lastName: lastName,
+              phoneNumber: phone,
+              email: email,
+              location: location,
+              userName: firstName + ' ' + lastName,
+          });
+    
+          // Update local state with the new data immediately
+          setFirstName(firstName);
+          setLastName(lastName);
+          setPhone(phone);
+          setEmail(email);
+          setLocation(location);
+          setUserName(firstName + ' ' + lastName);
+  
+          console.log("User profile updated successfully");
+      } catch (error) {
+          console.error("Error updating user profile:", error);
+      }
+    };
+
       return (
         <View style={styles.container}> 
             <View style={{alignItems: 'center'}}>
+              <TouchableOpacity onPress={null}>
+                <View
+                  style={{
+                    height: 150,
+                    width: 300,
+                    borderRadius: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <ImageBackground
+                    source={{
+                      uri: userProfileCover,
+                    }}
+                    style={{height: 150, width: 300}}
+                    imageStyle={{borderRadius: 15}}>
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Icon
+                        name="camera"
+                        size={35}
+                        color= {COLORS.white}
+                        style={{
+                          opacity: 0.7,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          borderWidth: 1,
+                          borderColor: COLORS.white,
+                          borderRadius: 10,
+                        }}
+                      />
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableOpacity>
+              <Text></Text>
               <TouchableOpacity onPress={null}>
                 <View
                   style={{
@@ -25,7 +103,7 @@ const EditProfile = () => {
                   }}>
                   <ImageBackground
                     source={{
-                      uri: image,
+                      uri: userProfileImage,
                     }}
                     style={{height: 100, width: 100}}
                     imageStyle={{borderRadius: 15}}>
@@ -53,7 +131,7 @@ const EditProfile = () => {
                 </View>
               </TouchableOpacity>
               <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold'}}>
-                John Doe
+                {userName}
               </Text>
             </View>
     
@@ -71,6 +149,8 @@ const EditProfile = () => {
 
                   },
                 ]}
+                value={firstName}
+                onChangeText={text => setFirstName(text)}
               />
             </View>
             <View style={styles.action}>
@@ -85,6 +165,8 @@ const EditProfile = () => {
                     color: colors.text,
                   },
                 ]}
+                value={lastName}
+                onChangeText={text => setLastName(text)}
               />
             </View>
             <View style={styles.action}>
@@ -102,6 +184,8 @@ const EditProfile = () => {
 
                   },
                 ]}
+                value={phone}
+                onChangeText={text => setPhone(text)}
               />
             </View>
             <View style={styles.action}>
@@ -119,6 +203,8 @@ const EditProfile = () => {
 
                   },
                 ]}
+                value={email}
+                onChangeText={text => setEmail(text)}
               />
             </View>
             <View style={styles.action}>
@@ -134,9 +220,11 @@ const EditProfile = () => {
                     paddingLeft:16,
                   },
                 ]}
+                value={location}
+                onChangeText={text => setLocation(text)}
               />
             </View>
-            <TouchableOpacity style={styles.commandButton} onPress={() => {}}>
+            <TouchableOpacity style={styles.commandButton} onPress={updateUserProfile}>
               <Text style={styles.panelButtonTitle}>Submit</Text>
             </TouchableOpacity>
         </View>

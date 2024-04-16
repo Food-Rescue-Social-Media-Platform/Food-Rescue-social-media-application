@@ -123,119 +123,118 @@ const AddPostScreen = () => {
       };
     
     return (      
-            <View style={styles.container} >
-                    <View style={styles.header}>
-                      <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
-                          <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
-                      </TouchableOpacity>
-                          <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
-                      <TouchableOpacity style={styles.button} onPress={handleAddPost}>
-                          <Text style={{fontSize:15}}>Post</Text>
-                      </TouchableOpacity>              
-                      </View>
-                      <ScrollView>
-                      <View style={styles.input_images}>
-                          <TextInput
-                              value={postInput}
-                              onChangeText={(text)=>setPostInput(text)}
-                              style={styles.postInput}
-                              placeholder="What's on your mind?"
-                              multiline
-                          />
-                          <Text>What are the delivery times?</Text>
-                          <TextInput
-                              value={timeInput}
-                              onChangeText={(text)=>setTimeInput(text)}
-                              style={styles.timeInput}
-                              placeholder="What's on your mind?"
-                              multiline
-                          />
-                          <Text>{timeInput.length}/30</Text>
-                          <View>
-                            {images.map( image => (
-
-                                <Image 
-                                    key={image}
-                                    style={{ width:100, height:100 }}
-                                    source={{uri: image}}/>
-                            ))}
-                          </View>
-                       </View>
-                       </ScrollView>
-
-                       <View style={styles.iconsWrapper}>
-                          <TouchableOpacity>
-                          <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity>
-                          <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity>
-                              <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity >
-                              <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity >
-                              <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
-                          </TouchableOpacity>
-                          </View>
-                              <Modal                                
-                                  animationType="slide"
-                                  transparent={true}
-                                  visible={modalPhoneVisible}
-                                  onRequestClose={() => {
-                                      console.log('close modal');
-                                  }}
-                                  >   
-                              <View 
-                              style={{  marginTop:'50%', width:'100%', backgroundColor: COLORS.white, border:1, borderColor: 'black'}}
-                              >
-                              <Text style={{fontSize:20, padding:10}}>Would you like to post your number {userData.phoneNumber} ?</Text>
-                              <View style={{flexDirection:'row'}}>
-                                  <Button title="Yes" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false); setPhoneNumber('052111111')}}/>
-                                  <Button title="No" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false)}}/>
-                              </View>
-                              </View>
-                      </Modal>
-    
-                      <Modal
-                          animationType="slide"
-                          transparent={true}
-                          visible={categoryModalVisible}
-                          >
-                      <View style={styles.categoryModal}>
-                          <Text style={styles.modalText}>Select options:</Text>
-    
-                          {options.map((option) => (
-                              <CheckBox
-                                style={styles.checkboxWrapper}
-                                key={option.value}
-                                title={option.value}
-                                checked={selectedOptions.includes(option.value)}
-                                onPress={() => handleCheck(option)}
-                              />
-                            ))}
-                       <Button title="Done" onPress={handleCloseCategoryModal} />
-                      </View>
-                      </Modal>
-                      <Modal 
-                      animationType="slide"
-                      transparent={true}
-                      visible={showLocationModel}
-                      >
-                        <View style={styles.locationModal}>
-                        <Text>Should you add your current location to the post?</Text>
-                        <Button title="Yes" onPress={handleAddLocation}/>
-                        <Button title="No" onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}/>
-                        <TextInput
-                         placeholder='Enter a different address'>
-                        </TextInput>
-                        </View>
-                      </Modal>
+        <View style={styles.container} >
+            <View style={styles.header}>
+            <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
+                <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
+            </TouchableOpacity>
+            <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
+            <TouchableOpacity style={styles.button} onPress={handleAddPost}>
+                <Text style={{fontSize:15}}>Post</Text>
+            </TouchableOpacity>              
             </View>
-            );
-        }
+            <ScrollView>
+                <View style={styles.input_images}>
+                    <TextInput
+                        value={postInput}
+                        onChangeText={(text)=>setPostInput(text)}
+                        style={styles.postInput}
+                        placeholder="What's on your mind?"
+                        multiline
+                    />
+                    <Text>What are the delivery times?</Text>
+                    <TextInput
+                        value={timeInput}
+                        onChangeText={(text)=>setTimeInput(text)}
+                        style={styles.timeInput}
+                        placeholder="What's on your mind?"
+                        multiline
+                    />
+                    <Text>{timeInput.length}/30</Text>
+                    <View>
+                        {images.map( image => (
+
+                            <Image 
+                                key={image}
+                                style={{ width:100, height:100 }}
+                                source={{uri: image}}/>
+                        ))}
+                    </View>
+                </View>
+            </ScrollView>
+
+            <View style={styles.iconsWrapper}>
+                <TouchableOpacity>
+                    <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                    <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                    <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
+                </TouchableOpacity>
+            </View>
+            <Modal                                
+                animationType="slide"
+                transparent={true}
+                visible={modalPhoneVisible}
+                onRequestClose={() => {
+                    console.log('close modal');
+                }}
+            >   
+                <View 
+                    style={{  marginTop:'50%', width:'100%', backgroundColor: COLORS.white, border:1, borderColor: 'black'}}
+                >
+                    <Text style={{fontSize:20, padding:10}}>Would you like to post your number {userData.phoneNumber} ?</Text>
+                    <View style={{flexDirection:'row'}}>
+                        <Button title="Yes" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false); setPhoneNumber('052111111')}}/>
+                        <Button title="No" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false)}}/>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={categoryModalVisible}
+            >
+                <View style={styles.categoryModal}>
+                    <Text style={styles.modalText}>Select options:</Text>
+                    {options.map((option) => (
+                        <CheckBox
+                            style={styles.checkboxWrapper}
+                            key={option.value}
+                            title={option.value}
+                            checked={selectedOptions.includes(option.value)}
+                            onPress={() => handleCheck(option)}
+                        />
+                        ))}
+                    <Button title="Done" onPress={handleCloseCategoryModal} />
+                </View>
+            </Modal>
+            <Modal 
+                animationType="slide"
+                transparent={true}
+                visible={showLocationModel}
+            >
+                <View style={styles.locationModal}>
+                    <Text>Should you add your current location to the post?</Text>
+                    <Button title="Yes" onPress={handleAddLocation}/>
+                    <Button title="No" onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}/>
+                    <TextInput
+                        placeholder='Enter a different address'>
+                    </TextInput>
+                </View>
+            </Modal>
+        </View>
+    );
+}
 
 
   const styles = StyleSheet.create({

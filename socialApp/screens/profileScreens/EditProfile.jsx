@@ -43,7 +43,18 @@ const EditProfile = ({ navigation, route }) => {
           setEmail(email);
           setLocation(location);
           setUserName(firstName + ' ' + lastName);
-  
+          
+          // Navigate back to ProfileScreen with updated user data
+          navigation.navigate('Profile', { 
+            postUserId: user.uid, 
+            userData: {
+              ...userData,
+              firstName: firstName,
+              lastName: lastName,
+              userName: firstName + ' ' + lastName // Pass updated userName
+            } 
+          });
+
           console.log("User profile updated successfully");
       } catch (error) {
           console.error("Error updating user profile:", error);

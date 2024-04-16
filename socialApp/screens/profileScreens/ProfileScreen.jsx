@@ -46,7 +46,14 @@ const ProfileScreen = ({ navigation, route }) => {
         const postDocRef = doc(database, "postsTest", postId);
         const postDocSnap = await getDoc(postDocRef);
         if (postDocSnap.exists()) {
-          userPostsData.push({ id: postId, ...postDocSnap.data() });
+          const postData = postDocSnap.data();
+          // Check if userData is not null before accessing its properties
+          if (userData) {
+            postData.firstName = userData.firstName;
+            postData.lastName = userData.lastName;
+            postData.userName = userData.userName;
+          }
+          userPostsData.push({ id: postId, ...postData });
         }
       }
 
@@ -58,6 +65,7 @@ const ProfileScreen = ({ navigation, route }) => {
       setLoading(false);
     }
   };
+
 
   // Fetch data when screen is focused
   useEffect(() => {

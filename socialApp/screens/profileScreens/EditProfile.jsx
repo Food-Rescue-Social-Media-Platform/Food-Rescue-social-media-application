@@ -74,11 +74,14 @@ const EditProfile = ({ navigation, route }) => {
                     alignItems: 'center',
                   }}>
                   <ImageBackground
-                    source={{
-                      uri: userProfileCover,
-                    }}
-                    style={{height: 150, width: 300}}
-                    imageStyle={{borderRadius: 15}}>
+                    source={
+                      typeof userProfileCover === 'string'
+                        ? { uri: userProfileCover }
+                        : userProfileCover
+                    }
+                    style={{ height: 150, width: 300 }}
+                    imageStyle={{ borderRadius: 15 }}
+                  >
                     <View
                       style={{
                         flex: 1,
@@ -113,11 +116,15 @@ const EditProfile = ({ navigation, route }) => {
                     alignItems: 'center',
                   }}>
                   <ImageBackground
-                    source={{
-                      uri: userProfileImage,
-                    }}
-                    style={{height: 100, width: 100}}
-                    imageStyle={{borderRadius: 15}}>
+                    source={
+                      typeof userProfileImage === 'string'
+                        ? { uri: userProfileImage }
+                        : userProfileImage
+                    }
+                    style={{ height: 100, width: 100 }}
+                    imageStyle={{ borderRadius: 15 }}
+                  >
+
                     <View
                       style={{
                         flex: 1,

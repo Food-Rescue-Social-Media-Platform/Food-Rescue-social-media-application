@@ -4,7 +4,8 @@ import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused 
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
 import { COLORS } from '../../styles/colors';
@@ -49,9 +50,16 @@ const ProfileScreen = ({ navigation, route }) => {
           const postData = postDocSnap.data();
           // Check if userData is not null before accessing its properties
           if (userData) {
+            // Update the post data with new user data
             postData.firstName = userData.firstName;
             postData.lastName = userData.lastName;
             postData.userName = userData.userName;
+            // Update the post document in Firestore
+            await updateDoc(postDocRef, {
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              userName: userData.userName
+            });
           }
           userPostsData.push({ id: postId, ...postData });
         }
@@ -65,7 +73,6 @@ const ProfileScreen = ({ navigation, route }) => {
       setLoading(false);
     }
   };
-
 
   // Fetch data when screen is focused
   useEffect(() => {

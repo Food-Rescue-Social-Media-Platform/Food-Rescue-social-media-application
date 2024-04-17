@@ -54,12 +54,15 @@ const ProfileScreen = ({ navigation, route }) => {
             postData.firstName = userData.firstName;
             postData.lastName = userData.lastName;
             postData.userName = userData.userName;
+            postData.userImg = userData.profileImg;
             // Update the post document in Firestore
-            await updateDoc(postDocRef, {
-              firstName: userData.firstName,
-              lastName: userData.lastName,
-              userName: userData.userName
-            });
+          // Update the post document in Firestore
+          await updateDoc(postDocRef, {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            userName: userData.userName,
+            userImg: userData.profileImg // Adjust the field name if needed
+          });
           }
           userPostsData.push({ id: postId, ...postData });
         }

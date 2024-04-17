@@ -43,6 +43,14 @@ const ProfileScreen = ({ navigation, route }) => {
       const postsIdArray = userDocSnap.data().postsId;
 
       const userPostsData = [];
+
+      // Check if postsIdArray is empty
+      if (postsIdArray.length === 0) {
+        setUserPosts([]); // Set userPosts state to an empty array
+        setLoading(false); // Set loading state to false
+        return; // Exit the function early
+      }
+
       for (const postId of postsIdArray) {
         const postDocRef = doc(database, "postsTest", postId);
         const postDocSnap = await getDoc(postDocRef);
@@ -56,23 +64,22 @@ const ProfileScreen = ({ navigation, route }) => {
             postData.userName = userData.userName;
             postData.userImg = userData.profileImg;
             // Update the post document in Firestore
-          // Update the post document in Firestore
-          await updateDoc(postDocRef, {
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            userName: userData.userName,
-            userImg: userData.profileImg // Adjust the field name if needed
-          });
+            await updateDoc(postDocRef, {
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              userName: userData.userName,
+              userImg: userData.profileImg // Adjust the field name if needed
+            });
           }
           userPostsData.push({ id: postId, ...postData });
         }
       }
 
       setUserPosts(userPostsData);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching user posts:", error);
       setError(error.message);
-    } finally {
       setLoading(false);
     }
   };

@@ -88,9 +88,9 @@ const EditProfile = ({ navigation, route }) => {
                         }}>
                         <ImageBackground
                             source={
-                              userProfileCover && typeof userProfileCover === 'string'
-                                    ? { uri: userProfileCover }
-                                    : userProfileCover
+                                userProfileCover && typeof userProfileCover === 'string'
+                                ? { uri: userProfileCover }
+                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}
                             }
                             style={{ height: 150, width: 300 }}
                             imageStyle={{ borderRadius: 15 }}
@@ -130,14 +130,13 @@ const EditProfile = ({ navigation, route }) => {
                         }}>
                         <ImageBackground
                             source={
-                              userProfileImage && typeof userProfileImage === 'string'
-                                    ? { uri: userProfileImage }
-                                    : userProfileImage
+                                userProfileImage && typeof userProfileImage === 'string'
+                                ? { uri: userProfileImage }
+                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}
                             }
                             style={{ height: 100, width: 100 }}
                             imageStyle={{ borderRadius: 15 }}
                         >
-
                             <View
                                 style={{
                                     flex: 1,

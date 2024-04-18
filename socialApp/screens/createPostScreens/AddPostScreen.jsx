@@ -123,116 +123,71 @@ const AddPostScreen = () => {
       };
     
     return (      
-            <View style={styles.container} >
-                    <View style={styles.header}>
-                      <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
-                          <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
-                      </TouchableOpacity>
-                          <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
-                      <TouchableOpacity style={styles.button} onPress={handleAddPost}>
-                          <Text style={{fontSize:15}}>Post</Text>
-                      </TouchableOpacity>              
-                      </View>
-                      <ScrollView>
-                      <View style={styles.input_images}>
-                          <TextInput
-                              value={postInput}
-                              onChangeText={(text)=>setPostInput(text)}
-                              style={styles.postInput}
-                              placeholder="What's on your mind?"
-                              multiline
-                          />
-                          <Text>What are the delivery times?</Text>
-                          <TextInput
-                              value={timeInput}
-                              onChangeText={(text)=>setTimeInput(text)}
-                              style={styles.timeInput}
-                              placeholder="What's on your mind?"
-                              multiline
-                          />
-                          <Text>{timeInput.length}/30</Text>
-                          <View>
-                            {images.map( image => (
+            <View style={styles.container} >        
 
-                                <Image 
-                                    key={image}
-                                    style={{ width:100, height:100 }}
-                                    source={{uri: image}}/>
-                            ))}
-                          </View>
-                       </View>
-                       </ScrollView>
+                <View style={styles.header}>
 
-                       <View style={styles.iconsWrapper}>
-                          <TouchableOpacity>
-                          <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity>
-                          <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity>
-                              <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity >
-                              <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
-                          </TouchableOpacity>
-                          <TouchableOpacity >
-                              <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
-                          </TouchableOpacity>
-                          </View>
-                              <Modal                                
-                                  animationType="slide"
-                                  transparent={true}
-                                  visible={modalPhoneVisible}
-                                  onRequestClose={() => {
-                                      console.log('close modal');
-                                  }}
-                                  >   
-                              <View 
-                              style={{  marginTop:'50%', width:'100%', backgroundColor: COLORS.white, border:1, borderColor: 'black'}}
-                              >
-                              <Text style={{fontSize:20, padding:10}}>Would you like to post your number {userData.phoneNumber} ?</Text>
-                              <View style={{flexDirection:'row'}}>
-                                  <Button title="Yes" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false); setPhoneNumber('052111111')}}/>
-                                  <Button title="No" style={styles.modalButton} onPress={()=>{setModalPhoneVisible(false)}}/>
-                              </View>
-                              </View>
-                      </Modal>
-    
-                      <Modal
-                          animationType="slide"
-                          transparent={true}
-                          visible={categoryModalVisible}
-                          >
-                      <View style={styles.categoryModal}>
-                          <Text style={styles.modalText}>Select options:</Text>
-    
-                          {options.map((option) => (
-                              <CheckBox
-                                style={styles.checkboxWrapper}
-                                key={option.value}
-                                title={option.value}
-                                checked={selectedOptions.includes(option.value)}
-                                onPress={() => handleCheck(option)}
-                              />
-                            ))}
-                       <Button title="Done" onPress={handleCloseCategoryModal} />
-                      </View>
-                      </Modal>
-                      <Modal 
-                      animationType="slide"
-                      transparent={true}
-                      visible={showLocationModel}
-                      >
-                        <View style={styles.locationModal}>
-                        <Text>Should you add your current location to the post?</Text>
-                        <Button title="Yes" onPress={handleAddLocation}/>
-                        <Button title="No" onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}/>
-                        <TextInput
-                         placeholder='Enter a different address'>
-                        </TextInput>
+                    <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
+                    <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
+                        </TouchableOpacity>
+                            <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
+                        <TouchableOpacity style={styles.postButton} onPress={handleAddPost}>
+                            <Text style={{fontSize:15}}>Post</Text>
+                        </TouchableOpacity> 
+
+                </View> 
+
+                    <ScrollView>
+                        <View style={{ minHeight:'100%'}}>
+                                <View >
+                                    <TextInput
+                                        value={postInput}
+                                        onChangeText={(text)=>setPostInput(text)}
+                                        style={styles.postInput}
+                                        placeholder="What food would you like to save today?"
+                                        multiline
+                                    />
+                                    <TextInput
+                                        value={timeInput}
+                                        onChangeText={(text)=>setTimeInput(text)}
+                                        style={styles.timeInput}
+                                        placeholder="What are the delivery times?"
+                                        multiline
+                                        
+                                    />
+                                    <Text>{timeInput.length}/30</Text>
+                                </View>
+
+                                    <View style={{  flex: 1, flexDirection: 'row', flexWrap:'wrap'}}>
+                                       {images.map((image) => (
+                                         <Image
+                                            key={image}
+                                            source={{ uri: image }}
+                                            style={{ width: 100, height: 100 }}
+                                        />
+                                        ))}
+                                        </View>
+                                        </View>
+                                </ScrollView>
+                                <View style={styles.iconsWrapper}>
+                            <TouchableOpacity>
+                            <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                            <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity>
+                                <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity >
+                                <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity >
+                                <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
+                            </TouchableOpacity>
                         </View>
-                      </Modal>
+
+                 
             </View>
             );
         }
@@ -251,73 +206,34 @@ const AddPostScreen = () => {
         width:'100%',
         marginBottom: 10,
         // height:'8%',
-    },  
-    iconsWrapper:{
-        position: 'absolute',
-        flexDirection: 'row',
-        justifyContent: 'start',
-        marginLeft: 15,
-        backgroundColor: COLORS.secondaryBackground,
-        height: 50,
-        width: '100%',
-        bottom:0,
     },
-    icon:{
-        marginHorizontal: 4,
-    },
-    input_images:{
-        flexDirection: 'column',
-        height:'92%',
-        minHeight: windowHeight - 200,
-    },
-    postInput: {
-        height:'50%',    
-        borderWidth: 1,
-        borderColor: 'gray',
-        padding: 10,
-        marginVertical: 14,
-    },
-    timeInput:{
-        borderWidth: 1,
-        padding: 10,
-        borderColor: 'gray',
-        marginVertical: 14,
-    },
-    button: {
+    postButton: {
         backgroundColor: COLORS.secondaryBackground,
         padding: 10,
         marginTop: 8,
         borderRadius: 5,
         alignItems: 'center',
-    },
-    categoryModal:{
-        backgroundColor: COLORS.secondaryBackground,
-        position: 'absolute',
-        width: '100%',
-        marginTop:'72%'
-    },
-    modalCategoryText: {
-        fontSize: 18,
-        marginBottom: 15,
-      },
-      checkboxWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-      },
-      modalButton:{
-        backgroundColor: COLORS.secondaryBackground,
+    },  
+    postInput: {
+        height: 200,
+        fontSize: 17,
+        marginBottom: 20,
+        marginTop: 20,
         padding: 10,
-        marginTop: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-      },
-      locationModal:{
-        backgroundColor: COLORS.secondaryBackground,
-        position: 'absolute',
-        width: '100%',
-        marginTop:'50%'
-      }
+        backgroundColor: '#fff',
+    },
+    timeInput: {
+        height: 150,
+        fontSize: 17,
+        marginBottom: 20,
+        padding: 10,
+        backgroundColor: '#fff',
+    },
+    iconsWrapper: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: '#fff',
+    },
   });
 
   export default AddPostScreen;

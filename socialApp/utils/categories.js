@@ -11,4 +11,5 @@ export const categories  = [
     'Vegetables',
     'Fruits',
     'Drinks',
+    'Other'
 ]

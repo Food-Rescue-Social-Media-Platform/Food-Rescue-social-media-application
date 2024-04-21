@@ -14,8 +14,10 @@ export const openGalereAndSelectImages = async (setImages, allowsMultipleSelecti
       });
     
       if (!result.canceled) {
-        console.log("result: ", result);
-        setImages( oldImages => [...oldImages, result.assets[0].uri] );
+        for (const asset of result.assets) {
+          // Extract the URI of each asset and set it individually
+          setImages((prevState) => [...prevState, asset.uri]);
+        }
       }
   }
 

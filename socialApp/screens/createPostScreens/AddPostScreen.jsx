@@ -89,7 +89,8 @@ const AddPostScreen = () => {
     }
 
     const handleAddPost = async () => {
-        // 0. save image in storage
+        setIsUploading(true);
+
         let imagesUrl = [];
         if(images.length > 0){
             for (let i = 0; i < images.length; i++) 
@@ -100,12 +101,11 @@ const AddPostScreen = () => {
         console.log("phone", phoneNumber);
         console.log("category", category);
         console.log("image", imagesUrl);
-       
+        
         const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imagesUrl);
         console.log('Post', newPost);  
-        setIsUploading(true);
         await addPost(newPost);
-        // 4. set space to empty
+
         setPhoneNumber('');
         setPostInput('');
         setImages([]);
@@ -113,8 +113,8 @@ const AddPostScreen = () => {
         setCategory('');
         setTimeInput('');
         setIsUploading(false);
-        // 5. navigate to home page
-        //navigation.navigate('HomePage');
+
+        navigation.navigate('HomePage');
     }
 
     const handleCheck = (option) => {

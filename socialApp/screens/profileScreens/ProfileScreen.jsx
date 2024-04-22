@@ -184,7 +184,7 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
         <Container>
           {userPosts.map(post => (
-            <PostCard key={post.id} item={post} isProfilePage={true}/>
+            <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
           ))}
         </Container>
       </View>

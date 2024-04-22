@@ -1,5 +1,6 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React,{useContext} from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -8,8 +9,8 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import Popover from 'react-native-popover-view';
-import { Entypo } from "@expo/vector-icons";
-
+import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
+import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 
@@ -47,13 +48,14 @@ const getCategoryIcon = (category) => {
 
 const PostCard = ({ item , postUserId, isProfilePage}) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
+    const { user } = useContext(AuthContext);
 
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
 
     const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
-    const postDate = moment(item.postDate.toDate()).calendar();
+    const postDate = moment(item.createdAt.toDate()).calendar();
     let statusColor;
     switch (item.status) {
         case 'rescued':
@@ -66,6 +68,40 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             statusColor = 'gray';
             break;
     }
+    const handleDelete = async () => {
+        try {
+            // Assuming `database` is the Firestore instance
+            const postRef = doc(database, 'postsTest', item.id);
+            const userRef = doc(database, 'users', postUserId);
+            
+            // Get the user document snapshot
+            const userDocSnap = await getDoc(userRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+
+                // Update the user's postsNum field
+                await updateDoc(userRef, {
+                    postsNum: userData.postsNum ? userData.postsNum - 1 : 0,
+                    earningPoints: userData.earningPoints ? userData.earningPoints -3 : 0,
+                });
+            }
+
+            // Delete the post document
+            await deleteDoc(postRef);
+    
+            // Remove the post ID from the user's postsId array
+            await updateDoc(userRef, {
+                postsId: arrayRemove(item.id)
+            });
+    
+            // Show a confirmation message
+            Alert.alert('Success', 'Post deleted successfully.');
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            Alert.alert('Error', 'Failed to delete post.');
+        }
+    };    
+    
     // console.log(isProfilePage);
     const handleUserPress = () => {
         if (isProfilePage === undefined) {
@@ -123,11 +159,14 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                     <Text style={{ paddingLeft:4}}>Edit</Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.optionButton}>
-                                    <Entypo name="block" size={20} color="black" />
-                                    <Text style={{ paddingLeft:4}}>block</Text>
-                                </TouchableOpacity>
+                                {user && user.uid === postUserId && (
 
+                                <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
+                                    <FontAwesome6 name="delete-left" size={20} color="black" />
+                                    <Text style={{ paddingLeft:4}}>delete</Text>
+                                </TouchableOpacity>
+                                )}
+                                
                                 <TouchableOpacity style={styles.optionButton}>
                                     <MaterialIcons name="report" size={20} color="black" />
                                     <Text style={{ paddingLeft:4}}>Report</Text>

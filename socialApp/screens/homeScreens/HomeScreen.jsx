@@ -1,45 +1,87 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, FlatList, Image } from 'react-native';
+import { StyleSheet, FlatList,ActivityIndicator } from 'react-native';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
-import Chat from '../chatScreens/Chat';
+
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
-import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { collection, getDocs } from "firebase/firestore";
-import { windowWidth } from '../../utils/Dimentions';
+import { database } from '../../firebase';
+import { collection, getDocs, addDoc } from "firebase/firestore";
+// import { windowWidth } from '../../utils/Dimentions';
 import AddPostCard from '../../components/addPost/AddPostCard';
-
-import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 
 const HomeScreen = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
-    const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
+    const navigation = useNavigation();
+    const isFocused = useIsFocused();
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const querySnapshot = await getDocs(collection(database, "postsTest"));
-                const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Sort the posts by creation time
-                data.sort((a, b) => b.createdAt - a.createdAt); // Assuming createdAt is a timestamp
-                setPosts([{}, ...data]); // Add an empty object as the first item
-                // console.log("Posts data:", data);
 
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-            
-        fetchData();
-    }, []); // Empty dependency array to fetch data only once when component mounts
+
+    const addPostToCollection = async () => {
+        try {
+            const postData = {
+                category: "Seafood",
+                createdAt: new Date("2024-04-10T09:26:46Z"), // UTC time equivalent to 12:26:46 UTC+3
+                deliveryRange: "every day from 10:00 to 14:00",
+                firstName: "mohammad",
+                lastName: "belbesi",
+                location: "jerusalem",
+                phoneNumber: "0558729400",
+                postDistance: "3km",
+                postImg: "",
+                postText: "after a big party. we have a big box of fresh sushi.",
+                status: "rescued",
+                userId: "2YzEk9svzTNpvFlYKfSNAes5I1x1",
+                userImg: "https://firebasestorage.googleapis.com/v0/b/food-rescue-social-platform.appspot.com/o/usersImages%2F1713776555256?alt=media&token=93c13d46-38f2-4b3c-ad85-6f67c3d0e8d7",
+                userName: "mohammad belbesi"
+            };
+            const docRef = await addDoc(collection(database, "postsTest"), postData);
+            console.log("Post added with ID:", docRef.id);
+        } catch (error) {
+            console.error("Error adding post:", error.message);
+        }
+    };
+
     
+    const fetchData = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(database, "postsTest"));
+            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            data.sort((a, b) => b.createdAt - a.createdAt);
+            setPosts([{}, ...data]);
+            // addPostToCollection();
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setLoading(false);
+        }
+    };
+
+    // Fetch data when screen is focused
+    useEffect(() => {
+        if (isFocused) {
+            setLoading(true);
+            fetchData();
+
+        }
+    }, [isFocused]);
+    
+    if (loading) {
+        return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
+    }
+
+    if (error) {
+        return <Text>Error: {error}</Text>;
+    }
+
     return (
         <Container style={styles.container}>
-            
             <FlatList
-                data={posts} // Use fetched data instead of the hardcoded `Posts` array
+                data={posts}
                 renderItem={({ item, index }) => {
                     if (index === 0) {
                         return <AddPostCard />;
@@ -50,37 +92,28 @@ const HomeScreen = () => {
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
-                />
-                <FormButton buttonTitle='Logout' onPress={() => logout()} /> 
+            />
+            <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
     );
 }
-
-
-export default HomeScreen;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        paddingTop: 5, // Adjust as needed
-        paddingBottom: 5, // Space for the logout button
+        paddingTop: 5,
+        paddingBottom: 5,
     },
     flatListContent: {
-        flexGrow: 1, // Allow content to grow within the container
-        paddingBottom: 5, // Adjust as needed to prevent content from hiding behind the logout button
+        flexGrow: 1,
+        paddingBottom: 5,
     },
-    mainContainer:{
-      width: windowWidth,
+    loadingIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    text: {
-        fontSize: 12,
-        color: "black"
-    },
-    iconsWrapper: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center"
-    }
-    
 });
+
+export default HomeScreen;

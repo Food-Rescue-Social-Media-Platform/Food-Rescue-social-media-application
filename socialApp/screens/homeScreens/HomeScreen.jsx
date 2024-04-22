@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, FlatList,ActivityIndicator } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 
 import { AuthContext } from '../../navigation/AuthProvider';
@@ -18,7 +18,7 @@ const HomeScreen = () => {
     const isFocused = useIsFocused();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const [refreshing, setRefreshing] = useState(false);
 
 
     const addPostToCollection = async () => {
@@ -70,6 +70,12 @@ const HomeScreen = () => {
         }
     }, [isFocused]);
     
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchData();
+        setRefreshing(false);
+    };
+
     if (loading) {
         return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
     }
@@ -92,6 +98,12 @@ const HomeScreen = () => {
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
+                refreshControl={ // Add RefreshControl component
+                    <RefreshControl
+                        refreshing={refreshing} // Set refreshing state
+                        onRefresh={onRefresh} // Handle refresh action
+                    />
+                }
             />
             <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>

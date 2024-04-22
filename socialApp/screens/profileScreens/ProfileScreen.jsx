@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
 import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused hook
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +17,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [error, setError] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [userData, setUserData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const postUserId = route.params ? route.params.postUserId : user.uid;
 
   // Fetch user data function
@@ -93,6 +94,13 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   }, [isFocused]);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    await fetchUserPosts();
+    setRefreshing(false);
+  };
+
   if (loading) {
     return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
   }
@@ -102,7 +110,12 @@ const ProfileScreen = ({ navigation, route }) => {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl
+                                                                        refreshing={refreshing}
+                                                                        onRefresh={onRefresh}
+                                                                      />
+                                                                    }
+    >
       <View style={styles.container}>
       {userData && (
           <View style={styles.header}>

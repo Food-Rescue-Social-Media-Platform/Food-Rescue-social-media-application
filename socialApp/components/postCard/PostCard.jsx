@@ -10,7 +10,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import Popover from 'react-native-popover-view';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { doc, deleteDoc, updateDoc, arrayRemove } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 
@@ -73,7 +73,19 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             // Assuming `database` is the Firestore instance
             const postRef = doc(database, 'postsTest', item.id);
             const userRef = doc(database, 'users', postUserId);
-    
+            
+            // Get the user document snapshot
+            const userDocSnap = await getDoc(userRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+
+                // Update the user's postsNum field
+                await updateDoc(userRef, {
+                    postsNum: userData.postsNum ? userData.postsNum - 1 : 0,
+                    earningPoints: userData.earningPoints ? userData.earningPoints -3 : 0,
+                });
+            }
+
             // Delete the post document
             await deleteDoc(postRef);
     

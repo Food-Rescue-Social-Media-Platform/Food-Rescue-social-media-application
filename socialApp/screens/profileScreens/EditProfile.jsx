@@ -7,7 +7,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../styles/colors';
-import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
+import { database } from '../../firebase';
 import { doc, updateDoc } from "firebase/firestore";
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { OpenGalereAndSelectImages } from '../../FirebaseFunctions/OpeningComponentsInPhone';
@@ -24,6 +24,7 @@ const EditProfile = ({ navigation, route }) => {
     const [email, setEmail] = useState(userData?.email || '');
     const [location, setLocation] = useState(userData?.location || '');
     const [userName, setUserName] = useState(userData?.userName || '');
+    const [forceUpdate, setForceUpdate] = useState(false);
 
     const handleAddUserProfileCover = async () => {
         await OpenGalereAndSelectImages(setUserProfileCover);
@@ -31,17 +32,14 @@ const EditProfile = ({ navigation, route }) => {
 
     const handleAddUserProfileImage = async () => {
         await OpenGalereAndSelectImages(setUserProfileImage);
+        setForceUpdate(prevState => !prevState);
     }
 
     const updateUserProfile = async () => {
         try {
-            // Trigger image upload process
             const profileURL = await uploadImages(userProfileImage, 'usersImages/', 'image');
             const coverURL = await uploadImages(userProfileCover, 'usersCoverImages/', 'image');
-            console.log(profileURL)
-            console.log(coverURL)
 
-            // Update user profile data in Firestore
             const userDocRef = doc(database, "users", user.uid);
             await updateDoc(userDocRef, {
               ...userData,
@@ -51,12 +49,10 @@ const EditProfile = ({ navigation, route }) => {
               email: email,
               location: location,
               userName: firstName + ' ' + lastName,
-              profileCover: coverURL, // Change to userProfileCover
-              profileImg: profileURL // Change to userProfileImage
+              profileCover: coverURL,
+              profileImg: profileURL
             });
-          
 
-            // Navigate back to ProfileScreen with updated user data
             navigation.navigate('Profile', {
                 postUserId: user.uid,
                 userData: {
@@ -90,8 +86,7 @@ const EditProfile = ({ navigation, route }) => {
                             source={
                                 userProfileCover && typeof userProfileCover === 'string'
                                 ? { uri: userProfileCover }
-                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}
-                            }
+                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}                            }
                             style={{ height: 150, width: 300 }}
                             imageStyle={{ borderRadius: 15 }}
                         >
@@ -129,11 +124,11 @@ const EditProfile = ({ navigation, route }) => {
                             alignItems: 'center',
                         }}>
                         <ImageBackground
+                            key={forceUpdate}
                             source={
                                 userProfileImage && typeof userProfileImage === 'string'
                                 ? { uri: userProfileImage }
-                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}
-                            }
+                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}                            }
                             style={{ height: 100, width: 100 }}
                             imageStyle={{ borderRadius: 15 }}
                         >
@@ -254,12 +249,15 @@ const EditProfile = ({ navigation, route }) => {
                     onChangeText={text => setLocation(text)}
                 />
             </View>
+            
             <TouchableOpacity style={styles.commandButton} onPress={updateUserProfile}>
                 <Text style={styles.panelButtonTitle}>Submit</Text>
             </TouchableOpacity>
         </View>
     );
 }
+
+export default EditProfile;
 
 const styles = StyleSheet.create({
     container: {
@@ -352,5 +350,3 @@ const styles = StyleSheet.create({
     color: '#05375a',
   },
 })
-
-export default EditProfile;

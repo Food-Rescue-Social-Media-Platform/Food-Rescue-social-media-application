@@ -21,6 +21,7 @@ import { set } from 'firebase/database';
 const AddPostScreen = () => {
     const navigation = useNavigation();
     const userData = useSelector(state => state.user.userData);
+    console.log('User Data', userData);
     const [postInput, setPostInput] = useState('');
     const [category, setCategory] = useState('');
     const [location, setLocation] = useState('');
@@ -102,7 +103,7 @@ const AddPostScreen = () => {
         console.log("category", category);
         console.log("image", imagesUrl);
         
-        const newPost = new Post(userData.id, postInput, timeInput, category, location, phoneNumber, imagesUrl);
+        const newPost = new Post(userData.id, userData.userName, postInput, timeInput, category, location, phoneNumber, imagesUrl);
         console.log('Post', newPost);  
         await addPost(newPost);
 

@@ -14,6 +14,8 @@ import MapScreen from '../screens/mapScreens/MapScreen';
 import AddPostScreen from '../screens/createPostScreens/AddPostScreen';
 import EditProfile from '../screens/profileScreens/EditProfile';
 import SingleChat from '../screens/chatScreens/SingleChat';
+import EditPostScreen from '../screens/editPost/EditPostScreen';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -109,7 +111,7 @@ const MapStack = () => (
       options={{
         headerTitleAlign: 'center',
         headerTitleStyle: {
-          color: COLORS.white,
+          color: COLORS.blueHeaderText,
         },
         headerStyle: {
           backgroundColor: COLORS.appBackGroundColor,
@@ -240,6 +242,8 @@ const RootStackScreen = () => (
     <RootStack.Screen name="Edit Profile" component={EditProfile} />
     <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false}} />
     <RootStack.Screen name="SingleChat" component={SingleChat}  />
+    <RootStack.Screen name="Edit Post" component={EditPostScreen} />
+
 
   </RootStack.Navigator>
 );

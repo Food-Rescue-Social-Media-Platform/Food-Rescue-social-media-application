@@ -154,10 +154,13 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                             horizontalOffset={-50} // Adjust the horizontal offset as needed 
                             >
                             <View style={styles.menu}>
-                                <TouchableOpacity style={styles.optionButton}>
+
+                                {user && user.uid === postUserId && (
+                                <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
                                     <MaterialIcons name="edit" size={20} color="black" />
                                     <Text style={{ paddingLeft:4}}>Edit</Text>
                                 </TouchableOpacity>
+                                )}
 
                                 {user && user.uid === postUserId && (
 

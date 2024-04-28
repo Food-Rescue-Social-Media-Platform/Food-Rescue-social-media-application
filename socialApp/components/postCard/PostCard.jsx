@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,7 +12,7 @@ import Popover from 'react-native-popover-view';
 import SelectDropdown from 'react-native-select-dropdown'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 import { COLORS } from '../../styles/colors';
@@ -49,10 +49,10 @@ const getCategoryIcon = (category) => {
 };
 
 const emojisWithIcons = [
-    {title: 'wait for rescue', icon: 'emoticon-happy-outline'},
-    {title: 'rescued', icon: 'emoticon-cool-outline'},
-    {title: 'wasted', icon: 'emoticon-sad-outline'},
-  ];
+    { title: 'wait for rescue', icon: 'emoticon-happy-outline', status: 'wait for rescue' },
+    { title: 'rescued', icon: 'emoticon-cool-outline', status: 'rescued' },
+    { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
+];
 
 const PostCard = ({ item , postUserId, isProfilePage}) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
@@ -64,6 +64,18 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
 
     const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
     const postDate = moment(item.createdAt.toDate()).calendar();
+    
+    const handleUpdateStatus = async (selectedItem) => {
+        try {
+            const postRef = doc(database, 'postsTest', item.id);
+            await updateDoc(postRef, { status: selectedItem.status });
+            Alert.alert('Success', 'Status updated successfully.');
+        } catch (error) {
+            console.error('Error updating status:', error);
+            Alert.alert('Error', 'Failed to update status.');
+        }
+    };
+
     let statusColor;
     switch (item.status) {
         case 'rescued':
@@ -196,9 +208,8 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                         {user && user.uid === postUserId && (
                             <SelectDropdown
                             data={emojisWithIcons}
-                            onSelect={(selectedItem, index) => {
-                            console.log(selectedItem, index);
-                            }}
+                            onSelect={(selectedItem, index) => handleUpdateStatus(selectedItem)}
+
                             renderButton={(selectedItem, isOpened) => {
                             return (
                                 <View style={styles.dropdownButtonStyle}>

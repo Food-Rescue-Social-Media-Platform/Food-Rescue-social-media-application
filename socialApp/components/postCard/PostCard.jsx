@@ -9,10 +9,13 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import Popover from 'react-native-popover-view';
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
+import { COLORS } from '../../styles/colors';
 
 const getCategoryIcon = (category) => {
     switch (category) {
@@ -45,6 +48,11 @@ const getCategoryIcon = (category) => {
     }
 };
 
+const emojisWithIcons = [
+    {title: 'wait for rescue', icon: 'emoticon-happy-outline'},
+    {title: 'rescued', icon: 'emoticon-cool-outline'},
+    {title: 'wasted', icon: 'emoticon-sad-outline'},
+  ];
 
 const PostCard = ({ item , postUserId, isProfilePage}) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
@@ -181,8 +189,37 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                 </TouchableOpacity>
                             </View>
                         </Popover>
-                        <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
-                    </View>
+                        {/* <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text> */}
+                        <SelectDropdown
+                            data={emojisWithIcons}
+                            onSelect={(selectedItem, index) => {
+                            console.log(selectedItem, index);
+                            }}
+                            renderButton={(selectedItem, isOpened) => {
+                            return (
+                                <View style={styles.dropdownButtonStyle}>
+                                {selectedItem && (
+                                    <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                                )}
+                                <Text style={styles.dropdownButtonTxtStyle}>
+                                    {(selectedItem && selectedItem.title) || item.status}
+                                </Text>
+                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                                </View>
+                            );
+                            }}
+                            renderItem={(item, index, isSelected) => {
+                            return (
+                                <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                <Icon name={item.icon} style={styles.dropdownItemIconStyle} />
+                                <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                                </View>
+                            );
+                            }}
+                            showsVerticalScrollIndicator={false}
+                            dropdownStyle={styles.dropdownMenuStyle}
+                        /> 
+                      </View>
                 </UserInfoText>
 
             </View>
@@ -282,5 +319,51 @@ const styles = StyleSheet.create({
         marginLeft:2,
         marginBottom:5,
 
-    }
+    },
+
+    ///////////////////////////////////////////////
+    dropdownButtonStyle: {
+        width: 130,
+        height: 30,
+        backgroundColor: COLORS.secondaryBackground,
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+    },
+        dropdownButtonTxtStyle: {
+        flex: 1,
+        fontSize: 10,
+        fontWeight: '500',
+        color: COLORS.black,
+    },
+        dropdownButtonArrowStyle: {
+        fontSize: 28,
+    },
+        dropdownButtonIconStyle: {
+        fontSize: 28,
+        marginRight: 5,
+    },
+        dropdownMenuStyle: {
+        backgroundColor: '#E9ECEF',
+        borderRadius: 8,
+    },
+        dropdownItemStyle: {
+        width: '98%',
+        flexDirection: 'row',
+        paddingHorizontal: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+        dropdownItemTxtStyle: {
+        flex: 1,
+        fontSize: 14,
+        fontWeight: '500',
+        color: COLORS.black,
+    },
+        dropdownItemIconStyle: {
+        fontSize: 20,
+    },
 });

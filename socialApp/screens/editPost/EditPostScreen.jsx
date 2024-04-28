@@ -106,6 +106,7 @@ const EditPostScreen = ({ navigation, route }) => {
                     placeholder="Category"
                     placeholderTextColor="#666666"
                     value={category}
+                    editable={false} // Disable editing
                     onChangeText={(text) => setCategory(text)}
                 />
             </View>

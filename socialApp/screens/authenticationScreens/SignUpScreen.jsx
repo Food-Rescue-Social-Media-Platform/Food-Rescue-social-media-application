@@ -5,6 +5,7 @@ import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
 import {COLORS} from '../../styles/colors';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SignUpScreen = ({ navigation }) => {
   const[firstName, setFirstName] = useState('');
@@ -58,109 +59,111 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={[styles.outerContainer, { paddingTop: topPadding }]}>
-      <View style={styles.container}>
+      <ScrollView>
+        <View style={styles.container}>
 
-        <Text style={styles.text}>Sign up</Text>
-        
-        <FormInput
-          placeHolderText="Fisrt Name"
-          iconType="id-card"
-          labelValue={firstName}
-          onChangeText={(firstName) => setFirstName(firstName)}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+          <Text style={styles.text}>Sign up</Text>
+          
+          <FormInput
+            placeHolderText="Fisrt Name"
+            iconType="id-card"
+            labelValue={firstName}
+            onChangeText={(firstName) => setFirstName(firstName)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-        <FormInput
-          placeHolderText="Last Name"
-          iconType="id-card"
-          labelValue={lastName}
-          onChangeText={(lastName) => setLastName(lastName)}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+          <FormInput
+            placeHolderText="Last Name"
+            iconType="id-card"
+            labelValue={lastName}
+            onChangeText={(lastName) => setLastName(lastName)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-        <FormInput
-          placeHolderText="Email"
-          iconType="email"
-          keyboardType="email-address"
-          labelValue={email}
-          onChangeText={(userEmail) => setEmail(userEmail)}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+          <FormInput
+            placeHolderText="Email"
+            iconType="email"
+            keyboardType="email-address"
+            labelValue={email}
+            onChangeText={(userEmail) => setEmail(userEmail)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-        <FormInput
-          placeHolderText="Phone Number"
-          iconType="phone"
-          keyboardType="phone-pad"
-          labelValue={phoneNumber}
-          onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+          <FormInput
+            placeHolderText="Phone Number"
+            iconType="phone"
+            keyboardType="phone-pad"
+            labelValue={phoneNumber}
+            onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-        <FormInput
-          placeHolderText="Password"
-          iconType="lock"
-          labelValue={password}
-          onChangeText={(userPassword) => setPassword(userPassword)}
-          secureTextEntry={true}
-        />
+          <FormInput
+            placeHolderText="Password"
+            iconType="lock"
+            labelValue={password}
+            onChangeText={(userPassword) => setPassword(userPassword)}
+            secureTextEntry={true}
+          />
 
-        <FormInput
-          placeHolderText="Confirm Password"
-          iconType="lock-check"
-          labelValue={confirmPassword}
-          onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
-          secureTextEntry={true}
-        />
+          <FormInput
+            placeHolderText="Confirm Password"
+            iconType="lock-check"
+            labelValue={confirmPassword}
+            onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
+            secureTextEntry={true}
+          />
 
-        <View style={styles.textPrivate}>
-            <Text style={styles.color_textPrivate}>By registering, you confirm that you accept our{' '}</Text>
-            <TouchableOpacity onPress={() => alert('Terms Clicked!')}>
-                <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Terms of service</Text>
+          <View style={styles.textPrivate}>
+              <Text style={styles.color_textPrivate}>By registering, you confirm that you accept our{' '}</Text>
+              <TouchableOpacity onPress={() => alert('Terms Clicked!')}>
+                  <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Terms of service</Text>
+              </TouchableOpacity>
+              <Text style={styles.color_textPrivate}> and </Text>
+              <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Privacy Policy</Text>
+          </View>
+
+          <FormButton
+            buttonTitle="Sign up"
+            onPress={handleSignUp}
+          />
+
+          <View style={styles.orRowContainer}>
+            <View style={styles.line}></View>
+            <Text style={styles.orText}>or</Text>
+            <View style={styles.line}></View>
+          </View>
+
+          <View style={styles.SocialButtonContainer}>
+              <SocialButton
+                  buttonTitle="Sign In with Facebook"
+                  btnType="facebook"
+                  color="#4867aa"
+                  backgroundColor="#e6eaf4"
+                  onPress={() => {}}
+              />
+              <SocialButton
+                  buttonTitle="Sign In with Google"
+                  btnType="google"
+                  color="#de4d41"
+                  backgroundColor="#f5e7ea"
+                  onPress={() => {}}
+              />
+          </View>
+
+          <View style={styles.createAccountContainer}>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Already have an account? </Text>
+            <TouchableOpacity>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>Sign in</Text>
             </TouchableOpacity>
-            <Text style={styles.color_textPrivate}> and </Text>
-            <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Privacy Policy</Text>
+          </View>
+
         </View>
-
-        <FormButton
-          buttonTitle="Sign up"
-          onPress={handleSignUp}
-        />
-
-        <View style={styles.orRowContainer}>
-          <View style={styles.line}></View>
-          <Text style={styles.orText}>or</Text>
-          <View style={styles.line}></View>
-        </View>
-
-        <View style={styles.SocialButtonContainer}>
-            <SocialButton
-                buttonTitle="Sign In with Facebook"
-                btnType="facebook"
-                color="#4867aa"
-                backgroundColor="#e6eaf4"
-                onPress={() => {}}
-            />
-            <SocialButton
-                buttonTitle="Sign In with Google"
-                btnType="google"
-                color="#de4d41"
-                backgroundColor="#f5e7ea"
-                onPress={() => {}}
-            />
-        </View>
-
-        <View style={styles.createAccountContainer}>
-          <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Already have an account? </Text>
-          <TouchableOpacity>
-            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
-
-      </View>
+      </ScrollView>
     </View>
   );
 };

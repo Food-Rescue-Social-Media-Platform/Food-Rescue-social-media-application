@@ -1,4 +1,4 @@
-import React,{useContext} from 'react';
+import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,10 +9,13 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import Popover from 'react-native-popover-view';
+import SelectDropdown from 'react-native-select-dropdown'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { doc, deleteDoc, updateDoc, arrayRemove, getDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
+import { COLORS } from '../../styles/colors';
 
 const getCategoryIcon = (category) => {
     switch (category) {
@@ -45,6 +48,11 @@ const getCategoryIcon = (category) => {
     }
 };
 
+const emojisWithIcons = [
+    { title: 'wait for rescue', icon: 'emoticon-happy-outline', status: 'wait for rescue' },
+    { title: 'rescued', icon: 'emoticon-cool-outline', status: 'rescued' },
+    { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
+];
 
 const PostCard = ({ item , postUserId, isProfilePage}) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
@@ -56,6 +64,18 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
 
     const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
     const postDate = moment(item.createdAt.toDate()).calendar();
+    
+    const handleUpdateStatus = async (selectedItem) => {
+        try {
+            const postRef = doc(database, 'postsTest', item.id);
+            await updateDoc(postRef, { status: selectedItem.status });
+            Alert.alert('Success', 'Status updated successfully.');
+        } catch (error) {
+            console.error('Error updating status:', error);
+            Alert.alert('Error', 'Failed to update status.');
+        }
+    };
+
     let statusColor;
     switch (item.status) {
         case 'rescued':
@@ -65,7 +85,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             statusColor = 'red';
             break;
         default:
-            statusColor = 'gray';
+            statusColor = 'orange';
             break;
     }
     const handleDelete = async () => {
@@ -154,13 +174,15 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                             horizontalOffset={-50} // Adjust the horizontal offset as needed 
                             >
                             <View style={styles.menu}>
-                                <TouchableOpacity style={styles.optionButton}>
+
+                                {user && user.uid === postUserId && (
+                                <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
                                     <MaterialIcons name="edit" size={20} color="black" />
                                     <Text style={{ paddingLeft:4}}>Edit</Text>
                                 </TouchableOpacity>
+                                )}
 
                                 {user && user.uid === postUserId && (
-
                                 <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
                                     <FontAwesome6 name="delete-left" size={20} color="black" />
                                     <Text style={{ paddingLeft:4}}>delete</Text>
@@ -178,8 +200,45 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                 </TouchableOpacity>
                             </View>
                         </Popover>
-                        <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
-                    </View>
+
+                        {user && user.uid != postUserId && (
+                            <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
+                        )}
+
+                        {user && user.uid === postUserId && (
+                            <SelectDropdown
+                            data={emojisWithIcons}
+                            onSelect={(selectedItem, index) => handleUpdateStatus(selectedItem)}
+
+                            renderButton={(selectedItem, isOpened) => {
+                            return (
+                                <View style={styles.dropdownButtonStyle}>
+                                {selectedItem && (
+                                    <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                                )}
+                                <Text style={styles.dropdownButtonTxtStyle}>
+                                    {(selectedItem && selectedItem.title) || item.status}
+                                </Text>
+                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                                </View>
+                            );
+                            }}
+
+                            renderItem={(item, index, isSelected) => {
+                            return (
+                                <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
+                                <Icon name={item.icon} style={styles.dropdownItemIconStyle} />
+                                <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                                </View>
+                            );
+                            }}
+                            
+                            showsVerticalScrollIndicator={false}
+                            dropdownStyle={styles.dropdownMenuStyle}
+                        /> 
+                        )}
+
+                      </View>
                 </UserInfoText>
 
             </View>
@@ -279,5 +338,51 @@ const styles = StyleSheet.create({
         marginLeft:2,
         marginBottom:5,
 
-    }
+    },
+
+    ///////////////////////////////////////////////
+    dropdownButtonStyle: {
+        width: 130,
+        height: 30,
+        backgroundColor: COLORS.secondaryBackground,
+        borderRadius: 10,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 8,
+    },
+        dropdownButtonTxtStyle: {
+        flex: 1,
+        fontSize: 10,
+        fontWeight: '500',
+        color: COLORS.black,
+    },
+        dropdownButtonArrowStyle: {
+        fontSize: 28,
+    },
+        dropdownButtonIconStyle: {
+        fontSize: 28,
+        marginRight: 5,
+    },
+        dropdownMenuStyle: {
+        backgroundColor: '#E9ECEF',
+        borderRadius: 8,
+    },
+        dropdownItemStyle: {
+        width: '98%',
+        flexDirection: 'row',
+        paddingHorizontal: 6,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+        dropdownItemTxtStyle: {
+        flex: 1,
+        fontSize: 14,
+        fontWeight: '500',
+        color: COLORS.black,
+    },
+        dropdownItemIconStyle: {
+        fontSize: 20,
+    },
 });

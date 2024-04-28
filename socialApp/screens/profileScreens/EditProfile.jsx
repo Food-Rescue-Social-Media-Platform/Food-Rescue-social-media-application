@@ -24,6 +24,7 @@ const EditProfile = ({ navigation, route }) => {
     const [email, setEmail] = useState(userData?.email || '');
     const [location, setLocation] = useState(userData?.location || '');
     const [userName, setUserName] = useState(userData?.userName || '');
+    const [bio, setUserBio] = useState(userData?.bio || '');
     const [forceUpdate, setForceUpdate] = useState(false);
 
     const handleAddUserProfileCover = async () => {
@@ -50,7 +51,8 @@ const EditProfile = ({ navigation, route }) => {
               location: location,
               userName: firstName + ' ' + lastName,
               profileCover: coverURL,
-              profileImg: profileURL
+              profileImg: profileURL,
+              bio: bio
             });
 
             navigation.navigate('Profile', {
@@ -60,7 +62,8 @@ const EditProfile = ({ navigation, route }) => {
                     firstName: firstName,
                     lastName: lastName,
                     userName: firstName + ' ' + lastName,
-                    userImg: profileURL
+                    userImg: profileURL,
+                    bio: bio
                 }
             });
 
@@ -247,6 +250,24 @@ const EditProfile = ({ navigation, route }) => {
                     ]}
                     value={location}
                     onChangeText={text => setLocation(text)}
+                />
+            </View>
+            <View style={styles.action}>
+                <MaterialCommunityIcons name="bio" color={colors.text} size={27} paddingLeft={5} />
+                <TextInput
+                    placeholder="bio..."
+                    placeholderTextColor="#666666"
+                    autoCorrect={false}
+                    style={[
+                        styles.textInput,
+                        {
+                            color: colors.text,
+                            paddingLeft: 16,
+                        },
+                    ]}
+                    multiline
+                    value={bio}
+                    onChangeText={(text) => setUserBio(text)}
                 />
             </View>
             

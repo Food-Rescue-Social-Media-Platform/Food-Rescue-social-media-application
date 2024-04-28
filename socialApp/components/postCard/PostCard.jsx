@@ -73,7 +73,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             statusColor = 'red';
             break;
         default:
-            statusColor = 'gray';
+            statusColor = 'orange';
             break;
     }
     const handleDelete = async () => {
@@ -171,7 +171,6 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                 )}
 
                                 {user && user.uid === postUserId && (
-
                                 <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
                                     <FontAwesome6 name="delete-left" size={20} color="black" />
                                     <Text style={{ paddingLeft:4}}>delete</Text>
@@ -189,8 +188,13 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                 </TouchableOpacity>
                             </View>
                         </Popover>
-                        {/* <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text> */}
-                        <SelectDropdown
+
+                        {user && user.uid != postUserId && (
+                            <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
+                        )}
+
+                        {user && user.uid === postUserId && (
+                            <SelectDropdown
                             data={emojisWithIcons}
                             onSelect={(selectedItem, index) => {
                             console.log(selectedItem, index);
@@ -208,6 +212,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                 </View>
                             );
                             }}
+
                             renderItem={(item, index, isSelected) => {
                             return (
                                 <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
@@ -216,9 +221,12 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                                 </View>
                             );
                             }}
+                            
                             showsVerticalScrollIndicator={false}
                             dropdownStyle={styles.dropdownMenuStyle}
                         /> 
+                        )}
+
                       </View>
                 </UserInfoText>
 

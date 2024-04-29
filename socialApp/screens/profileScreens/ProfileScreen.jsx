@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl, Platform } from 'react-native';
 import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused hook
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -195,7 +195,7 @@ const ProfileScreen = ({ navigation, route }) => {
           <Text style={styles.bioText}>Bio</Text>
           <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
         </View>
-        <Container>
+        <Container style={styles.CardContainer}>
           {userPosts.map(post => (
             <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
           ))}
@@ -334,6 +334,147 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  /////////////////////////////////////////////////////////////
+  ...Platform.select({
+    web: {
+      container: {
+        flex: 1,
+        backgroundColor: COLORS.appBackGroundColor,
+      },
+      CardContainer: {
+        flex: 1,
+        backgroundColor: COLORS.appBackGroundColor,
+        width: '57%', // Apply this style only for web
+        marginLeft: '17.5%',
+      },
+      header: {
+        position: 'relative',
+        width: '100%',
+        height: 400,
+        overflow: 'hidden',
+      },
+      coverImage: {
+        width: '100%',
+        height: '70%',
+        resizeMode: 'cover',
+        position: 'absolute',
+      },
+      overlay: {
+        position: 'absolute',
+        top: 200,
+        left: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      avatarContainer: {
+        width: 200,
+        height: 200,
+        borderRadius: 100,
+        backgroundColor: COLORS.white,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      avatar: {
+        width: 190,
+        height: 190,
+        borderRadius: 100,
+      },
+      name: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: COLORS.black,
+        marginTop: 28,
+      },
+      profileInfo: {
+        alignItems: 'center',
+        marginTop:-40,
+        marginLeft:'12%',
+      },
+      userInfoContainer: {
+        alignItems: 'center',
+        marginRight: '8%',
+      },
+      iconContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      statNumValue: {
+        marginLeft: 4,
+      },
+      wordStat: {
+        marginTop: 4,
+        color: COLORS.black,
+      },
+      stats: {
+        flexDirection: 'row',
+        width: '100%',
+      },
+      earningsPoints: {
+        fontSize: 17,
+        fontWeight: 'bold',
+        marginHorizontal: 20,
+        backgroundColor: COLORS.secondaryTheme,
+        height: 45,
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignContent: 'center',
+        textAlign: 'center',
+        padding: 10,
+        borderRadius: 10,
+        width: '38%', // Apply this style only for web
+        marginLeft: '31%',
+      },
+      buttons: {
+        flexDirection: 'row',
+        gap:10,
+        width: '100%',
+        marginBottom:'2%',
+        marginTop: '2%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      button: {
+        backgroundColor: COLORS.secondaryTheme,
+        padding: 13,
+        borderRadius: 10,
+        width: '44%',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      buttonText: {
+        fontSize: 15,
+        fontWeight: 'bold',
+      },
+      bio: {
+        marginTop: '3%',
+        fontSize: 17,
+        fontWeight: 'bold',
+        marginHorizontal: 20,
+        backgroundColor: COLORS.secondaryTheme,
+        width: '38%', // Apply this style only for web
+        marginLeft: '31%',        
+        justifyContent: 'center',
+        alignItems: 'left',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        borderRadius: 10,
+      },
+      bioText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 5,
+      },
+      bioContent: {
+        fontSize: 16,
+        fontWeight: '500',
+      },
+      loadingIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+    },
+  })
 });
 
 export default ProfileScreen;

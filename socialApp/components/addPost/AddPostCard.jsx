@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View, Modal,StyleSheet, Text, TextInput, TouchableOpacity } from 'react-native';
+import { View, Modal,StyleSheet, Text, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Button } from 'react-native-elements';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,7 +25,7 @@ const AddPostCard = () => {
             <Image style={styles.profileImage} source={require('../../assets/users/user-1.jpg')} />
             <View>
                 <TouchableOpacity style={styles.sharePostWrapper} onPress={openShareFoodScreen}>
-                <Text style={styles.mainText}>Share food...</Text>
+                    <Text style={styles.mainText}>Share food...</Text>
                 </TouchableOpacity>       
                     <Icons 
                         size={20}
@@ -43,24 +43,36 @@ const AddPostCard = () => {
   const styles = StyleSheet.create({
     container: {
        width: '100%',
-       height: windowHeight/7,
+       height: windowHeight/8,
        backgroundColor: COLORS.secondaryTheme,
        flexDirection: 'row',
-       marginBottom: 20, 
+       marginBottom: 20,
+       borderRadius:8,
+       ...Platform.select({
+        web: {
+            width: '70%',
+            marginLeft: '15%',
+        },
+    }),
     },
     sharePostWrapper:{
-        width: '100%', 
+        width: '100%',
         backgroundColor: COLORS.secondaryBackground,
         borderWidth: 0.5,
         borderRadius: 20,
         borderColor: COLORS.black,
         paddingVertical: 10,
         paddingHorizontal: 15,
-        paddingRight: 120,
+        paddingRight: 150,
         marginLeft: 3,
         marginTop: 14,
         marginBottom: 8,
         justifyContent: 'center',
+        ...Platform.select({
+            web: {
+                marginRight: '0.1rem',
+            },
+        }),
     },
     mainText : {
         fontSize: 15,
@@ -69,13 +81,14 @@ const AddPostCard = () => {
         flexDirection: 'row',
         justifyContent: 'start',
         marginLeft: 15,
+        marginTop:'1%',
     },
     icon:{
         marginHorizontal: 4,
     },
     profileImage:{
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
         borderRadius: 50,
         margin: 12,
     },
@@ -87,21 +100,21 @@ const AddPostCard = () => {
   const Icons = ({handelClick, size, iconStyle, wrapperStyle, color})  => {
     return (
         <TouchableOpacity style={wrapperStyle}>
-        <TouchableOpacity onPress={handelClick}>
-        <FontAwesome6 name="images" size={size} color={color} style={iconStyle}/>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handelClick}>
-            <Entypo name="location-pin"  size={size} color={color} style={iconStyle} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handelClick}>
-            <Fontisto name="clock"  size={size} color={color} style={iconStyle}/>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handelClick}>
-            <Entypo name="phone"  size={size} color={color} style={iconStyle}/>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handelClick}>
-            <MaterialIcons name="category"  size={size} color={color} style={iconStyle}/>
-        </TouchableOpacity>
+            <TouchableOpacity onPress={handelClick}>
+                <MaterialIcons  name="photo-library" size={22} color={color} style={iconStyle}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handelClick}>
+                <MaterialCommunityIcons  name="map-marker"  size={22} color={color} style={iconStyle} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handelClick}>
+                <MaterialCommunityIcons  name="clock"  size={22} color={color} style={iconStyle}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handelClick}>
+                <MaterialCommunityIcons name="phone"  size={22} color={color} style={iconStyle}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handelClick}>
+                <MaterialIcons name="category"  size={22} color={color} style={iconStyle}/>
+            </TouchableOpacity>
         </TouchableOpacity>
     )
   }

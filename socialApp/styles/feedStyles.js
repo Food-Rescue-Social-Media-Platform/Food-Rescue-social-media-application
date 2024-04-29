@@ -1,4 +1,5 @@
-import styled from 'styled-components';
+import styled from 'styled-components/native';
+import { Platform } from 'react-native';
 
 export const Container = styled.View`
   ${'' /* justify-content: center; flex:1; */}
@@ -9,9 +10,11 @@ export const Container = styled.View`
 
 export const Card = styled.View`
     background-color: #CEF0D3;
-    width: 100%;
+    ${Platform.OS === 'web' ? 'width: 70%;' : 'width: 100%;'}
     margin-bottom: 20px;
     border-radius: 10px;
+    ${Platform.OS === 'web' ? 'margin-left:15%;' : ''}
+
 `;
 
 export const UserInfo = styled.View`
@@ -54,7 +57,7 @@ export const PostText = styled.Text`
 
 export const PostImg = styled.Image`
     width: 100%;
-    height: 250px;
+    ${Platform.OS === 'web' ? 'height: 500px' : 'height: 250px;'}
     margin-bottom: 15px;
 
     /* margin-top: 15px; */
@@ -73,6 +76,7 @@ export const InteractionWrapper = styled.View`
     flex-direction: row;
     justify-content: space-around;
     padding: 15px;
+    marginTop:1%;
     background-color: #A7EAAE;
     border-radius: 50px;
     margin-right:8px;

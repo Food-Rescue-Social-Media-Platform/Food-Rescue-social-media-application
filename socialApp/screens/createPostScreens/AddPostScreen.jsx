@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity } from 'react-native';
+import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {COLORS} from '../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import {Camera} from 'expo-camera'
@@ -125,13 +125,13 @@ const AddPostScreen = () => {
     return (      
         <View style={styles.container} >
             <View style={styles.header}>
-            <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
-                <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
-            </TouchableOpacity>
-            <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
-            <TouchableOpacity style={styles.button} onPress={handleAddPost}>
-                <Text style={{fontSize:15}}>Post</Text>
-            </TouchableOpacity>              
+                <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
+                    <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
+                </TouchableOpacity>
+                    <Text style={{fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%': '27%', marginBottom:5}}>Create Post</Text>
+                <TouchableOpacity style={styles.button} onPress={handleAddPost}>
+                    <Text style={{fontSize:15}}>Post</Text>
+                </TouchableOpacity>              
             </View>
             <ScrollView>
                 <View style={styles.input_images}>
@@ -168,13 +168,13 @@ const AddPostScreen = () => {
                     <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
+                    <MaterialIcons name="photo-library" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
                 </TouchableOpacity>
                 <TouchableOpacity>
-                    <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
+                    <MaterialCommunityIcons name="map-marker"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
                 </TouchableOpacity>
                 <TouchableOpacity >
-                    <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
+                    <MaterialCommunityIcons name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
                 </TouchableOpacity>
                 <TouchableOpacity >
                     <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
@@ -242,7 +242,14 @@ const AddPostScreen = () => {
           width: '100%',
           height: '100%',
           marginTop: 15,
-          padding: 20,
+          ...Platform.select({
+                web: {
+                    marginTop: 0,
+                },
+            }),
+          paddingLeft: 20,
+          paddingRight: 20,
+          paddingTop: 20,
     },
     header:{
         alignItems: 'center',
@@ -252,17 +259,19 @@ const AddPostScreen = () => {
         // height:'8%',
     },  
     iconsWrapper:{
-        position: 'absolute',
         flexDirection: 'row',
-        justifyContent: 'start',
-        marginLeft: 15,
         backgroundColor: COLORS.secondaryBackground,
         height: 50,
         width: '100%',
-        bottom:0,
     },
     icon:{
-        marginHorizontal: 4,
+        marginHorizontal: 10,
+        marginVertical: 5,
+        ...Platform.select({
+            web: {
+                marginVertical: 10,
+            },
+        }),
     },
     input_images:{
         flexDirection: 'column',

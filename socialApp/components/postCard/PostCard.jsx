@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -319,6 +319,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 200, // Adjust height as needed
         resizeMode: 'cover', // Or use 'contain' for other resizing options
+        ...Platform.select({
+            web: {
+                height: 400, // Adjust height as needed
+            },
+        }),
     },
     placeholderImage: {
         width: 50,

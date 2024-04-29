@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet, Platform } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { useTheme } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -286,7 +286,6 @@ const styles = StyleSheet.create({
     container: {
     flex: 1,
     backgroundColor: COLORS.white,
-
   },
   commandButton: {
     backgroundColor: COLORS.secondaryBackground,
@@ -297,6 +296,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft:20,
     marginTop:10,
+    ...Platform.select({
+        web: {
+            marginLeft: '30%',
+            width:'40%',
+        },
+    }),
   },
   panel: {
     padding: 20,
@@ -359,6 +364,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f2f2f2',
     paddingBottom: 5,
+    ...Platform.select({
+        web: {
+            marginLeft:'2%',
+        },
+    }),
   },
   actionError: {
     flexDirection: 'row',

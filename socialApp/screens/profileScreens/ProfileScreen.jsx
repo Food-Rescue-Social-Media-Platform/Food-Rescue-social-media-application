@@ -5,7 +5,7 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-
+import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
 import { COLORS } from '../../styles/colors';
@@ -196,10 +196,13 @@ const ProfileScreen = ({ navigation, route }) => {
           <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
         </View>
         <Container style={styles.CardContainer}>
+          <AddPostCard />
+          <Text style={styles.PostsTitleText}>Posts</Text>
           {userPosts.map(post => (
             <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
           ))}
         </Container>
+
       </View>
     </ScrollView>
   );
@@ -345,7 +348,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.appBackGroundColor,
         width: '57%', // Apply this style only for web
-        marginLeft: '17.5%',
+        marginLeft: '19%',
+        marginTop:'-15%',
       },
       header: {
         position: 'relative',
@@ -388,7 +392,7 @@ const styles = StyleSheet.create({
       profileInfo: {
         alignItems: 'center',
         marginTop:-40,
-        marginLeft:'12%',
+        marginLeft:'13%',
       },
       userInfoContainer: {
         alignItems: 'center',
@@ -421,17 +425,19 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 10,
         borderRadius: 10,
-        width: '38%', // Apply this style only for web
-        marginLeft: '31%',
+        width: '18%', // Apply this style only for web
+        marginLeft: '0.9%',
+        zIndex: 2, // Ensure it's above the hidden content
       },
       buttons: {
         flexDirection: 'row',
         gap:10,
-        width: '100%',
-        marginBottom:'2%',
+        width: '19.8%',
+        marginBottom:'1%',
         marginTop: '2%',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 2, // Ensure it's above the hidden content
       },
       button: {
         backgroundColor: COLORS.secondaryTheme,
@@ -446,23 +452,30 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       bio: {
-        marginTop: '3%',
+        marginTop: '1%',
         fontSize: 17,
         fontWeight: 'bold',
         marginHorizontal: 20,
         backgroundColor: COLORS.secondaryTheme,
-        width: '38%', // Apply this style only for web
-        marginLeft: '31%',        
+        width: '18%', // Apply this style only for web
+        marginLeft: '1%',        
         justifyContent: 'center',
         alignItems: 'left',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 10,
+        zIndex: 2, // Ensure it's above the hidden content
       },
       bioText: {
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 5,
+      },
+      PostsTitleText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        marginLeft:'-47%',
       },
       bioContent: {
         fontSize: 16,

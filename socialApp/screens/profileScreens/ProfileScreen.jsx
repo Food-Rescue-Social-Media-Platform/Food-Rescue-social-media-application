@@ -5,7 +5,7 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-
+import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
 import { COLORS } from '../../styles/colors';
@@ -167,39 +167,85 @@ const ProfileScreen = ({ navigation, route }) => {
 
           </View>
         </View>
-        
-        { postUserId==user.uid?
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                <Text style={styles.buttonText}>Edit Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-            :
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
-                <Text style={styles.buttonText}>Chat</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
-                <Text style={styles.buttonText}>Follow</Text>
-              </TouchableOpacity>
-            </View>    
-        }
+        {Platform.OS === 'web' && (
+          <Container style={styles.CardContainerAndSideContainer}> 
+            <Container style={styles.sideContainer}>
+              { postUserId==user.uid?
+                  <View style={styles.buttons}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                      <Text style={styles.buttonText}>Edit Profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
+                      <Text style={styles.buttonText}>Logout</Text>
+                    </TouchableOpacity>
+                  </View>
+                  :
+                  <View style={styles.buttons}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                      <Text style={styles.buttonText}>Chat</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                      <Text style={styles.buttonText}>Follow</Text>
+                    </TouchableOpacity>
+                  </View>    
+              }
 
-        <View>
-          <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
-        </View>
-        <View style={styles.bio}>
-          <Text style={styles.bioText}>Bio</Text>
-          <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
-        </View>
-        <Container style={styles.CardContainer}>
-          {userPosts.map(post => (
-            <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
-          ))}
-        </Container>
+              <View>
+                <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+              </View>
+              <View style={styles.bio}>
+                <Text style={styles.bioText}>Bio</Text>
+                <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
+              </View>
+            </Container>
+            <Container style={styles.CardContainer}>
+              <AddPostCard />
+              <Text style={styles.PostsTitleText}>Posts</Text>
+              {userPosts.map(post => (
+                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
+              ))}
+            </Container>
+          </Container>
+        )}
+        {Platform.OS !== 'web' && (
+          <Container>
+            {postUserId === user.uid ? (
+              <View style={styles.buttons}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                  <Text style={styles.buttonText}>Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
+                  <Text style={styles.buttonText}>Logout</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.buttons}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                  <Text style={styles.buttonText}>Chat</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                  <Text style={styles.buttonText}>Follow</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <View>
+              <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+            </View>
+            <View style={styles.bio}>
+              <Text style={styles.bioText}>Bio</Text>
+              <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
+            </View>
+            <AddPostCard />
+            <Text style={styles.PostsTitleText}>Posts</Text>
+            {userPosts.map(post => (
+              <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
+            ))}
+          </Container>
+        )}
+
+
+
+        
       </View>
     </ScrollView>
   );
@@ -207,6 +253,10 @@ const ProfileScreen = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: COLORS.appBackGroundColor,
+  },
+  lowerContainer: {
     flex: 1,
     backgroundColor: COLORS.appBackGroundColor,
   },
@@ -289,9 +339,7 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     gap:10,
-    width: '100%',
     marginBottom:'3%',
-    marginTop: '6%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -299,7 +347,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondaryTheme,
     padding: 13,
     borderRadius: 10,
-    width: '44%',
+    width: '48%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -309,6 +357,8 @@ const styles = StyleSheet.create({
   },
   bio: {
     marginTop: '3%',
+    marginBottom: '6%',
+
     fontSize: 17,
     fontWeight: 'bold',
     marginHorizontal: 20,
@@ -329,6 +379,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
+  PostsTitleText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    marginRight:'82%',
+  },
   loadingIndicator: {
     flex: 1,
     justifyContent: 'center',
@@ -341,11 +397,25 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.appBackGroundColor,
       },
+      // Inside the Platform.select block for web styles
       CardContainer: {
-        flex: 1,
         backgroundColor: COLORS.appBackGroundColor,
-        width: '57%', // Apply this style only for web
-        marginLeft: '17.5%',
+        width: '70%', // Adjust the width as needed
+        alignItems: 'left', // You can remove this if not necessary
+        marginLeft:'-5%',
+      },
+      sideContainer: {
+        backgroundColor: COLORS.appBackGroundColor,
+        zIndex: 2, // Ensure it's above the hidden content
+        alignItems: 'left', // You can remove this if not necessary
+        justifyContent: 'left', // You can remove this if not necessary
+        width: '30%', // Adjust the width as needed
+        marginTop:'-83.5%',
+      },
+      CardContainerAndSideContainer: {
+        flexDirection: 'row', // Ensure the containers are positioned beside each other
+        width: '70%',
+        alignItems: 'center', // You can adjust this based on your design
       },
       header: {
         position: 'relative',
@@ -388,7 +458,7 @@ const styles = StyleSheet.create({
       profileInfo: {
         alignItems: 'center',
         marginTop:-40,
-        marginLeft:'12%',
+        marginLeft:'13%',
       },
       userInfoContainer: {
         alignItems: 'center',
@@ -421,23 +491,23 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 10,
         borderRadius: 10,
-        width: '38%', // Apply this style only for web
-        marginLeft: '31%',
+        marginLeft: '1%',
+        zIndex: 2, // Ensure it's above the hidden content
       },
       buttons: {
         flexDirection: 'row',
         gap:10,
-        width: '100%',
-        marginBottom:'2%',
-        marginTop: '2%',
+        marginBottom:'1%',
         justifyContent: 'center',
         alignItems: 'center',
+        zIndex: 2, // Ensure it's above the hidden content
+        marginLeft:'-5%',
       },
       button: {
         backgroundColor: COLORS.secondaryTheme,
         padding: 13,
         borderRadius: 10,
-        width: '44%',
+        width: '42%',
         justifyContent: 'center',
         alignItems: 'center',
       },
@@ -446,23 +516,29 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       bio: {
-        marginTop: '3%',
+        marginTop: '1%',
         fontSize: 17,
         fontWeight: 'bold',
         marginHorizontal: 20,
         backgroundColor: COLORS.secondaryTheme,
-        width: '38%', // Apply this style only for web
-        marginLeft: '31%',        
+        marginLeft: '1%',     
         justifyContent: 'center',
         alignItems: 'left',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 10,
+        zIndex: 2, // Ensure it's above the hidden content
       },
       bioText: {
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 5,
+      },
+      PostsTitleText: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        marginLeft:'15%',
       },
       bioContent: {
         fontSize: 16,

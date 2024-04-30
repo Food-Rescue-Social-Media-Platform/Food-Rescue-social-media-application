@@ -167,42 +167,85 @@ const ProfileScreen = ({ navigation, route }) => {
 
           </View>
         </View>
-        
-        { postUserId==user.uid?
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                <Text style={styles.buttonText}>Edit Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
-                <Text style={styles.buttonText}>Logout</Text>
-              </TouchableOpacity>
+        {Platform.OS === 'web' && (
+          <Container style={styles.CardContainerAndSideContainer}> 
+            <Container style={styles.sideContainer}>
+              { postUserId==user.uid?
+                  <View style={styles.buttons}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                      <Text style={styles.buttonText}>Edit Profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
+                      <Text style={styles.buttonText}>Logout</Text>
+                    </TouchableOpacity>
+                  </View>
+                  :
+                  <View style={styles.buttons}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                      <Text style={styles.buttonText}>Chat</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                      <Text style={styles.buttonText}>Follow</Text>
+                    </TouchableOpacity>
+                  </View>    
+              }
+
+              <View>
+                <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+              </View>
+              <View style={styles.bio}>
+                <Text style={styles.bioText}>Bio</Text>
+                <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
+              </View>
+            </Container>
+            <Container style={styles.CardContainer}>
+              <AddPostCard />
+              <Text style={styles.PostsTitleText}>Posts</Text>
+              {userPosts.map(post => (
+                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
+              ))}
+            </Container>
+          </Container>
+        )}
+        {Platform.OS !== 'web' && (
+          <Container>
+            {postUserId === user.uid ? (
+              <View style={styles.buttons}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                  <Text style={styles.buttonText}>Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
+                  <Text style={styles.buttonText}>Logout</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.buttons}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                  <Text style={styles.buttonText}>Chat</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                  <Text style={styles.buttonText}>Follow</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <View>
+              <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
             </View>
-            :
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
-                <Text style={styles.buttonText}>Chat</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
-                <Text style={styles.buttonText}>Follow</Text>
-              </TouchableOpacity>
-            </View>    
-        }
+            <View style={styles.bio}>
+              <Text style={styles.bioText}>Bio</Text>
+              <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
+            </View>
+            <AddPostCard />
+            <Text style={styles.PostsTitleText}>Posts</Text>
+            {userPosts.map(post => (
+              <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
+            ))}
+          </Container>
+        )}
 
-        <View>
-          <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
-        </View>
-        <View style={styles.bio}>
-          <Text style={styles.bioText}>Bio</Text>
-          <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
-        </View>
-        <Container style={styles.CardContainer}>
-          <AddPostCard />
-          <Text style={styles.PostsTitleText}>Posts</Text>
-          {userPosts.map(post => (
-            <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
-          ))}
-        </Container>
 
+
+        
       </View>
     </ScrollView>
   );
@@ -210,6 +253,10 @@ const ProfileScreen = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+    backgroundColor: COLORS.appBackGroundColor,
+  },
+  lowerContainer: {
     flex: 1,
     backgroundColor: COLORS.appBackGroundColor,
   },
@@ -292,9 +339,7 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     gap:10,
-    width: '100%',
     marginBottom:'3%',
-    marginTop: '6%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -302,7 +347,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.secondaryTheme,
     padding: 13,
     borderRadius: 10,
-    width: '44%',
+    width: '48%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -312,6 +357,8 @@ const styles = StyleSheet.create({
   },
   bio: {
     marginTop: '3%',
+    marginBottom: '6%',
+
     fontSize: 17,
     fontWeight: 'bold',
     marginHorizontal: 20,
@@ -332,6 +379,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
+  PostsTitleText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    marginRight:'82%',
+  },
   loadingIndicator: {
     flex: 1,
     justifyContent: 'center',
@@ -344,12 +397,25 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.appBackGroundColor,
       },
+      // Inside the Platform.select block for web styles
       CardContainer: {
-        flex: 1,
         backgroundColor: COLORS.appBackGroundColor,
-        width: '57%', // Apply this style only for web
-        marginLeft: '19%',
-        marginTop:'-15%',
+        width: '70%', // Adjust the width as needed
+        alignItems: 'left', // You can remove this if not necessary
+        marginLeft:'-5%',
+      },
+      sideContainer: {
+        backgroundColor: COLORS.appBackGroundColor,
+        zIndex: 2, // Ensure it's above the hidden content
+        alignItems: 'left', // You can remove this if not necessary
+        justifyContent: 'left', // You can remove this if not necessary
+        width: '30%', // Adjust the width as needed
+        marginTop:'-83.5%',
+      },
+      CardContainerAndSideContainer: {
+        flexDirection: 'row', // Ensure the containers are positioned beside each other
+        width: '70%',
+        alignItems: 'center', // You can adjust this based on your design
       },
       header: {
         position: 'relative',
@@ -425,25 +491,23 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         padding: 10,
         borderRadius: 10,
-        width: '18%', // Apply this style only for web
-        marginLeft: '0.9%',
+        marginLeft: '1%',
         zIndex: 2, // Ensure it's above the hidden content
       },
       buttons: {
         flexDirection: 'row',
         gap:10,
-        width: '19.8%',
         marginBottom:'1%',
-        marginTop: '2%',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 2, // Ensure it's above the hidden content
+        marginLeft:'-5%',
       },
       button: {
         backgroundColor: COLORS.secondaryTheme,
         padding: 13,
         borderRadius: 10,
-        width: '44%',
+        width: '42%',
         justifyContent: 'center',
         alignItems: 'center',
       },
@@ -457,8 +521,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginHorizontal: 20,
         backgroundColor: COLORS.secondaryTheme,
-        width: '18%', // Apply this style only for web
-        marginLeft: '1%',        
+        marginLeft: '1%',     
         justifyContent: 'center',
         alignItems: 'left',
         paddingVertical: 10,
@@ -475,7 +538,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 5,
-        marginLeft:'-47%',
+        marginLeft:'15%',
       },
       bioContent: {
         fontSize: 16,

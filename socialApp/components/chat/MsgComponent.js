@@ -5,16 +5,16 @@ import { useSelector } from 'react-redux';
 import moment from 'moment';
 
 const MsgComponent = (props) => {
-    const { sender, message, item, sendTime } = props;
+    // console.log('props: ', props);
+    const { sender, message, sendTime } = props;
     const userData = useSelector(state => state.user.userData);
-    console.log('sentTime: ', sendTime);
+    // console.log('sentTime: ', sendTime);
+    // <Text style={styles.timeText}>{moment(sendTime).format('LT')}</Text>
 
     return (
-        <View 
-        style= {[styles.msgBox, sender === userData.id ? styles.right : styles.left ]}
-        >
-        <Text >{message}</Text>
-        <Text style={styles.timeText}>{moment(sendTime).format('LT')}</Text>
+        <View style= {[styles.msgBox, sender === userData.id ? styles.right : styles.left ]}>
+            <Text >{message}</Text>
+            <Text style={styles.timeText}>22:31</Text>
         </View>
         )
     }

@@ -1,168 +1,141 @@
 import React, { useEffect, useState } from 'react';
-import {View, StatusBar,StyleSheet, FlatList, TextInput, Text} from "react-native";
+import {View, Text, StatusBar,StyleSheet, FlatList, TextInput} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
-import { db, database } from '../../firebase';
+import { database } from '../../firebase';
 import { getDoc, doc } from 'firebase/firestore';
-import { ref , set , child, push, update, onValue } from 'firebase/database';
 import { useSelector } from 'react-redux';
 import  uuid from 'react-native-uuid';
-import moment from 'moment';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import MsgComponent from "../../components/chat/MsgComponent";
+import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
+import { Message, addMessage, listeningToNewMessages } from '../../FirebaseFunctions/collections/message';
+import { ref ,update,child ,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
+import { serverTimestamp } from 'firebase/firestore';
+import { db } from '../../firebase';
+
 
 
 const SingleChat = ({navigation}) => {
     // const route = useRoute();
     // const receiverId = route.params?.receiverId || '';
-    const receiverId = '2YzEk9svzTNpvFlYKfSNAes5I1x1';
-    console.log('receiverId: ', receiverId);    
+    const receiverId = 'zsERzWzcK7cp50c1bzIoSqxpBsA2';
     const sender = useSelector(state => state.user.userData);
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
     const [ msg, setMsg] = useState('');
-
-    const [ chatData, setChatData] = useState('');
     const [ roomId, setRoomId ] = useState('');
-    const [ isLoaded, setIsLoaded ] = useState(false);
 
     useEffect(() => {
-        if(roomId === '') {
-            fetchChat();
-        }
-        try{
-            if(roomId !== ''){
+      const fetchData = async () => {
+            // Fetch the roomID
+            await fetchRoomId();
+
             const docRef = ref(db, "messages/" + roomId);
-            onValue(docRef, (snapshot) => {
-               const data = Object.values(snapshot.val());
-               if(!data) return console.log('-No data found');
-               setAllMessages((prevState) => [...prevState, ...data]);
-               console.log("allMessages: ", data);
-            });
+            console.log('docRef: ', docRef);
+    
+            onChildAdded(docRef, (snapshot) => {
+                const data = snapshot.val();
+              
+                // Data validation (optional but recommended)
+                if (!data || typeof data !== 'object') {
+                  console.error('Invalid data format in new message:', data);
+                  return; // Or handle the error gracefully, e.g., by ignoring the message
+                }
+              
+                const newMessages = Object.values(data);
+              
+                // Update state with new messages
+                setAllMessages((prevMessages) => [...prevMessages, ...newMessages]);
+              
+                // Additional actions (optional)
+                // - Trigger UI updates to display the new messages
+                // - Perform further processing on the new messages as needed
+              });
+    
+
+            // Listen to new messages
+            // const unsubscribe = listeningToNewMessages(roomId, (newMsg) => {
+            //     if(newMsg !== null && newMsg !== undefined) {
+            //         console.log('newMsg: ', newMsg);
+            //         setAllMessages((prevMessages) => [prevMessages, ...newMsg]);
+            //         console.log('allMessages: ', allMessages);
+            //     }
+            // });
+            // return () => unsubscribe(); // Call unsubscribe in cleanup
+      }
+      fetchData();       
+    }, []);
+
+
+    const fetchRoomId = async () => {
+        let receiver = await fetchUser(receiverId);
+
+        if (receiver !== null) {
+
+            receiver.id = receiverId;
+
+            setReceiver(receiver);
+            fetchChat('chatsList/' + sender.id + '/' + receiver.id, (chat) => {
+
+            // if chat is not found, create a new chat
+            if(chat === null){
+                createNewChat();
+                return;
             }
-        } catch (error){
-             console.log('Error fetching document: ', error);
-           }  
-    }, [roomId, receiverId]);
-
-
-    const fetchChat = async () => {
-        try {     
-            const docRef = doc(database, "users", receiverId);
-            const docSnap = await getDoc(docRef);
-            
-            if (docSnap.exists()) {
-                let receiverTemp = docSnap.data();
-                receiverTemp.id = receiverId;
-                setReceiver(receiverTemp);
-
-                // fetch chat
-                const docRef = ref(db, "chatsList/" + sender.id + '/' + receiverTemp.id);
-                onValue(docRef, (snapshot) => {
-                   const data = snapshot.val();
-                   // if chat not created then create new chat
-                   if(!data) {
-                       createNewChat(receiverTemp);
-                       return;
-                   };
-                //    console.log('data: ', data);
-                   setChatData(data);
-                   setRoomId(data.roomID);
-                });
-            } else {
-             console.log("No such user!");
-            }
-        } catch (error) {
-             console.error("Error fetching document:", error);
-        
+            else{
+                setRoomId(chat.roomID);
+            }});
         }
     }
     
 
-    const createNewChat = (receiverData) => {
+    const createNewChat = async () => {
+        // generate a new roomID
         const roomID = uuid.v4();
-        try{      
-            set(ref(db, 'chatsList/' + sender.id + '/' + receiverData.id),
-            {
-                roomID,
-                id: receiverData.id,
-                sender: sender.firstName + " " + sender.lastName,
-                receiver: receiverData.firstName + " " + receiverData.lastName,
-                image:receiverData?.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAiRQwXf9TTpgIOStvwMpdGBeEQecgottZew&usqp=CAU',
-                emailId: receiverData.email,
-                lastMsg: "",
-            })
 
-            set(ref(db, 'chatsList/' +  receiverData.id + '/' + sender.id ),
-            {
-                roomID,
-                id: sender.id,
-                sender: receiverData.firstName + ' ' + receiverData.lastName,
-                receiver: sender.firstName + ' ' + sender.lastName,
-                image: sender?.image || "https://www.elitesingles.co.uk/wp-content/uploads/sites/59/2019/11/2b_en_articleslide_sm2-350x264.jpg",
-                emailId: sender.email,
-                lastMsg: "",
-            });                        
-            setRoomId(roomID);
-        } catch (error) {
-            console.error("Error adding document: ", error);
-       }    
+        // create a new chat
+        const chat = new Chat(roomID, sender, receiver);
+        await addChat(chat, 'chatsList/' + sender.id + '/' + receiver.id);
+           
+        // create a new chat for the receiver
+        const chat2 = new Chat(roomID, receiver, sender);
+        await addChat(chat2, 'chatsList/' +  receiver.id + '/' + sender.id);                          
+           
+        setRoomId(roomID); 
     }
 
 
-    const sendMsg = () => { 
-        if(msg === ''){
-            return;
-        }
-        
-        let msgData = {
-            message: msg,
-            from: sender.id,
-            to: receiver?.id || chatData.id,
-            sentTime: moment().format(),
-            msgType: 'text',
-        }
-        
-        const newPostKey = push(child(ref(db), 'messages')).key;
-        const updates = {};
-        updates['messages/' + roomId + '/' + newPostKey] = msgData;
-        update(ref(db), updates).then(() => {
-            console.log('Message sent successfully');
-            const updateChat = {
-                lastMsg: msg,
-                sendTime: msgData.sentTime,
-            }
-            update(ref(db, 'chatsList/' + sender.id + '/' + receiverId),( updateChat))
-            update(ref(db, 'chatsList/' +  receiverId + '/' + sender.id ),(updateChat)); 
-            setMsg('');
-        }).catch((error) => {
-            console.error("Error adding document: ", error);
-        });
-    }
+    const sendMsg = async () => { 
+        if(msg === '') return;
     
-    const renderItem = ({  item  }) => {      
-       return (
-        <View style={styles.msg}>
-        <MsgComponent     
-          sender={item.from}
-          message={item.message}
-          sendTime={item.sentTime}
-        />
-        </View>
-      );
-    };
+        const message = new Message(msg, sender.id, receiver.id, 'text');
+        await addMessage(message, roomId, sender, receiver.id);
+        setMsg('');
+    }
 
 
     return (
            <View style={styles.container} >
             <FlatList
-               keyExtractor={(item, index) => {item.id}}
-               data={allMessages}
-               renderItem={renderItem}
-             />
+                keyExtractor={(item, index) => index.toString()}
+                data={allMessages}
+                renderItem={({item}) => {
+                    // console.log('item: ', item.from);
+                    // console.log('item: ', item.message);
+                    // console.log('item: ', item.sendTime);
+                    return(
+                        <MsgComponent    
+                            sender={item.from}
+                            message={item.message}
+                            sendTime={"22:31"}
+                         />
+                    )
+                }}
+            />
            
             <View style={styles.containerFooter}>  
                 <Octicons name="smiley" size={24} style={styles.smiley}/> 
@@ -186,14 +159,10 @@ const SingleChat = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
       marginTop:  5,
-    //   marginLeft: windowWidth/14,
-    //   marginRight: windowWidth/14,
-      // delete -80
       height: windowHeight - StatusBar.currentHeight - windowHeight / 11  ,
     },
     containerFooter :{
         height: windowHeight /12,
-        // height: windowHeight /20,
         flexDirection: 'row',
         padding: 10,
         backgroundColor: COLORS.headerChat,
@@ -206,7 +175,6 @@ const styles = StyleSheet.create({
     },
     windowSend :{
         flexDirection: 'row',
-        // justifyContent: 'space-between',
         alignItems: 'center',
         padding: 10,
         width: windowWidth / 1.5,
@@ -219,6 +187,76 @@ const styles = StyleSheet.create({
          marginLeft: 10,
          marginTop:5  
       },
+      msgBox :{
+        marginHorizontal: 10,
+        minWidth: 80,
+        maxWidth: '80%',
+        marginVertical: 5,
+        padding: 6,
+        borderRadius: 8,
+        margin: 10,
+    },
+    timeText: {
+        fontSize: 10,
+        paddingTop:4,
+        alignSelf: 'flex-end',
+    },
+    dayview: {
+        alignSelf: 'center',
+        height: 30,
+        width: 100,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: COLORS.white,
+        borderRadius: 30,
+        marginTop: 10
+    },
+    iconView: {
+        width: 42,
+        height: 42,
+        borderRadius: 21,
+        alignItems: 'center',
+        justifyContent: 'center',
+        // backgroundColor: COLORS.themecolor,
+    },
+    TriangleShapeCSS: {
+        position: 'absolute',
+        width: 0,
+        height: 0,
+        backgroundColor: 'transparent',
+        borderStyle: 'solid',
+        borderLeftWidth: 15,
+        borderRightWidth: 5,
+        borderBottomWidth: 20,
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+    },
+    left: {
+        backgroundColor: COLORS.messageNotME,
+        alignSelf: 'flex-start',
+    },
+    right: {
+        backgroundColor: COLORS.theme,
+        alignSelf: 'flex-end',
+
+    },
   });
+  
+
+const fetchUser = async (receiverId) => {
+    try{
+    const docRef = doc(database, "users", receiverId);
+    const docSnap = await getDoc(docRef);
+    console.log('docSnap: ', docSnap.data());
+    if(!docSnap.exists()) {
+        return null;
+    }
+    return docSnap.data();
+ } catch (error) {
+    console.error("Error getting document:", error);
+    return null;
+ }
+}
+
   
 export default SingleChat;

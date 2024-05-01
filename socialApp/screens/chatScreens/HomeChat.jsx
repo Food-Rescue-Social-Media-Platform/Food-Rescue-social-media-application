@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, {  useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, TextInput } from 'react-native';
+import { Button } from 'react-native-elements';
+
 import {ListItem, Avatar} from 'react-native-elements';
 import {COLORS} from '../../styles/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -131,6 +133,11 @@ const renderItem = ({ item })=> (
   </ListItem>
 );
 
+const createChat = () => {
+  const receiverId = '2YzEk9svzTNpvFlYKfSNAes5I1x1';
+  navigation.navigate('SingleChat', {chatData:'', receiverId: receiverId});
+}
+
 return (
     <View style={styles.container}>
     <View style={styles.searchContainer}>      
@@ -142,6 +149,8 @@ return (
         keyBoardType="string"
     />
     </View>
+    <Button title='Create Chat' onPress={createChat}/>
+
     <FlatList
         keyExtractor={(item, index) => index.toString()}
         data={listChats}

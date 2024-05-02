@@ -16,6 +16,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 import { COLORS } from '../../styles/colors';
+import { deletePost } from '../../FirebaseFunctions/collections/post';
 
 const getCategoryIcon = (category) => {
     switch (category) {
@@ -90,37 +91,13 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
     }
     const handleDelete = async () => {
         try {
-            // Assuming `database` is the Firestore instance
-            const postRef = doc(database, 'postsTest', item.id);
-            const userRef = doc(database, 'users', postUserId);
-            
-            // Get the user document snapshot
-            const userDocSnap = await getDoc(userRef);
-            if (userDocSnap.exists()) {
-                const userData = userDocSnap.data();
-
-                // Update the user's postsNum field
-                await updateDoc(userRef, {
-                    postsNum: userData.postsNum ? userData.postsNum - 1 : 0,
-                    earningPoints: userData.earningPoints ? userData.earningPoints -3 : 0,
-                });
-            }
-
-            // Delete the post document
-            await deleteDoc(postRef);
-    
-            // Remove the post ID from the user's postsId array
-            await updateDoc(userRef, {
-                postsId: arrayRemove(item.id)
-            });
-    
-            // Show a confirmation message
+            await deletePost(item.id, postUserId);
             Alert.alert('Success', 'Post deleted successfully.');
         } catch (error) {
             console.error('Error deleting post:', error);
             Alert.alert('Error', 'Failed to delete post.');
         }
-    };    
+    };  
     
     // console.log(isProfilePage);
     const handleUserPress = () => {

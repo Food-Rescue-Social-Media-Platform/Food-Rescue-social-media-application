@@ -1,4 +1,4 @@
-import { ref ,update,child ,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
+import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
 import { serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 
@@ -16,6 +16,29 @@ export class Message {
 }
 
 
+
+export async function fetchMessages(roomID, setAllMessages) {
+    try {
+        const docRef = ref(db, 'messages/' + roomID);
+        onValue(docRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!data) {
+                console.log('No data found');
+                setAllMessages([]);
+                return;
+            }
+            console.log('Messages: ', data);
+            setAllMessages(Object.values(data));
+        }, {
+            onlyOnce: true
+        });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+    }
+}
+
+
+
 export async function addMessage(message, roomID, sender, receiverId) {
     try {
         const messageData = {
@@ -26,12 +49,41 @@ export async function addMessage(message, roomID, sender, receiverId) {
             msgType: message.msgType,
         };
 
-        const newPostKey = push(child(ref(db), 'messages')).key;
-        const updates = {};
+        const postListRef = ref(db, 'messages/'+ roomID);
+        const newPostRef = push(postListRef);
+        await set(newPostRef, messageData).then(async () => {
+            console.log('Message sent successfully');
+            const updateChat = {
+                lastMsg: message.message,
+                sendTime: messageData.sentTime,
+            }
 
-        updates['messages/' + roomID + '/' + newPostKey] = messageData;
+            await update(ref(db, 'chatsList/' + sender.id + '/' + receiverId),( updateChat))
+            await update(ref(db, 'chatsList/' +  receiverId + '/' + sender.id ),(updateChat)); 
+        }).catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+       
 
-        update(ref(db), updates).then(() => {
+
+
+
+
+
+
+
+
+
+
+
+
+        /// old -----------------
+        // const newPostKey = push(child(ref(db), 'messages')).key;
+        // const updates = {};
+
+        // updates['messages/' + roomID + '/' + newPostKey] = messageData;
+
+        // update(ref(db), updates).then(() => {
             // console.log('Message sent successfully');
             // const updateChat = {
             //     lastMsg: message.message,
@@ -41,9 +93,9 @@ export async function addMessage(message, roomID, sender, receiverId) {
             // update(ref(db, 'chatsList/' + sender.id + '/' + receiverId),( updateChat))
             // update(ref(db, 'chatsList/' +  receiverId + '/' + sender.id ),(updateChat)); 
         
-        }).catch((error) => {
-            console.error("Error adding document: ", error);
-        });
+        // }).catch((error) => {
+        //     console.error("Error adding document: ", error);
+        // });
     } catch (error) {
         console.error("Error adding message:", error.message);
     }
@@ -51,26 +103,24 @@ export async function addMessage(message, roomID, sender, receiverId) {
 
 
 
-export function listeningToNewMessages(roomID, callback) {
+export async function startListeningForMessages(roomId, setAllMessages) {
     try {
-        console.log('roomID: ', roomID);
-        const docRef = ref(db, "messages", roomID);
-        console.log('docRef: ', docRef);
-        let unsubscribe; // Store unsubscribe function
-
-        unsubscribe = onChildAdded(docRef, (snapshot) => {
-            const data = snapshot.val();
-            console.log('Messages: ', Object.values(data));
-
-            callback(Object.values(data));
-        });
-
-        return unsubscribe;
+ 
+      const docRef = ref(db, "messages/" + roomId);
+  
+      const unsubscribe = onChildChanged(docRef, (snapshot) => {
+        const data = snapshot.val();
+        const newMessages = Object.values(data);
+        setAllMessages((prevMessages) => [...prevMessages, ...newMessages]);
+      });
+  
+      // Return the unsubscribe function for cleanup
+      return unsubscribe;
     } catch (error) {
-        console.log('Error fetching document: ', error);
-        callback(null);
-    }   
-}
+      console.error('Error fetching messages:', error);
+      // Handle error appropriately (e.g., display an error message)
+    }
+  }
 
 
 

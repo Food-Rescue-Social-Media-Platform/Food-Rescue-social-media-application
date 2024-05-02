@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, StatusBar,StyleSheet, FlatList, TextInput} from "react-native";
+import {View, Text, StatusBar,StyleSheet, FlatList, TextInput, TouchableOpacity} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
@@ -12,10 +12,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import MsgComponent from "../../components/chat/MsgComponent";
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
-import { Message, addMessage, listeningToNewMessages } from '../../FirebaseFunctions/collections/message';
-import { ref ,update,child ,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
+import { Message,fetchMessages, addMessage, startListeningForMessages } from '../../FirebaseFunctions/collections/message';
+import { ref ,onChildAdded, onChildChanged, set } from "firebase/database";
 import { serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
 
 
 
@@ -26,49 +27,31 @@ const SingleChat = ({navigation}) => {
     const sender = useSelector(state => state.user.userData);
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
+    const [ new_Messages, setNew_Messages ] = useState([]);
     const [ msg, setMsg] = useState('');
+    const [images, setImages] = useState([]);
     const [ roomId, setRoomId ] = useState('');
+    const [ loadedMessages, setLoadedMessages ] = useState(true);
 
     useEffect(() => {
       const fetchData = async () => {
             // Fetch the roomID
             await fetchRoomId();
 
-            const docRef = ref(db, "messages/" + roomId);
-            console.log('docRef: ', docRef);
-    
-            onChildAdded(docRef, (snapshot) => {
-                const data = snapshot.val();
-              
-                // Data validation (optional but recommended)
-                if (!data || typeof data !== 'object') {
-                  console.error('Invalid data format in new message:', data);
-                  return; // Or handle the error gracefully, e.g., by ignoring the message
-                }
-              
-                const newMessages = Object.values(data);
-              
-                // Update state with new messages
-                setAllMessages((prevMessages) => [...prevMessages, ...newMessages]);
-              
-                // Additional actions (optional)
-                // - Trigger UI updates to display the new messages
-                // - Perform further processing on the new messages as needed
-              });
-    
+            // fetch all existing messages
+            fetchMessages(roomId, setAllMessages);
 
             // Listen to new messages
-            // const unsubscribe = listeningToNewMessages(roomId, (newMsg) => {
-            //     if(newMsg !== null && newMsg !== undefined) {
-            //         console.log('newMsg: ', newMsg);
-            //         setAllMessages((prevMessages) => [prevMessages, ...newMsg]);
-            //         console.log('allMessages: ', allMessages);
-            //     }
-            // });
-            // return () => unsubscribe(); // Call unsubscribe in cleanup
+            const unsubscribe = startListeningForMessages(roomId, setAllMessages);
+
+            return () => {
+                if (unsubscribe) {
+                  unsubscribe(); // Call the unsubscribe function if it exists
+                }
+            };
       }
       fetchData();       
-    }, []);
+    }, [roomId]);
 
 
     const fetchRoomId = async () => {
@@ -114,7 +97,15 @@ const SingleChat = ({navigation}) => {
     
         const message = new Message(msg, sender.id, receiver.id, 'text');
         await addMessage(message, roomId, sender, receiver.id);
+        setLoadedMessages(true);
+        
         setMsg('');
+    }
+
+    const onPressAttach = () => {
+        console.log('Attach file');
+        openGalereAndSelectImages(setImages);
+        console.log('Images uri', images);
     }
 
 
@@ -139,7 +130,9 @@ const SingleChat = ({navigation}) => {
            
             <View style={styles.containerFooter}>  
                 <Octicons name="smiley" size={24} style={styles.smiley}/> 
-                <MaterialIcons name="attach-file" size={24} style={styles.attachment}/>            
+                <TouchableOpacity style={styles.attachment} onPress={onPressAttach}>
+                    <MaterialIcons name="attach-file" size={24} /> 
+                </TouchableOpacity>           
                     <View style={styles.windowSend} >
                         <TextInput
                         placeholder='Send message...'

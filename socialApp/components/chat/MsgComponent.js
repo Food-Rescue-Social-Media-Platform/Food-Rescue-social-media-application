@@ -3,17 +3,31 @@ import { View, Text, StyleSheet } from 'react-native';
 import {COLORS} from '../../styles/colors';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
+import { Image } from 'react-native';
 
 const MsgComponent = (props) => {
     // console.log('props: ', props);
-    const { sender, message, sendTime } = props;
+    const { item } = props;
+    item.sendTime = '22:21';
+    const { message, images, sender, sendTime } = item;
     const userData = useSelector(state => state.user.userData);
     // console.log('sentTime: ', sendTime);
     // <Text style={styles.timeText}>{moment(sendTime).format('LT')}</Text>
-
     return (
         <View style= {[styles.msgBox, sender === userData.id ? styles.right : styles.left ]}>
-            <Text >{message}</Text>
+            { message?.length > 0 && (<Text >{message}</Text>)}
+            {( images?.length > 0) && (
+                <View style={{flexDirection: 'cul', flexWrap: 'wrap'}}>
+                    {images.map((img, index) => (
+                        <Image
+                            key={index}
+                            source={{uri: img}}
+                            style={{height: 100, width: 100, margin: 5}}
+                        />
+                    ))}
+                </View>
+            
+            )}
             <Text style={styles.timeText}>22:31</Text>
         </View>
         )

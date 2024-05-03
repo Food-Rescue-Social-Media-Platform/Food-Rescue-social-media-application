@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, StatusBar,StyleSheet, FlatList, TextInput, TouchableOpacity} from "react-native";
+import {View, Text, StatusBar,StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
@@ -9,14 +9,14 @@ import { useSelector } from 'react-redux';
 import  uuid from 'react-native-uuid';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Octicons from 'react-native-vector-icons/Octicons';
 import MsgComponent from "../../components/chat/MsgComponent";
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
 import { Message,fetchMessages, addMessage, startListeningForMessages } from '../../FirebaseFunctions/collections/message';
-import { ref ,onChildAdded, onChildChanged, set } from "firebase/database";
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { useRef } from 'react';
+import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
 import { serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
 
 
 
@@ -27,11 +27,11 @@ const SingleChat = ({navigation}) => {
     const sender = useSelector(state => state.user.userData);
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
-    const [ new_Messages, setNew_Messages ] = useState([]);
     const [ msg, setMsg] = useState('');
     const [images, setImages] = useState([]);
     const [ roomId, setRoomId ] = useState('');
-    const [ loadedMessages, setLoadedMessages ] = useState(true);
+    const chatContainerRef = useRef(null);
+
 
     useEffect(() => {
       const fetchData = async () => {
@@ -39,15 +39,15 @@ const SingleChat = ({navigation}) => {
             await fetchRoomId();
 
             // fetch all existing messages
-            fetchMessages(roomId, setAllMessages);
+            fetchMessages(roomId, setAllMessages, setHasMoreMessages, setCurrentPage);
 
+            const docRef = ref(db, "messages/" + roomId);
+           
             // Listen to new messages
             const unsubscribe = startListeningForMessages(roomId, setAllMessages);
 
             return () => {
-                if (unsubscribe) {
-                  unsubscribe(); // Call the unsubscribe function if it exists
-                }
+                if (unsubscribe) unsubscribe(); // Call the unsubscribe function if it exists
             };
       }
       fetchData();       
@@ -93,11 +93,11 @@ const SingleChat = ({navigation}) => {
 
 
     const sendMsg = async () => { 
-        if(msg === '') return;
-    
-        const message = new Message(msg, sender.id, receiver.id, 'text');
+        if(msg === '' && images == '') return;
+
+        const message = new Message(msg, images, sender.id, receiver.id);
+        console.log('Message: ', message);
         await addMessage(message, roomId, sender, receiver.id);
-        setLoadedMessages(true);
         
         setMsg('');
     }
@@ -108,42 +108,54 @@ const SingleChat = ({navigation}) => {
         console.log('Images uri', images);
     }
 
+    const handleOpenCamera = async () => {
+        console.log('Open camera');
+        openCameraAndTakePicture(setImages);
+        console.log('Images uri', images);
+    }
+    
 
     return (
-           <View style={styles.container} >
-            <FlatList
-                keyExtractor={(item, index) => index.toString()}
-                data={allMessages}
-                renderItem={({item}) => {
-                    // console.log('item: ', item.from);
-                    // console.log('item: ', item.message);
-                    // console.log('item: ', item.sendTime);
-                    return(
-                        <MsgComponent    
-                            sender={item.from}
-                            message={item.message}
-                            sendTime={"22:31"}
+           <View style={styles.container}>
+                <FlatList
+                    ref={chatContainerRef}
+                    onContentSizeChange={() =>
+                        chatContainerRef.current?.scrollToEnd({ animated: false })
+                    }            
+                    keyExtractor={(item, index) => index.toString()}
+                    data={allMessages}
+                    refreshing={true}
+                    renderItem={({item}) => {
+                    return(    
+                         <MsgComponent  
+                           item={item} 
                          />
-                    )
-                }}
-            />
-           
-            <View style={styles.containerFooter}>  
-                <Octicons name="smiley" size={24} style={styles.smiley}/> 
-                <TouchableOpacity style={styles.attachment} onPress={onPressAttach}>
-                    <MaterialIcons name="attach-file" size={24} /> 
-                </TouchableOpacity>           
-                    <View style={styles.windowSend} >
-                        <TextInput
-                        placeholder='Send message...'
-                        onChangeText={val => setMsg(val)}
-                        >
-                        {msg}
-                        </TextInput>
-                    </View>
-                    
-                <MaterialCommunityIcons name="send" onPress={sendMsg} size={25} style={styles.send}/>          
-            </View>
+                     )}}
+                />
+            
+                <View style={styles.containerFooter}>  
+                    <TouchableOpacity style={styles.icon} onPress={onPressAttach}>
+                        <MaterialIcons name="attach-file" size={24} /> 
+                    </TouchableOpacity> 
+                    <TouchableOpacity style={styles.icon} onPress={handleOpenCamera}>
+                        <MaterialCommunityIcons name="camera" size={24} />  
+                    </TouchableOpacity> 
+        
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                        <View style={styles.windowSend} >
+                            <TextInput
+                                placeholder='Send message...'
+                                onChangeText={val => setMsg(val)}
+                                multiline={true}
+                                numberOfLines={4}
+                            >
+                            {msg}
+                            </TextInput>
+                        </View>
+                        </ScrollView>
+                        
+                    <MaterialCommunityIcons name="send" onPress={sendMsg} size={25} style={styles.send}/>          
+                </View>
         </View>
     )
 }
@@ -152,25 +164,29 @@ const SingleChat = ({navigation}) => {
 const styles = StyleSheet.create({
     container: {
       marginTop:  5,
-      height: windowHeight - StatusBar.currentHeight - windowHeight / 11  ,
+      width: '100%',
+      height: '100%'  ,
     },
     containerFooter :{
-        height: windowHeight /12,
+        height: windowHeight /10,
+        alignItems: 'center',
         flexDirection: 'row',
         padding: 10,
+        bottom: 0,
         backgroundColor: COLORS.headerChat,
     },
-    attachment:{
-        padding: 5,
-    },
-    smiley:{
-        padding: 5,
+    icon:{
+        margin: 4,
     },
     windowSend :{
+        flex:1,
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 10,
-        width: windowWidth / 1.5,
+        bottom: 0,
+        padding: 9,
+        marginLeft: 5,
+        // height: windowHeight / 12,
+        width: windowWidth / 1.45,
         borderRadius: 20,
         backgroundColor: COLORS.white,
         borderTopWidth: 1,
@@ -203,14 +219,6 @@ const styles = StyleSheet.create({
         // backgroundColor: COLORS.white,
         borderRadius: 30,
         marginTop: 10
-    },
-    iconView: {
-        width: 42,
-        height: 42,
-        borderRadius: 21,
-        alignItems: 'center',
-        justifyContent: 'center',
-        // backgroundColor: COLORS.themecolor,
     },
     TriangleShapeCSS: {
         position: 'absolute',

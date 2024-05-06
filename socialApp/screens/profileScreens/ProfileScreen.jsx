@@ -19,6 +19,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const postUserId = route.params ? route.params.postUserId : user.uid;
+  const [isFollowing, setIsFollowing] = useState(false);
 
   // Fetch user data function
   const fetchUserData = async () => {
@@ -85,14 +86,83 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleFollowButton = async () => {
+    try {
+      setIsFollowing(!isFollowing);
+      // Reference to the logged-in user's document
+      const loggedInUserDocRef = doc(database, "users", user.uid);
+  
+      // Reference to the followed user's document
+      const followedUserDocRef = doc(database, "users", postUserId);
+  
+      // Get data of the logged-in user
+      const loggedInUserDocSnap = await getDoc(loggedInUserDocRef);
+      const loggedInUserData = loggedInUserDocSnap.data();
+  
+      // Get data of the followed user
+      const followedUserDocSnap = await getDoc(followedUserDocRef);
+      const followedUserData = followedUserDocSnap.data();
+  
+      if (isFollowing) {
+        // Remove followed user's ID from the follower's following list
+        const updatedFollowingUsersId = loggedInUserData.followingUsersId.filter(id => id !== postUserId);
+  
+        // Remove follower's ID from the followed user's followers list
+        const updatedFollowersUsersId = followedUserData.followersUsersId.filter(id => id !== user.uid);
+  
+        // Update logged-in user's following list
+        await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId });
+  
+        // Update followed user's followers list
+        await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId });
+      } else {
+        // Add followed user's ID to the follower's following list
+        const updatedFollowingUsersId = [...loggedInUserData.followingUsersId, postUserId];
+  
+        // Add follower's ID to the followed user's followers list
+        const updatedFollowersUsersId = [...followedUserData.followersUsersId, user.uid];
+  
+        // Update logged-in user's following list
+        await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId });
+  
+        // Update followed user's followers list
+        await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId });
+      }
+    } catch (error) {
+      console.error("Error updating follow status:", error);
+    }
+  };
+
   // Fetch data when screen is focused
   useEffect(() => {
     if (isFocused) {
       setLoading(true);
       fetchUserData();
       fetchUserPosts();
+      const checkFollowingStatus = async () => {
+        try {
+          const loggedInUserDocRef = doc(database, "users", user.uid);
+          const loggedInUserDocSnap = await getDoc(loggedInUserDocRef);
+          if (loggedInUserDocSnap.exists()) {
+            const followingUsersId = loggedInUserDocSnap.data().followingUsersId;
+            setIsFollowing(followingUsersId.includes(postUserId));
+          }
+        } catch (error) {
+          console.error("Error checking follow status:", error);
+        }
+      };
+      checkFollowingStatus();
     }
   }, [isFocused]);
+
+  // Render button text based on follow status
+  const renderButtonText = () => {
+    if (isFollowing) {
+      return 'Following';
+    } else {
+      return 'Follow';
+    }
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -169,7 +239,7 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
         {Platform.OS === 'web' && (
           <Container style={styles.CardContainerAndSideContainer}> 
-            <Container style={styles.sideContainer}>
+            <Container style={postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther}>
               { postUserId==user.uid?
                   <View style={styles.buttons}>
                     <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
@@ -184,8 +254,8 @@ const ProfileScreen = ({ navigation, route }) => {
                     <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
                       <Text style={styles.buttonText}>Chat</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
-                      <Text style={styles.buttonText}>Follow</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>
+                      <Text style={styles.buttonText}>{renderButtonText()}</Text>
                     </TouchableOpacity>
                   </View>    
               }
@@ -223,8 +293,8 @@ const ProfileScreen = ({ navigation, route }) => {
                 <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
                   <Text style={styles.buttonText}>Chat</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
-                  <Text style={styles.buttonText}>Follow</Text>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>
+                  <Text style={styles.buttonText}>{renderButtonText()}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -404,13 +474,21 @@ const styles = StyleSheet.create({
         alignItems: 'left', // You can remove this if not necessary
         marginLeft:'-5%',
       },
-      sideContainer: {
+      sideContainerUser: {
         backgroundColor: COLORS.appBackGroundColor,
         zIndex: 2, // Ensure it's above the hidden content
         alignItems: 'left', // You can remove this if not necessary
         justifyContent: 'left', // You can remove this if not necessary
         width: '30%', // Adjust the width as needed
         marginTop:'-83.5%',
+      },
+      sideContainerOther:{
+        backgroundColor: COLORS.appBackGroundColor,
+        zIndex: 2, // Ensure it's above the hidden content
+        alignItems: 'left', // You can remove this if not necessary
+        justifyContent: 'left', // You can remove this if not necessary
+        width: '30%', // Adjust the width as needed
+        marginTop:'-65.5%',
       },
       CardContainerAndSideContainer: {
         flexDirection: 'row', // Ensure the containers are positioned beside each other

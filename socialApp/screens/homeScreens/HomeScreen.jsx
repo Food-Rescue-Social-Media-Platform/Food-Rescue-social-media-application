@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl} from 'react-native';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 
 import { AuthContext } from '../../navigation/AuthProvider';
@@ -90,8 +90,9 @@ const HomeScreen = () => {
                 data={posts}
                 renderItem={({ item, index }) => {
                     if (index === 0) {
-                        return <AddPostCard />;
-                    } else {
+                        return <AddPostCard />                        
+                    }
+                    else {
                         return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />;
                     }
                 }}
@@ -125,6 +126,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    PostsTitleText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        marginRight:'82%',
     },
 });
 

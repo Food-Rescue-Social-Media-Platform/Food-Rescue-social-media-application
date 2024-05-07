@@ -210,21 +210,25 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
               <Text style={styles.wordStat}>Rating</Text>
             </View>
-
+            
             <View style={styles.userInfoContainer}>
-              <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'heart'} size={22} color={COLORS.black} />
-                <Text style={styles.statNumValue}>{userData?.followingNum || 0}</Text>
-              </View>
-              <Text style={styles.wordStat}>Following</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Following List', { userData })}>
+                <View style={styles.iconContainer}>
+                  <MaterialCommunityIcons name={'heart'} size={22} color={COLORS.black} />
+                  <Text style={styles.statNumValue}>{userData?.followingNum || 0}</Text>
+                </View>
+                <Text style={styles.wordStat}>Following</Text>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.userInfoContainer}>
-              <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'account-group'} size={22} color={COLORS.black} />
-                <Text style={styles.statNumValue}>{userData?.followersNum || 0}</Text>
-              </View>
-              <Text style={styles.wordStat}>Followers</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Followers List', { userData })}>
+                <View style={styles.iconContainer}>
+                  <MaterialCommunityIcons name={'account-group'} size={22} color={COLORS.black} />
+                  <Text style={styles.statNumValue}>{userData?.followersNum || 0}</Text>
+                </View>
+                <Text style={styles.wordStat}>Followers</Text>
+              </TouchableOpacity>
             </View>
             
             <View style={styles.userInfoContainer}>
@@ -269,7 +273,7 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
             </Container>
             <Container style={styles.CardContainer}>
-              <AddPostCard />
+              {postUserId === user.uid && <AddPostCard />}
               <Text style={styles.PostsTitleText}>Posts</Text>
               {userPosts.map(post => (
                 <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
@@ -305,7 +309,7 @@ const ProfileScreen = ({ navigation, route }) => {
               <Text style={styles.bioText}>Bio</Text>
               <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
             </View>
-            <AddPostCard />
+            {postUserId === user.uid && <AddPostCard />}
             <Text style={styles.PostsTitleText}>Posts</Text>
             {userPosts.map(post => (
               <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>

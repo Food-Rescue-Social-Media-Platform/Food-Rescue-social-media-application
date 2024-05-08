@@ -67,7 +67,7 @@ const UsersList = ({ usersIds }) => {
             ) : (
                 <>
                     {usersData.length === 0 ? (
-                        <Text style={styles.noFollowingText}>You are not following anyone yet.</Text>
+                        <Text style={styles.noFollowingText}>The list is empty</Text>
                     ) : (
                         <View style={styles.container}>
                             <FlatList

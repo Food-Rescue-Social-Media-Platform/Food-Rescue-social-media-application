@@ -106,32 +106,41 @@ const ProfileScreen = ({ navigation, route }) => {
       if (isFollowing) {
         // Remove followed user's ID from the follower's following list
         const updatedFollowingUsersId = loggedInUserData.followingUsersId.filter(id => id !== postUserId);
+        // Decrease the count of following by 1
+        const updatedFollowingNum = loggedInUserData.followingNum - 1;
   
         // Remove follower's ID from the followed user's followers list
         const updatedFollowersUsersId = followedUserData.followersUsersId.filter(id => id !== user.uid);
+        // Decrease the count of followers by 1
+        const updatedFollowersNum = followedUserData.followersNum - 1;
   
-        // Update logged-in user's following list
-        await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId });
+        // Update logged-in user's following list and count
+        await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId, followingNum: updatedFollowingNum });
   
-        // Update followed user's followers list
-        await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId });
+        // Update followed user's followers list and count
+        await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId, followersNum: updatedFollowersNum });
       } else {
         // Add followed user's ID to the follower's following list
         const updatedFollowingUsersId = [...loggedInUserData.followingUsersId, postUserId];
+        // Increase the count of following by 1
+        const updatedFollowingNum = loggedInUserData.followingNum + 1;
   
         // Add follower's ID to the followed user's followers list
         const updatedFollowersUsersId = [...followedUserData.followersUsersId, user.uid];
+        // Increase the count of followers by 1
+        const updatedFollowersNum = followedUserData.followersNum + 1;
   
-        // Update logged-in user's following list
-        await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId });
+        // Update logged-in user's following list and count
+        await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId, followingNum: updatedFollowingNum });
   
-        // Update followed user's followers list
-        await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId });
+        // Update followed user's followers list and count
+        await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId, followersNum: updatedFollowersNum });
       }
     } catch (error) {
       console.error("Error updating follow status:", error);
     }
   };
+  
 
   // Fetch data when screen is focused
   useEffect(() => {

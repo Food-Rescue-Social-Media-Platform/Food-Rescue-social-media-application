@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity, Button } from 'react-native';
+import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {COLORS} from '../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import {Camera} from 'expo-camera'
@@ -138,43 +138,34 @@ const AddPostScreen = () => {
             <View style={styles.container}>
             
             <View style={styles.header}>
-
-            <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
-                <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
-            </TouchableOpacity>
-
-            <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
-            
-            <MyButton 
-                style={styles.button}
-                text='Post'
-                styleText={{fontSize:15}}
-                onPress={handleAddPost}
-             />                     
-
-        </View> 
-
-        <ScrollView>
-                <View style={{ minHeight:'100%'}}>
-                        <View >
-                            <TextInput
-                                value={postInput}
-                                onChangeText={(text)=>setPostInput(text)}
-                                style={styles.postInput}
-                                placeholder="What food would you like to save today?"
-                                multiline
-                                editable={timeInput.length < 3000}
-                            />
-                            <TextInput
-                                value={timeInput}
-                                onChangeText={(text)=>setTimeInput(text)}
-                                style={styles.timeInput}
-                                placeholder="What are the delivery times?"
-                                multiline
-                                editable={timeInput.length < 30}
-                            />
-                            <Text>{timeInput.length}/30</Text>
-                        </View>
+                <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
+                    <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
+                </TouchableOpacity>
+                    <Text style={{fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%': '27%', marginBottom:5}}>Create Post</Text>
+                <TouchableOpacity style={styles.button} onPress={handleAddPost}>
+                    <Text style={{fontSize:15}}>Post</Text>
+                </TouchableOpacity>              
+            </View>
+            <ScrollView>
+                <View style={styles.input_images}>
+                    <TextInput
+                        value={postInput}
+                        onChangeText={(text)=>setPostInput(text)}
+                        style={styles.postInput}
+                        placeholder="What's on your mind?"
+                        multiline
+                    />
+                    <Text>What are the delivery times?</Text>
+                    <TextInput
+                        value={timeInput}
+                        onChangeText={(text)=>setTimeInput(text)}
+                        style={styles.timeInput}
+                        placeholder="What's on your mind?"
+                        multiline
+                    />
+                    <Text>{timeInput.length}/30</Text>
+                    <View>
+                        {images.map( image => (
 
                             <View style={{  flex: 1, flexDirection: 'row', flexWrap:'wrap'}}>
                                 {images.map((image, index) => (
@@ -204,25 +195,24 @@ const AddPostScreen = () => {
 
         </ScrollView>
 
-        <View style={styles.iconsWrapper}>
-                    <TouchableOpacity>
-                        <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                         <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity >
-                        <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity >
-                        <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
-                    </TouchableOpacity>
-        </View>
-     
-        <Modal                                
+            <View style={styles.iconsWrapper}>
+                <TouchableOpacity>
+                    <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <MaterialIcons name="photo-library" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                    <MaterialCommunityIcons name="map-marker"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                    <MaterialCommunityIcons name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
+                </TouchableOpacity>
+                <TouchableOpacity >
+                    <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
+                </TouchableOpacity>
+            </View>
+            <Modal                                
                 animationType="slide"
                 transparent={true}
                 visible={modalPhoneVisible}
@@ -367,7 +357,14 @@ const AddPostScreen = () => {
           width: '100%',
           height: '100%',
           marginTop: 15,
-          padding: 20,      
+          ...Platform.select({
+                web: {
+                    marginTop: 0,
+                },
+            }),
+          paddingLeft: 20,
+          paddingRight: 20,
+          paddingTop: 20,
     },
     header:{
         alignItems: 'center',
@@ -375,6 +372,39 @@ const AddPostScreen = () => {
         width:'100%',
         marginBottom: 10,
         // height:'8%',
+    },  
+    iconsWrapper:{
+        flexDirection: 'row',
+        backgroundColor: COLORS.secondaryBackground,
+        height: 50,
+        width: '100%',
+    },
+    icon:{
+        marginHorizontal: 10,
+        marginVertical: 5,
+        ...Platform.select({
+            web: {
+                marginVertical: 10,
+            },
+        }),
+    },
+    input_images:{
+        flexDirection: 'column',
+        height:'92%',
+        minHeight: windowHeight - 200,
+    },
+    postInput: {
+        height:'50%',    
+        borderWidth: 1,
+        borderColor: 'gray',
+        padding: 10,
+        marginVertical: 14,
+    },
+    timeInput:{
+        borderWidth: 1,
+        padding: 10,
+        borderColor: 'gray',
+        marginVertical: 14,
     },
     button: {
         backgroundColor: COLORS.secondaryBackground,

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet, Platform } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { useTheme } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,6 +11,7 @@ import { database } from '../../firebase';
 import { doc, updateDoc } from "firebase/firestore";
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { OpenGalereAndSelectImages } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const EditProfile = ({ navigation, route }) => {
     const { colors } = useTheme();
@@ -24,6 +25,7 @@ const EditProfile = ({ navigation, route }) => {
     const [email, setEmail] = useState(userData?.email || '');
     const [location, setLocation] = useState(userData?.location || '');
     const [userName, setUserName] = useState(userData?.userName || '');
+    const [bio, setUserBio] = useState(userData?.bio || '');
     const [forceUpdate, setForceUpdate] = useState(false);
 
     const handleAddUserProfileCover = async () => {
@@ -50,7 +52,8 @@ const EditProfile = ({ navigation, route }) => {
               location: location,
               userName: firstName + ' ' + lastName,
               profileCover: coverURL,
-              profileImg: profileURL
+              profileImg: profileURL,
+              bio: bio
             });
 
             navigation.navigate('Profile', {
@@ -60,7 +63,8 @@ const EditProfile = ({ navigation, route }) => {
                     firstName: firstName,
                     lastName: lastName,
                     userName: firstName + ' ' + lastName,
-                    userImg: profileURL
+                    userImg: profileURL,
+                    bio: bio
                 }
             });
 
@@ -72,187 +76,206 @@ const EditProfile = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <View style={{ alignItems: 'center' }}>
-                <TouchableOpacity onPress={handleAddUserProfileCover}>
-                    <View
-                        style={{
-                            height: 150,
-                            width: 300,
-                            borderRadius: 15,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                        <ImageBackground
-                            source={
-                                userProfileCover && typeof userProfileCover === 'string'
-                                ? { uri: userProfileCover }
-                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}                            }
-                            style={{ height: 150, width: 300 }}
-                            imageStyle={{ borderRadius: 15 }}
-                        >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}>
-                                <Icon
-                                    name="camera"
-                                    size={35}
-                                    color={COLORS.white}
+            <ScrollView>
+                <View style={{ alignItems: 'center' }}>
+                    <TouchableOpacity onPress={handleAddUserProfileCover}>
+                        <View
+                            style={{
+                                height: 150,
+                                width: 300,
+                                borderRadius: 15,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                            <ImageBackground
+                                source={
+                                    userProfileCover && typeof userProfileCover === 'string'
+                                    ? { uri: userProfileCover }
+                                    : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}                            }
+                                style={{ height: 150, width: 300 }}
+                                imageStyle={{ borderRadius: 15 }}
+                            >
+                                <View
                                     style={{
-                                        opacity: 0.7,
-                                        alignItems: 'center',
+                                        flex: 1,
                                         justifyContent: 'center',
-                                        borderWidth: 1,
-                                        borderColor: COLORS.white,
-                                        borderRadius: 10,
-                                    }}
-                                />
-                            </View>
-                        </ImageBackground>
-                    </View>
-                </TouchableOpacity>
-                <Text></Text>
-                <TouchableOpacity onPress={handleAddUserProfileImage}>
-                    <View
-                        style={{
-                            height: 100,
-                            width: 100,
-                            borderRadius: 15,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}>
-                        <ImageBackground
-                            key={forceUpdate}
-                            source={
-                                userProfileImage && typeof userProfileImage === 'string'
-                                ? { uri: userProfileImage }
-                                : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}                            }
-                            style={{ height: 100, width: 100 }}
-                            imageStyle={{ borderRadius: 15 }}
-                        >
-                            <View
-                                style={{
-                                    flex: 1,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}>
-                                <Icon
-                                    name="camera"
-                                    size={35}
-                                    color={COLORS.white}
+                                        alignItems: 'center',
+                                    }}>
+                                    <Icon
+                                        name="camera"
+                                        size={35}
+                                        color={COLORS.white}
+                                        style={{
+                                            opacity: 0.7,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            borderWidth: 1,
+                                            borderColor: COLORS.white,
+                                            borderRadius: 10,
+                                        }}
+                                    />
+                                </View>
+                            </ImageBackground>
+                        </View>
+                    </TouchableOpacity>
+                    <Text></Text>
+                    <TouchableOpacity onPress={handleAddUserProfileImage}>
+                        <View
+                            style={{
+                                height: 100,
+                                width: 100,
+                                borderRadius: 15,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                            <ImageBackground
+                                key={forceUpdate}
+                                source={
+                                    userProfileImage && typeof userProfileImage === 'string'
+                                    ? { uri: userProfileImage }
+                                    : {uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif'}                            }
+                                style={{ height: 100, width: 100 }}
+                                imageStyle={{ borderRadius: 15 }}
+                            >
+                                <View
                                     style={{
-                                        opacity: 0.7,
-                                        alignItems: 'center',
+                                        flex: 1,
                                         justifyContent: 'center',
-                                        borderWidth: 1,
-                                        borderColor: COLORS.white,
-                                        borderRadius: 10,
-                                    }}
-                                />
-                            </View>
-                        </ImageBackground>
-                    </View>
+                                        alignItems: 'center',
+                                    }}>
+                                    <Icon
+                                        name="camera"
+                                        size={35}
+                                        color={COLORS.white}
+                                        style={{
+                                            opacity: 0.7,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            borderWidth: 1,
+                                            borderColor: COLORS.white,
+                                            borderRadius: 10,
+                                        }}
+                                    />
+                                </View>
+                            </ImageBackground>
+                        </View>
+                    </TouchableOpacity>
+                    <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
+                        {userName}
+                    </Text>
+                </View>
+
+                <View style={styles.action}>
+                    <FontAwesome name="id-card" color={colors.text} size={25} paddingLeft={10} />
+                    <TextInput
+                        placeholder="First Name"
+                        placeholderTextColor="#666666"
+                        autoCorrect={false}
+                        style={[
+                            styles.textInput,
+                            {
+                                color: colors.text,
+                                paddingLeft: 10,
+
+                            },
+                        ]}
+                        value={firstName}
+                        onChangeText={text => setFirstName(text)}
+                    />
+                </View>
+                <View style={styles.action}>
+                    <FontAwesome name="id-card" color={colors.text} size={25} paddingLeft={10} />
+                    <TextInput
+                        placeholder="Last Name"
+                        placeholderTextColor="#666666"
+                        autoCorrect={false}
+                        style={[
+                            styles.textInput,
+                            {
+                                color: colors.text,
+                            },
+                        ]}
+                        value={lastName}
+                        onChangeText={text => setLastName(text)}
+                    />
+                </View>
+                <View style={styles.action}>
+                    <FontAwesome name="phone" color={colors.text} size={25} paddingLeft={10} />
+                    <TextInput
+                        placeholder="Phone"
+                        placeholderTextColor="#666666"
+                        keyboardType="number-pad"
+                        autoCorrect={false}
+                        style={[
+                            styles.textInput,
+                            {
+                                color: colors.text,
+                                paddingLeft: 18,
+
+                            },
+                        ]}
+                        value={phone}
+                        onChangeText={text => setPhone(text)}
+                    />
+                </View>
+                <View style={styles.action}>
+                    <AntDesign name="email" color={colors.text} size={25} paddingLeft={8} />
+                    <TextInput
+                        placeholder="Email"
+                        placeholderTextColor="#666666"
+                        keyboardType="email-address"
+                        autoCorrect={false}
+                        style={[
+                            styles.textInput,
+                            {
+                                color: colors.text,
+                                paddingLeft: 14,
+
+                            },
+                        ]}
+                        value={email}
+                        onChangeText={text => setEmail(text)}
+                    />
+                </View>
+                <View style={styles.action}>
+                    <MaterialCommunityIcons name="map-marker" color={colors.text} size={27} paddingLeft={5} />
+                    <TextInput
+                        placeholder="location"
+                        placeholderTextColor="#666666"
+                        autoCorrect={false}
+                        style={[
+                            styles.textInput,
+                            {
+                                color: colors.text,
+                                paddingLeft: 16,
+                            },
+                        ]}
+                        value={location}
+                        onChangeText={text => setLocation(text)}
+                    />
+                </View>
+                <View style={styles.action}>
+                    <MaterialCommunityIcons name="bio" color={colors.text} size={27} paddingLeft={5} />
+                    <TextInput
+                        placeholder="bio..."
+                        placeholderTextColor="#666666"
+                        autoCorrect={false}
+                        style={[
+                            styles.textInput,
+                            {
+                                color: colors.text,
+                                paddingLeft: 16,
+                            },
+                        ]}
+                        multiline
+                        value={bio}
+                        onChangeText={(text) => setUserBio(text)}
+                    />
+                </View>
+                <TouchableOpacity style={styles.commandButton} onPress={updateUserProfile}>
+                    <Text style={styles.panelButtonTitle}>Submit</Text>
                 </TouchableOpacity>
-                <Text style={{ marginTop: 10, fontSize: 18, fontWeight: 'bold' }}>
-                    {userName}
-                </Text>
-            </View>
-
-            <View style={styles.action}>
-                <FontAwesome name="id-card" color={colors.text} size={25} paddingLeft={10} />
-                <TextInput
-                    placeholder="First Name"
-                    placeholderTextColor="#666666"
-                    autoCorrect={false}
-                    style={[
-                        styles.textInput,
-                        {
-                            color: colors.text,
-                            paddingLeft: 10,
-
-                        },
-                    ]}
-                    value={firstName}
-                    onChangeText={text => setFirstName(text)}
-                />
-            </View>
-            <View style={styles.action}>
-                <FontAwesome name="id-card" color={colors.text} size={25} paddingLeft={10} />
-                <TextInput
-                    placeholder="Last Name"
-                    placeholderTextColor="#666666"
-                    autoCorrect={false}
-                    style={[
-                        styles.textInput,
-                        {
-                            color: colors.text,
-                        },
-                    ]}
-                    value={lastName}
-                    onChangeText={text => setLastName(text)}
-                />
-            </View>
-            <View style={styles.action}>
-                <FontAwesome name="phone" color={colors.text} size={25} paddingLeft={10} />
-                <TextInput
-                    placeholder="Phone"
-                    placeholderTextColor="#666666"
-                    keyboardType="number-pad"
-                    autoCorrect={false}
-                    style={[
-                        styles.textInput,
-                        {
-                            color: colors.text,
-                            paddingLeft: 18,
-
-                        },
-                    ]}
-                    value={phone}
-                    onChangeText={text => setPhone(text)}
-                />
-            </View>
-            <View style={styles.action}>
-                <AntDesign name="email" color={colors.text} size={25} paddingLeft={8} />
-                <TextInput
-                    placeholder="Email"
-                    placeholderTextColor="#666666"
-                    keyboardType="email-address"
-                    autoCorrect={false}
-                    style={[
-                        styles.textInput,
-                        {
-                            color: colors.text,
-                            paddingLeft: 14,
-
-                        },
-                    ]}
-                    value={email}
-                    onChangeText={text => setEmail(text)}
-                />
-            </View>
-            <View style={styles.action}>
-                <MaterialCommunityIcons name="map-marker" color={colors.text} size={27} paddingLeft={5} />
-                <TextInput
-                    placeholder="location"
-                    placeholderTextColor="#666666"
-                    autoCorrect={false}
-                    style={[
-                        styles.textInput,
-                        {
-                            color: colors.text,
-                            paddingLeft: 16,
-                        },
-                    ]}
-                    value={location}
-                    onChangeText={text => setLocation(text)}
-                />
-            </View>
-            
-            <TouchableOpacity style={styles.commandButton} onPress={updateUserProfile}>
-                <Text style={styles.panelButtonTitle}>Submit</Text>
-            </TouchableOpacity>
+            </ScrollView>
         </View>
     );
 }
@@ -262,8 +285,7 @@ export default EditProfile;
 const styles = StyleSheet.create({
     container: {
     flex: 1,
-    backgroundColor: COLORS.appBackGroundColor,
-
+    backgroundColor: COLORS.white,
   },
   commandButton: {
     backgroundColor: COLORS.secondaryBackground,
@@ -274,6 +296,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft:20,
     marginTop:10,
+    ...Platform.select({
+        web: {
+            marginLeft: '30%',
+            width:'40%',
+        },
+    }),
   },
   panel: {
     padding: 20,
@@ -336,6 +364,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f2f2f2',
     paddingBottom: 5,
+    ...Platform.select({
+        web: {
+            marginLeft:'2%',
+        },
+    }),
   },
   actionError: {
     flexDirection: 'row',

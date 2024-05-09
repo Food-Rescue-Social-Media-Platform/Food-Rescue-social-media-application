@@ -5,6 +5,7 @@ import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
 import {COLORS} from '../../styles/colors';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -13,66 +14,68 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.outerContainer}>
-      <View style={styles.container}>
-        <Image
-          source={require('../../assets/Images/PhoneAuthLogo.png')}
-          style={styles.logo}
-        />
-        <Text style={styles.text}>Sign in</Text>
-        <Text style={{ paddingBottom: 10 }}>Rescue The Food From Wasting</Text>
-        <FormInput
-          placeHolderText="Email"
-          iconType="email"
-          keyboardType="email-address"
-          labelValue={email}
-          onChangeText={(userEmail) => setEmail(userEmail)}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <FormInput
-          placeHolderText="Password"
-          iconType="lock"
-          labelValue={password}
-          onChangeText={(userPassword) => setPassword(userPassword)}
-          secureTextEntry={true}
-        />
-        <View style={styles.forgotButton}>
-          <TouchableOpacity>
-            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('ForgotMyPasswordScreen')}>Forgot your Password ?</Text>
-          </TouchableOpacity>
+      <ScrollView>
+        <View style={styles.container}>
+          <Image
+            source={require('../../assets/Images/PhoneAuthLogo.png')}
+            style={styles.logo}
+          />
+          <Text style={styles.text}>Sign in</Text>
+          <Text style={{ paddingBottom: 10 }}>Rescue The Food From Wasting</Text>
+          <FormInput
+            placeHolderText="Email"
+            iconType="email"
+            keyboardType="email-address"
+            labelValue={email}
+            onChangeText={(userEmail) => setEmail(userEmail)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <FormInput
+            placeHolderText="Password"
+            iconType="lock"
+            labelValue={password}
+            onChangeText={(userPassword) => setPassword(userPassword)}
+            secureTextEntry={true}
+          />
+          <View style={styles.forgotButton}>
+            <TouchableOpacity>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('ForgotMyPasswordScreen')}>Forgot your Password ?</Text>
+            </TouchableOpacity>
+          </View>
+          <FormButton
+            buttonTitle="Sign in"
+            onPress={() => login(email,password)}
+          />
+          <View style={styles.orRowContainer}>
+            <View style={styles.line}></View>
+            <Text style={styles.orText}>or</Text>
+            <View style={styles.line}></View>
+          </View>
+          <View style={styles.SocialButtonContainer}>
+              <SocialButton
+                  buttonTitle="Sign In with Facebook"
+                  btnType="facebook"
+                  color="#4867aa"
+                  backgroundColor="#e6eaf4"
+                  onPress={() => {}}
+              />
+              <SocialButton
+                  buttonTitle="Sign In with Google"
+                  btnType="google"
+                  color="#de4d41"
+                  backgroundColor="#f5e7ea"
+                  onPress={() => {}}
+              />
+          </View>
+          <View style={styles.createAccountContainer}>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
+            <TouchableOpacity>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>Sign up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <FormButton
-          buttonTitle="Sign in"
-          onPress={() => login(email,password)}
-        />
-        <View style={styles.orRowContainer}>
-          <View style={styles.line}></View>
-          <Text style={styles.orText}>or</Text>
-          <View style={styles.line}></View>
-        </View>
-        <View style={styles.SocialButtonContainer}>
-            <SocialButton
-                buttonTitle="Sign In with Facebook"
-                btnType="facebook"
-                color="#4867aa"
-                backgroundColor="#e6eaf4"
-                onPress={() => {}}
-            />
-            <SocialButton
-                buttonTitle="Sign In with Google"
-                btnType="google"
-                color="#de4d41"
-                backgroundColor="#f5e7ea"
-                onPress={() => {}}
-            />
-        </View>
-        <View style={styles.createAccountContainer}>
-          <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
-          <TouchableOpacity>
-            <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>Sign up</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };

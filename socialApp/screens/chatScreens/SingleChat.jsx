@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import {View, Text, StatusBar,StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView} from "react-native";
+import React, { useEffect, useState, useContext } from 'react';
+import {View, ActivityIndicator, Text, StatusBar,StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
@@ -14,34 +14,41 @@ import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/ch
 import { Message,fetchMessages, addMessage, startListeningForMessages } from '../../FirebaseFunctions/collections/message';
 import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
 import { useRef } from 'react';
-import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
+import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved,orderByChild } from "firebase/database";
 import { serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
-
+import { AuthContext } from '../../navigation/AuthProvider';
 
 
 const SingleChat = ({navigation}) => {
     // const route = useRoute();
     // const receiverId = route.params?.receiverId || '';
+    // const sender = useSelector(state => state.user.userData);
+    const { user, logout } = useContext(AuthContext);
+    const userDataId = user.uid;
     const receiverId = 'zsERzWzcK7cp50c1bzIoSqxpBsA2';
-    const sender = useSelector(state => state.user.userData);
+    const [ sender, setSender] = useState(null);
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
     const [ msg, setMsg] = useState('');
     const [images, setImages] = useState([]);
     const [ roomId, setRoomId ] = useState('');
+    const [hasMoreMessages, setHasMoreMessages] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [lastMessageKey, setLastMessageKey] = useState(null);
+    const [startMessageID, setStartMessageID] = useState(null);
     const chatContainerRef = useRef(null);
+    
 
 
     useEffect(() => {
       const fetchData = async () => {
             // Fetch the roomID
+            console.log('Fetch roomID');
             await fetchRoomId();
-
+            console.log('RoomID: ', roomId);
             // fetch all existing messages
-            fetchMessages(roomId, setAllMessages, setHasMoreMessages, setCurrentPage);
-
-            const docRef = ref(db, "messages/" + roomId);
+            await fetchMessages(roomId, setAllMessages, setHasMoreMessages, setStartMessageID, startMessageID);
            
             // Listen to new messages
             const unsubscribe = startListeningForMessages(roomId, setAllMessages);
@@ -56,14 +63,18 @@ const SingleChat = ({navigation}) => {
 
     const fetchRoomId = async () => {
         let receiver = await fetchUser(receiverId);
-
-        if (receiver !== null) {
-
+        let senderData = await fetchUser(userDataId);
+        console.log('Sender: ', senderData);
+        
+        if (receiver !== null) {    
+            senderData.id = userDataId;
+            setSender(senderData);
             receiver.id = receiverId;
-
             setReceiver(receiver);
-            fetchChat('chatsList/' + sender.id + '/' + receiver.id, (chat) => {
+            console.log('Sender id: ', senderData.id);
 
+            fetchChat('chatsList/' + senderData.id + '/' + receiver.id, (chat) => {
+            console.log('[Chat]: ', chat);    
             // if chat is not found, create a new chat
             if(chat === null){
                 createNewChat();
@@ -94,7 +105,6 @@ const SingleChat = ({navigation}) => {
 
     const sendMsg = async () => { 
         if(msg === '' && images == '') return;
-
         const message = new Message(msg, images, sender.id, receiver.id);
         console.log('Message: ', message);
         await addMessage(message, roomId, sender, receiver.id);
@@ -114,25 +124,38 @@ const SingleChat = ({navigation}) => {
         console.log('Images uri', images);
     }
     
+    const handleLoadMore = async () => {
+        // console.log("handleLoadMore is Load more messages")
+        // fetchMessages(roomId, setAllMessages, setHasMoreMessages, setStartMessageID, startMessageID);    
+      };
+      
+      // initialScrollIndex={allMessages.length - 1}
+ 
 
-    return (
-           <View style={styles.container}>
-                <FlatList
-                    ref={chatContainerRef}
-                    onContentSizeChange={() =>
-                        chatContainerRef.current?.scrollToEnd({ animated: false })
-                    }            
-                    keyExtractor={(item, index) => index.toString()}
-                    data={allMessages}
-                    refreshing={true}
-                    renderItem={({item}) => {
-                    return(    
-                         <MsgComponent  
-                           item={item} 
-                         />
-                     )}}
+    const isCloseToTop = ({ layoutMeasurement, contentOffset, contentSize }) => {
+        const paddingToTop = 80;        
+        return layoutMeasurement.height + contentOffset.y >=
+          contentSize.height - paddingToTop ;
+      };
+    
+      return (
+          <View style={styles.container}>
+            <FlatList
+                ref={chatContainerRef}
+                onContentSizeChange={() =>
+                    chatContainerRef.current?.scrollToEnd({})                    
+                } 
+                onLayout={() => chatContainerRef.current.scrollToEnd({})}           
+                keyExtractor={(item, index) => index.toString()}
+                data={allMessages}
+                renderItem={({item}) => {
+                return(    
+                     <MsgComponent  
+                       item={item} 
+                     />
+                 )}}                     
                 />
-            
+
                 <View style={styles.containerFooter}>  
                     <TouchableOpacity style={styles.icon} onPress={onPressAttach}>
                         <MaterialIcons name="attach-file" size={24} /> 
@@ -244,11 +267,10 @@ const styles = StyleSheet.create({
   });
   
 
-const fetchUser = async (receiverId) => {
+const fetchUser = async (userId) => {
     try{
-    const docRef = doc(database, "users", receiverId);
+    const docRef = doc(database, "users", userId);
     const docSnap = await getDoc(docRef);
-    console.log('docSnap: ', docSnap.data());
     if(!docSnap.exists()) {
         return null;
     }

@@ -1,6 +1,8 @@
-import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
-import { serverTimestamp } from 'firebase/firestore';
+import { getDatabase, ref ,on,query, update,child, startAt, endAt, set,orderByKey, push, onValue, equalTo, get ,limitToLast,orderByChild, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
+import { doc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
+
+const PAGE_SIZE = 10; 
 
 export class Message {
     constructor(message, images, from, to) {
@@ -11,30 +13,99 @@ export class Message {
         if(images) this.images = images;
         this.from = from;
         this.to = to;
-        this.sentTime = serverTimestamp();
+        this.sentTime = Date.now();;
     }
 }
 
 
 
-export async function fetchMessages(roomID, setAllMessages,  setHasMoreMessages, setCurrentPage)) {
-    try {
-        const docRef = ref(db, 'messages/' + roomID);
-        onValue(docRef, (snapshot) => {
+export async function fetchMessages(roomID, setAllMessages, setHasMoreMessages, setStartMessageID, startMessageID) {
+    try {  
+         const messageRef = ref(db, 'messages/' + roomID);
+         console.log("messageRef: ", messageRef);
+
+         const snapshot = await get(messageRef).then((snapshot) => {
             const data = snapshot.val();
             if (!data) {
                 console.log('No data found');
-                setAllMessages([]);
+                setHasMoreMessages(false);
                 return;
             }
-            console.log('Messages: ', data);
-            setAllMessages(Object.values(data));
-        }, {
-            onlyOnce: true
-        });
-    } catch (error) {
-        console.error('Error fetching messages:', error);
-    }
+            const messages = Object.values(data);
+            // console.log('Object.values(data):', Object.values(data));
+            setAllMessages((prevMessages) => [...prevMessages, ...messages]);
+            setStartMessageID(Object.keys(data)[0]);
+            setHasMoreMessages(messages.length < PAGE_SIZE ? false : true);
+         }).catch((error) => {
+            console.error('Error fetching messages:', error);
+            });
+
+        //  let snapshot;
+
+        //  if(startMessageID !== null) {
+        //     console.log('Start message ID is NOT NULL:', startMessageID);
+        //     snapshot = await get(
+        //      query(messageRef, endAt(startMessageID), orderByChild('sentTime'), limitToLast(10))
+        //  );
+        // }
+        // else {
+        //     console.log('Start message ID is NUll');
+        //     snapshot = await get(
+        //         query(messageRef, orderByChild('sentTime'), limitToLast(10))
+        //      );
+        // }
+        //  const data = snapshot.val();
+        //  if (!data) {
+        //     console.log('No data found');
+        //     setHasMoreMessages(false);
+        //     return;
+        //  }
+        //  const messages = Object.values(data);
+        //  console.log('Object.values(data):', Object.values(data));
+        //  setAllMessages((prevMessages) => [...prevMessages, ...messages]);
+        //  setStartMessageID(Object.keys(data)[0]);
+        // //  console.log('\nObject.keys(data): ', Object.keys(data));
+
+        // //  console.log('\nStart message ID:', Object.keys(data)[0]);
+        //  setHasMoreMessages(messages.length < PAGE_SIZE ? false : true);
+        } 
+     
+        catch (error) {
+            console.error('Error fetching messages:', error);
+        }
+            // const query = orderByChild(docRef, 'sentTime');
+            // const query2 = limitToLast(query, (currentPage + 1) * PAGE_SIZE);
+            // const query3 = query2;
+            // const snapshot = await get(query3);
+            // const data = snapshot.val();
+            // if (!data) {
+            //     console.log('No data found');
+            //     // setAllMessages([]);
+            //     setHasMoreMessages(false);
+            //     return;
+            // }
+            // const messages = Object.values(data);
+            // console.log('Messages: ', messages);
+            // setAllMessages((prevMessages) => [...prevMessages, ...messages]);
+            // setCurrentPage(currentPage + 1);
+            // setLastMessageKey(Object.keys(data)[0]);
+        
+    
+       
+      
+        // onValue(docRef, (snapshot) => {
+        //     const data = snapshot.val();
+        //     if (!data) {
+        //         console.log('No data found');
+        //         setAllMessages([]);
+        //         return;
+        //     }
+        //     console.log('Messages: ', data);
+        //     setAllMessages(Object.values(data));
+        // }, {
+        //     onlyOnce: true
+        // });
+    
 }
 
 
@@ -67,16 +138,22 @@ export async function startListeningForMessages(roomId, setAllMessages) {
     try {
  
       const docRef = ref(db, "messages/" + roomId);
-  
+    //   const unsubscribe= onChildAdded(docRef, (snapshot) => {
+    //     const data = snapshot.val();
+    //     const newMessages = Object.values(data);
+    //     console.log('New messages:', newMessages);
+    //     setAllMessages((prevMessages) => [...prevMessages, ...newMessages]);
+    //   });
       const unsubscribe = onChildChanged(docRef, (snapshot) => {
         const data = snapshot.val();
         const newMessages = Object.values(data);
-        console.log('New messages:', newMessages);
-        setAllMessages((prevMessages) => [...prevMessages, ...newMessages]);
+        const message = newMessages[newMessages.length - 1];
+        console.log('New messages:', message);
+        setAllMessages((prevMessages) => [...prevMessages, message]);
       });
   
       // Return the unsubscribe function for cleanup
-      return unsubscribe;
+     return unsubscribe;
     } catch (error) {
       console.error('Error fetching messages:', error);
     }

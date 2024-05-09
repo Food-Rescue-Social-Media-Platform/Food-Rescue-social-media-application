@@ -42,6 +42,6 @@ if (typeof window !== 'undefined' && window.document) {
 
 export const storage = getStorage(app);
 export const database = getFirestore(app);
-const db =  getDatabase(app);
+const db =  getDatabase();
 export { db };
 export { auth };

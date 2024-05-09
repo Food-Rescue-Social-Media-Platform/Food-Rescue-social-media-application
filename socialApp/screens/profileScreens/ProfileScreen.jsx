@@ -27,7 +27,9 @@ const ProfileScreen = ({ navigation, route }) => {
       const userDocRef = doc(database, "users", postUserId);
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
-        setUserData(userDocSnap.data());
+        const user = userDocSnap.data();
+        user.id = postUserId;
+        setUserData(user);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -255,7 +257,7 @@ const ProfileScreen = ({ navigation, route }) => {
             <Container style={postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther}>
               { postUserId==user.uid?
                   <View style={styles.buttons}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData})}>
                       <Text style={styles.buttonText}>Edit Profile</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
@@ -264,7 +266,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   </View>
                   :
                   <View style={styles.buttons}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() =>  navigation.navigate('SingleChat', {receiverId: userData.id })}>
                       <Text style={styles.buttonText}>Chat</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>
@@ -303,7 +305,7 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
             ) : (
               <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={()=> navigation.navigate('SingleChat', {receiverId: userData.id})}>
                   <Text style={styles.buttonText}>Chat</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>

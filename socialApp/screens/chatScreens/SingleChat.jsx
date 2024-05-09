@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import {View, Text, StatusBar,StyleSheet, FlatList, TextInput, TouchableOpacity, ScrollView} from "react-native";
 import { useRoute } from '@react-navigation/native';
 import {COLORS} from '../../styles/colors';
@@ -17,20 +17,23 @@ import { useRef } from 'react';
 import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
 import { serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { AuthContext } from '../../navigation/AuthProvider';
+
 
 
 
 const SingleChat = ({navigation}) => {
-    // const route = useRoute();
-    // const receiverId = route.params?.receiverId || '';
-    const receiverId = 'zsERzWzcK7cp50c1bzIoSqxpBsA2';
-    const sender = useSelector(state => state.user.userData);
+    const { user, logout } = useContext(AuthContext);
+    const route = useRoute();
+    const receiverId = route.params.receiverId;
+    const [sender, setSender] = useState();
     const [ receiver, setReceiver] = useState();
     const [ allMessages, setAllMessages ] = useState([]);
     const [ msg, setMsg] = useState('');
     const [images, setImages] = useState([]);
     const [ roomId, setRoomId ] = useState('');
     const chatContainerRef = useRef(null);
+    const [hasMoreMessages, setHasMoreMessages] = useState(true);
 
 
     useEffect(() => {
@@ -39,7 +42,7 @@ const SingleChat = ({navigation}) => {
             await fetchRoomId();
 
             // fetch all existing messages
-            fetchMessages(roomId, setAllMessages, setHasMoreMessages, setCurrentPage);
+            fetchMessages(roomId, setAllMessages, setHasMoreMessages);
 
             const docRef = ref(db, "messages/" + roomId);
            
@@ -55,13 +58,16 @@ const SingleChat = ({navigation}) => {
 
 
     const fetchRoomId = async () => {
+        let sender = await fetchUser(user.uid);
         let receiver = await fetchUser(receiverId);
 
-        if (receiver !== null) {
+        if (receiver !== null && sender !== null) {
 
             receiver.id = receiverId;
-
             setReceiver(receiver);
+            sender.id = user.uid;
+            setSender(sender);
+
             fetchChat('chatsList/' + sender.id + '/' + receiver.id, (chat) => {
 
             // if chat is not found, create a new chat
@@ -161,6 +167,7 @@ const SingleChat = ({navigation}) => {
 }
 
 
+
 const styles = StyleSheet.create({
     container: {
       marginTop:  5,
@@ -244,9 +251,9 @@ const styles = StyleSheet.create({
   });
   
 
-const fetchUser = async (receiverId) => {
+const fetchUser = async (id) => {
     try{
-    const docRef = doc(database, "users", receiverId);
+    const docRef = doc(database, "users", id);
     const docSnap = await getDoc(docRef);
     console.log('docSnap: ', docSnap.data());
     if(!docSnap.exists()) {

@@ -20,7 +20,7 @@ const Chat = () => {
 
     const createChat = () => {
         const receiverId = 'uNwhQOcidogqWCR5FU2Y6Wo003t1';
-        navigation.navigate('SingleChat', {chatData:'', receiverId: receiverId});
+        navigation.navigate('SingleChat', {receiverId: receiverId});
         // fetchUser(receiverId);
         // fetchChat(receiverId);
     }

@@ -17,7 +17,7 @@ export class Message {
 
 
 
-export async function fetchMessages(roomID, setAllMessages,  setHasMoreMessages, setCurrentPage)) {
+export async function fetchMessages(roomID, setAllMessages,  setHasMoreMessages) {
     try {
         const docRef = ref(db, 'messages/' + roomID);
         onValue(docRef, (snapshot) => {

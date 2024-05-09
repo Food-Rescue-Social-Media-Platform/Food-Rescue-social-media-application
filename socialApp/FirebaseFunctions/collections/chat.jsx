@@ -55,3 +55,15 @@ export function fetchChat(path, callback) {
     callback(null); // Call the callback with null on error
   }
 }
+
+
+export function getListChats(userId, setListChats){
+  const docRef = ref(db, "chatsList/" + userId);
+  console.log('docRef: ', docRef);
+  onValue(docRef, (snapshot) => {
+      const data = snapshot.val();
+      if(!data) return console.log('-No data found');
+      console.log('chatList: ', Object.values(data));
+      setListChats(Object.values(snapshot.val()));//todo
+  });
+}

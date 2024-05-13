@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {COLORS} from '../../styles/colors';
@@ -9,28 +8,28 @@ import { AuthContext } from '../../navigation/AuthProvider';
 
 const MsgComponent = (props) => {
     const { user, logout } = useContext(AuthContext);
-
     const { item } = props;
     const { message, images, sender, sentTime } = item;
     const userData = useSelector(state => state.user.userData);
     const formatDate = moment(sentTime).format('LT');
-
     
     return (
         <View style= {[styles.msgBox, sender === user.id ? styles.right : styles.left ]}>
-            { message?.length > 0 && (<Text >{message}</Text>)}
-            {( images?.length > 0) && (
-                <View style={{flexDirection: 'cul', flexWrap: 'wrap'}}>
-                    {images.map((img, index) => (
+            { message?.length > 0 && 
+                (<Text >{message}</Text>)
+            }
+            
+            { images?.length > 0 && 
+                ( <View style={{flexDirection: 'cul', flexWrap: 'wrap'}}>
+                    { images.map((img, index) => (
                         <Image
                             key={index}
                             source={{uri: img}}
                             style={{height: 100, width: 100}}
                         />
-                    ))}
-                </View>
-            
-            )}
+                    )) }
+                </View>)
+            }
             <Text style={styles.timeText}>{formatDate}</Text>
         </View>
         )
@@ -59,7 +58,6 @@ const styles = StyleSheet.create({
     right: {
         backgroundColor: COLORS.theme,
         alignSelf: 'flex-end',
-
     },
 })
 

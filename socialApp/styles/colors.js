@@ -13,5 +13,6 @@ export const COLORS = {
     navBar: '#56D06B',
     headerChat: '#A7EAAE',
     blueHeaderText: '#2e64e5',
-    appBackGroundColor: '#f9fafd'
+    appBackGroundColor: '#f9fafd',
+    lightGray: '#f5f5f5',
 }

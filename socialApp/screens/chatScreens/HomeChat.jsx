@@ -31,22 +31,24 @@ const HomeChat = ({navigation}) => {
 
   const renderItem = ({ item })=> (
       <ListItem
-        bottomDivider
-        containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
-        onPress={() => navigation.navigate('SingleChat', {receiverData:item, userConnected:userConnected } )}
+          bottomDivider
+          containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
+          onPress={() => navigation.navigate('SingleChat', {receiverData:item, userConnected:userConnected } )}
       >
-        <Avatar
+      <Avatar
           source={{ uri: item.image }}
           rounded
           title={item.receiver}
           size="medium"
-        />
-        <ListItem.Content>
-          <ListItem.Title style={{ fontSize: 14 }}>
-            {item.receiver}
-          </ListItem.Title>
+      />
+
+      <ListItem.Content>
+            <ListItem.Title style={{ fontSize: 14 }}>
+              {item.receiver}
+            </ListItem.Title>
+
             <ListItem.Subtitle numberOfLines={1} style={{ fontSize: 12 }}>
-              {item.lastMsg}
+                {item.lastMsg}
             </ListItem.Subtitle>
         </ListItem.Content>
       </ListItem>
@@ -55,46 +57,46 @@ const HomeChat = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-        <View style={styles.searchContainer}>      
-        <AntDesign name="search1" size={18} style={styles.searchIcon} />
-        <TextInput style={styles.searchInput}
-            value={search}
-            onChangeText={(text)=> setSearch(text)}
-            placeholder='Search'
-            keyBoardType="string"
-        />
-        </View>
+            <View style={styles.searchContainer}>      
+                <AntDesign name="search1" size={18} style={styles.searchIcon} />
+                
+                <TextInput style={styles.searchInput}
+                    value={search}
+                    onChangeText={(text)=> setSearch(text)}
+                    placeholder='Search'
+                    keyBoardType="string"
+                />
 
-        <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            data={listChats}
-            renderItem={renderItem}
-        />
-        <View>
-        </View>
+            </View>
+
+            <FlatList
+                keyExtractor={(item, index) => index.toString()}
+                data={listChats}
+                renderItem={renderItem}
+            />
         </View>
       );
-    };
+};
 
-    export default HomeChat;
+export default HomeChat;
 
-    const styles = StyleSheet.create({
+const styles = StyleSheet.create({
       container:{
         backgroundColor: COLORS.white
       },  
       searchContainer : {
-        width: windowWidth/1.1,
+        width: windowWidth,
         rounded: 10,
         paddingHorizontal:10,
         flexDirection:'row',
         alignItems:'center',
+        backgroundColor: COLORS.lightGray,   
     }, 
       searchInput: {
         fontSize: 14,
         opacity: 1.7,
         height: windowHeight/18,
         width: windowWidth/1.8,
-
       },
       searchIcon:{
         marginRight: 10,

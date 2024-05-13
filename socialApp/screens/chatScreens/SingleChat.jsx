@@ -24,8 +24,6 @@ const SingleChat = ({ navigation }) => {
     const { user, logout } = useContext(AuthContext);
     const receiverData = route.params.receiverData;
     const userData = route.params.userConnected; 
-    // console.log('userData', userData);
-    // console.log('receiverData', receiverData);
     const [allMessages, setAllMessages] = useState([]);
     const [msg, setMsg] = useState('');
     const [images, setImages] = useState([]);
@@ -33,6 +31,7 @@ const SingleChat = ({ navigation }) => {
 
 
     useEffect(() => {
+        chatContainerRef.current?.scrollToEnd({ animated: true })
         let unsubscribe;
         
         const listener = async () => {
@@ -50,7 +49,7 @@ const SingleChat = ({ navigation }) => {
         console.log('sendMsg, msg:', msg, 'images:', images, 'userData.id:', userData.id, 'receiverData.id:', receiverData.id)
         const message = new Message(msg, images, userData.id, receiverData.id);
         console.log('sendMsg, message:', message);
-        await addMessage(message, receiverData.roomID, userData, receiverData.id);
+        await addMessage(message, receiverData.roomID, userData, receiverData.id, setMsg, setImages);
         console.log('\nsendMsg, Message: ', message);
         setMsg('');
         setImages([]);
@@ -80,7 +79,7 @@ const SingleChat = ({ navigation }) => {
         <FlatList
                 ref={chatContainerRef}
                 onContentSizeChange={() =>
-                    chatContainerRef.current?.scrollToEnd({ animated: false })
+                    chatContainerRef.current?.scrollToEnd({ animated: true })
                 }
                 keyExtractor={(item, index) => index.toString()}
                 data={allMessages}
@@ -102,6 +101,7 @@ const SingleChat = ({ navigation }) => {
                 <View style={styles.windowSend}>
                         <ScrollView  horizontal={true} showsHorizontalScrollIndicator={false}>
                             <TextInput
+                                autoFocus={true}
                                 placeholder='Send message...'
                                 onChangeText={val => setMsg(val)}
                                 multiline={true}

@@ -25,7 +25,7 @@ const MsgComponent = (props) => {
                         <Image
                             key={index}
                             source={{uri: img}}
-                            style={{height: 100, width: 100, margin: 5}}
+                            style={{height: 100, width: 100}}
                         />
                     ))}
                 </View>
@@ -40,7 +40,7 @@ const MsgComponent = (props) => {
 const styles = StyleSheet.create({
     msgBox :{
         marginHorizontal: 10,
-        minWidth: 80,
+        minWidth: 100,
         maxWidth: '80%',
         marginVertical: 5,
         padding: 6,
@@ -52,36 +52,6 @@ const styles = StyleSheet.create({
         paddingTop:4,
         alignSelf: 'flex-end',
     },
-    dayview: {
-        alignSelf: 'center',
-        height: 30,
-        width: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-        // backgroundColor: COLORS.white,
-        borderRadius: 30,
-        marginTop: 10
-    },
-    iconView: {
-        width: 42,
-        height: 42,
-        borderRadius: 21,
-        alignItems: 'center',
-        justifyContent: 'center',
-        // backgroundColor: COLORS.themecolor,
-    },
-    TriangleShapeCSS: {
-        position: 'absolute',
-        width: 0,
-        height: 0,
-        backgroundColor: 'transparent',
-        borderStyle: 'solid',
-        borderLeftWidth: 15,
-        borderRightWidth: 5,
-        borderBottomWidth: 20,
-        borderLeftColor: 'transparent',
-        borderRightColor: 'transparent',
-    },
     left: {
         backgroundColor: COLORS.messageNotME,
         alignSelf: 'flex-start',
@@ -92,14 +62,5 @@ const styles = StyleSheet.create({
 
     },
 })
-
-const getFormattedTime = (timestamp) => {
-    const date = new Date(timestamp);
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    
-    const formattedTime = `${hours}:${minutes}`;
-    return formattedTime;
-}
 
 export default MsgComponent;

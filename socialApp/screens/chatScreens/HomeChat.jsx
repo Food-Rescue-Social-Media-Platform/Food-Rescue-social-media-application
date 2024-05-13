@@ -1,50 +1,39 @@
 import React, {  useState, useEffect, useContext } from 'react';
 import { View, FlatList, StyleSheet, TextInput } from 'react-native';
-import { Button } from 'react-native-elements';
 import {ListItem, Avatar} from 'react-native-elements';
 import {COLORS} from '../../styles/colors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {windowHeight, windowWidth} from '../../utils/Dimentions';
-import { useSelector } from 'react-redux';
-import { db } from '../../firebase';
-import { ref  } from 'firebase/database';
-import { onValue } from '@firebase/database';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { getListChats } from '../../FirebaseFunctions/collections/chat';
+import { getDoc, doc } from 'firebase/firestore';
+import { database } from '../../firebase';
 
 
 
 const HomeChat = ({navigation}) => {
-  const { userId , logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const [ listChats , setListChats] = useState([]);
   const [search, setSearch] = useState('');
+  const [ userConnected, setUserConnected ] = useState(false);
 
   useEffect(()=>{
-    getListChats(userId, setListChats); 
+    const fetchData = async () => {
+      const user_data = await fetchUser(user.uid);
+      user_data.id = user.uid;
+      setUserConnected(user_data);
+      getListChats(user.uid, setListChats);
+    } 
+
+    fetchData();
   },[]);
 
 
-    // const getChatList = async () => {
-    //   try{
-    //   const docRef = ref(db, "chatsList/" + userId);
-    //   console.log('docRef: ', docRef);
-    //   onValue(docRef, (snapshot) => {
-    //       const data = snapshot.val();
-    //       if(!data) return console.log('-No data found');
-    //       console.log('chatList: ', Object.values(data));
-    //       setListChats(Object.values(snapshot.val()));//todo
-    //   });
-    //   } catch (error){
-    //     console.log('Error fetching document: ', error);
-    //   }
-    // };
-
-
-    const renderItem = ({ item })=> (
+  const renderItem = ({ item })=> (
       <ListItem
         bottomDivider
         containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
-        onPress={() => navigation.navigate('SingleChat', {chatData: item, receiverId:'', userName:item.receiver} )}
+        onPress={() => navigation.navigate('SingleChat', {receiverData:item, userConnected:userConnected } )}
       >
         <Avatar
           source={{ uri: item.image }}
@@ -63,10 +52,6 @@ const HomeChat = ({navigation}) => {
       </ListItem>
     );
 
-    const createChat = () => {
-      const receiverId = '2YzEk9svzTNpvFlYKfSNAes5I1x1';
-      navigation.navigate('SingleChat', {chatData:'', receiverId: receiverId});
-    }
 
     return (
         <View style={styles.container}>
@@ -79,7 +64,6 @@ const HomeChat = ({navigation}) => {
             keyBoardType="string"
         />
         </View>
-        <Button title='Create Chat' onPress={createChat}/>
 
         <FlatList
             keyExtractor={(item, index) => index.toString()}
@@ -116,3 +100,18 @@ const HomeChat = ({navigation}) => {
         marginRight: 10,
       } 
     });
+
+  const fetchUser = async (id) => {
+      try{
+      const docRef = doc(database, "users", id);
+      const docSnap = await getDoc(docRef);
+      if(!docSnap.exists()) {
+          return null;
+      }
+      return docSnap.data();
+   } catch (error) {
+      console.error("fetchUser, Error getting document:", error);
+      return null;
+   }
+  }
+  

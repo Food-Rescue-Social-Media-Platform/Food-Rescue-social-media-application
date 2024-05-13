@@ -1,20 +1,23 @@
 
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {COLORS} from '../../styles/colors';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Image } from 'react-native';
+import { AuthContext } from '../../navigation/AuthProvider';
 
 const MsgComponent = (props) => {
-    // console.log('props: ', props);
+    const { user, logout } = useContext(AuthContext);
+
     const { item } = props;
-    item.sendTime = '22:21';
-    const { message, images, sender, sendTime } = item;
+    const { message, images, sender, sentTime } = item;
     const userData = useSelector(state => state.user.userData);
-    // console.log('sentTime: ', sendTime);
-    // <Text style={styles.timeText}>{moment(sendTime).format('LT')}</Text>
+    const formatDate = moment(sentTime).format('LT');
+
+    
     return (
-        <View style= {[styles.msgBox, sender === userData.id ? styles.right : styles.left ]}>
+        <View style= {[styles.msgBox, sender === user.id ? styles.right : styles.left ]}>
             { message?.length > 0 && (<Text >{message}</Text>)}
             {( images?.length > 0) && (
                 <View style={{flexDirection: 'cul', flexWrap: 'wrap'}}>
@@ -28,7 +31,7 @@ const MsgComponent = (props) => {
                 </View>
             
             )}
-            <Text style={styles.timeText}>22:31</Text>
+            <Text style={styles.timeText}>{formatDate}</Text>
         </View>
         )
     }
@@ -90,30 +93,13 @@ const styles = StyleSheet.create({
     },
 })
 
+const getFormattedTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    
+    const formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
+}
 
-        // <Pressable
-        //     style={{ marginVertical: 0 }}
-        // >
-        //     <View
-        //         style={[styles.TriangleShapeCSS,
-        //         sender ? styles.right : [styles.left]
-        //         ]}
-        //     />
-        //     <View
-        //         style={[styles.hasBox, {
-        //             alignItems: sender ? 'flex-end' : 'flex-start',
-        //             backgroundColor: sender ? COLORS.theme : COLORS.white
-        //         }]}
-        //     />
-    
-        //     <Text style={{ paddingLeft: 5, color: sender ? COLORS.white : COLORS.black, fontSize: 12.5 }}>
-        //         {message}
-        //     </Text>
-    
-        //     <TimeDelivery
-        //         sender={sender}
-        //         item={item}
-        //     />
-    
-        // </Pressable>
 export default MsgComponent;

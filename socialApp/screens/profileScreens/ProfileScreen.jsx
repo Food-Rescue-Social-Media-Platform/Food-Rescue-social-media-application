@@ -9,12 +9,15 @@ import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
 import { COLORS } from '../../styles/colors';
+import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
+import  uuid from 'react-native-uuid';
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
-  const isFocused = useIsFocused(); // Hook to check if screen is focused
+  const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [ userConnected, setUserConnected ] = useState(false);
   const [userPosts, setUserPosts] = useState([]);
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -23,21 +26,53 @@ const ProfileScreen = ({ navigation, route }) => {
 
   // Fetch user data function
   const fetchUserData = async () => {
-    try {
-      const userDocRef = doc(database, "users", postUserId);
-      const userDocSnap = await getDoc(userDocRef);
-      if (userDocSnap.exists()) {
-        const user = userDocSnap.data();
-        user.id = postUserId;
-        setUserData(user);
+    // try {
+    //   const userDocRef = doc(database, "users", postUserId);
+    //   const userDocSnap = await getDoc(userDocRef);
+    //   if (userDocSnap.exists()) {
+    //     const user = userDocSnap.data();
+    //     user.id = postUserId;
+    //     setUserData(user);
+    //   }
+    // } catch (error) {
+    //   console.error("Error fetching user data:", error);
+    //   setError(error.message);
+    // } finally {
+    //   setLoading(false);
+    // }
+    let user_data;
+    if(route.params) {
+      user_data = await fetchUser(user.uid);
+      if(user_data) {
+          user_data.id = user.uid;
+          console.log('user_data', user_data);
+          setUserConnected(user_data);
       }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      setError(error.message);
-    } finally {
-      setLoading(false);
+    }
+    user_data = await fetchUser(postUserId);
+    if(user_data) {
+          user_data.id = postUserId;
+          // console.log('user_data', user_data);
+          setUserData(user_data);
     }
   };
+
+
+  const fetchUser = async (id) => {
+    try{
+    const docRef = doc(database, "users", id);
+    const docSnap = await getDoc(docRef);
+    if(!docSnap.exists()) {
+        return;
+    }
+    return docSnap.data();
+ } catch (error) {
+    console.error("fetchUser, Error getting document:", error);
+    setError(error.message);
+    return null;
+ }
+}
+
 
   // Fetch user posts function
   const fetchUserPosts = async () => {
@@ -182,6 +217,43 @@ const ProfileScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
+
+  const handleOpenChat = async () => {
+    // Check if the user has a chat with the receiver
+    fetchChat(userConnected.id, userData.id, async (chat) => {
+      if (chat !== null) {
+        // If chat exists, navigate to the chat screen
+        navigation.navigate('SingleChat', { receiverData: chat, userConnected : userConnected });
+      } else {
+        // If chat does not exist, create a new chat
+        await createNewChat();
+      
+        // fetch chat again to get the new chat 
+        fetchChat(userConnected.uid, userData.id, async (newChat) => {
+          if (newChat !== null) {
+            // If chat is created, navigate to the chat screen
+            navigation.navigate('SingleChat', { receiverData: newChat, userConnected : userConnected });
+          }
+        }
+      
+    );
+  }
+})};
+
+
+
+const createNewChat = async () => {
+    // generate a new roomID
+    const roomID = uuid.v4();
+
+    const chat = new Chat(roomID, userConnected, userData);
+    await addChat(chat, 'chatsList/' + userConnected.id + '/' + userData.id);
+
+    const chat2 = new Chat(roomID, userData, userConnected);
+    await addChat(chat2, 'chatsList/' + userData.id + '/' + userConnected.id);
+}
+
+
   if (loading) {
     return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
   }
@@ -266,7 +338,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   </View>
                   :
                   <View style={styles.buttons}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() =>  navigation.navigate('SingleChat', {receiverId: userData.id })}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleOpenChat()}>
                       <Text style={styles.buttonText}>Chat</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>
@@ -305,7 +377,7 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
             ) : (
               <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={()=> navigation.navigate('SingleChat', {receiverId: userData.id})}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleOpenChat}>
                   <Text style={styles.buttonText}>Chat</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>

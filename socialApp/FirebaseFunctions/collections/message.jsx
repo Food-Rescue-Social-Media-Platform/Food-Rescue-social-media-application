@@ -1,6 +1,6 @@
-import { ref ,update,child ,set,push,onValue, onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
-import { serverTimestamp } from 'firebase/firestore';
+import { ref ,update,child ,set,push,onValue,serverTimestamp , onChildChanged,onChildAdded, onChildRemoved } from "firebase/database";
 import { db } from '../../firebase';
+
 
 export class Message {
     constructor(message, images, from, to) {
@@ -20,15 +20,16 @@ export class Message {
 export async function fetchMessages(roomID, setAllMessages,  setHasMoreMessages) {
     try {
         const docRef = ref(db, 'messages/' + roomID);
+        console.info('Fetching messages, for room:', roomID);
         onValue(docRef, (snapshot) => {
             const data = snapshot.val();
             if (!data) {
-                console.log('No data found');
-                setAllMessages([]);
+                console.info('fetchMessages, No data found');
                 return;
             }
-            console.log('Messages: ', data);
-            setAllMessages(Object.values(data));
+
+            console.info('fetchMessages, Messages is: ', data);
+            setAllMessages((oldMessages) => [...oldMessages, ...Object.values(data)]);
         }, {
             onlyOnce: true
         });
@@ -41,67 +42,38 @@ export async function fetchMessages(roomID, setAllMessages,  setHasMoreMessages)
 
 export async function addMessage(message, roomID, sender, receiverId) {
     try {
-        const postListRef = ref(db, 'messages/'+ roomID);
-        const newPostRef = push(postListRef);
-        await set(newPostRef, message).then(async () => {
-            console.log('Message sent successfully');
-            const updateChat = {
-                lastMsg: message.message,
-                sendTime: message.sentTime,
-            }
+        console.log("addMessage, room: ", roomID, "message: ", message, "sender: ", sender, "receiverId: ", receiverId);
+        push(ref(db, `messages/${roomID}`), message);
 
-            await update(ref(db, 'chatsList/' + sender.id + '/' + receiverId),( updateChat))
-            await update(ref(db, 'chatsList/' +  receiverId + '/' + sender.id ),(updateChat)); 
-        }).catch((error) => {
-            console.error("Error adding document: ", error);
-        });
+        // Update the chat documents with the new message
+        const updateChat = {
+            lastMsg: message.message? message.message: '📷 Image',
+            sentTime: message.sentTime,
+        };
 
+        await update(ref(db, 'chatsList/' + sender.id + '/' + receiverId), updateChat);
+        await update(ref(db, 'chatsList/' + receiverId + '/' + sender.id), updateChat);
+
+        console.log('addMessage, Message sent successfully');
     } catch (error) {
-        console.error("Error adding message:", error.message);
+        console.error("addMessage, Error adding message:", error.message);
     }
 }
 
 
-
 export async function startListeningForMessages(roomId, setAllMessages) {
     try {
- 
-      const docRef = ref(db, "messages/" + roomId);
-  
-      const unsubscribe = onChildChanged(docRef, (snapshot) => {
-        const data = snapshot.val();
-        const newMessages = Object.values(data);
-        console.log('New messages:', newMessages);
-        setAllMessages((prevMessages) => [...prevMessages, ...newMessages]);
-      });
-  
-      // Return the unsubscribe function for cleanup
-      return unsubscribe;
+        console.info('Listening for new messages in room:', roomId);
+        const docRef = ref(db, `messages/${roomId}`);
+        const unsubscribe = onChildAdded(docRef, (snapshot) => {
+            const data = snapshot.val();
+            console.log('startListeningForMessages, New message:', data);
+            setAllMessages((prevMessages) => [...prevMessages, data]);
+        });
+
+        // Return the unsubscribe function for cleanup
+        return unsubscribe;
     } catch (error) {
-      console.error('Error fetching messages:', error);
+        console.error('startListeningForMessages, Error fetching messages:', error);
     }
-  }
-
-
-
-// export function listeningToNewMessages(roomID, callback) {
-//     try {
-//         const docRef = ref(db, "messages", roomID);
-//         onValue(docRef, (snapshot) => {
-//             const data = snapshot.val();
-//             if (!data) {
-//                 console.log('No data found');
-//                 callback(null);
-//                 return;
-//             }
-//             console.log('1 Messages: ', data);
-
-//             console.log('2 Messages: ', Object.values(data));
-//             callback(data);
-//         });
-//     } catch (error) {
-//         console.log('Error fetching document: ', error);
-//         callback(null);
-//     }
-   
-// }
+}

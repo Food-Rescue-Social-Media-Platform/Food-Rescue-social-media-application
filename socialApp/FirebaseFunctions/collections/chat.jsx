@@ -35,23 +35,23 @@ export async function addChat(chat, path) {
     set(ref(db, path), chatData);
 
 } catch (error) {
-    console.error("Error adding chat:", error.message);
+    console.error("addChat, Error adding chat:", error.message);
   }
 }
 
 
-export function fetchChat(path, callback) {
+export function fetchChat(userId, receiverId, callback) {
   try {
-    const docRef = ref(db, path);
+    const docRef = ref(db, "chatsList/" + userId + "/" + receiverId);
     onValue(docRef, (snapshot) => {
-      const data = snapshot.val();
+      const data = snapshot.val();1
       callback(data);
     }, (error) => {
-      console.error("Error fetching document:", error);
+      console.error("fetchChat, Error fetching document:", error);
       callback(null); // Call the callback with null on error
     });
   } catch (error) {
-    console.error("Error fetching document:", error);
+    console.error("fetchChat, Error fetching document:", error);
     callback(null); // Call the callback with null on error
   }
 }
@@ -62,8 +62,8 @@ export function getListChats(userId, setListChats){
   console.log('docRef: ', docRef);
   onValue(docRef, (snapshot) => {
       const data = snapshot.val();
-      if(!data) return console.log('-No data found');
-      console.log('chatList: ', Object.values(data));
+      if(!data) return console.log('getListChats, No data found');
+      console.log('getListChats, chatList: ', Object.values(data));
       setListChats(Object.values(snapshot.val()));//todo
   });
 }

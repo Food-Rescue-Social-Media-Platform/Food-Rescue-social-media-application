@@ -1,28 +1,40 @@
-import React, {useState} from 'react';
-import { View, Modal,StyleSheet, Text, TextInput, TouchableOpacity, Platform } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import { Button } from 'react-native-elements';
+import React, {useEffect, useState, useContext} from 'react';
+import { View,StyleSheet, Text, TouchableOpacity, Platform } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Entypo from 'react-native-vector-icons/Entypo';
-import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome5';
 import {COLORS} from '../../styles/colors';
-import {windowHeight, windowWidth} from '../../utils/Dimentions';
+import {windowHeight} from '../../utils/Dimentions';
 import { Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
+import { AuthContext } from '../../navigation/AuthProvider';
+import { getDoc, doc } from 'firebase/firestore';
+import { database } from '../../firebase';
 const AddPostCard = () => {
     const navigation = useNavigation();
+    const { user, logout } = useContext(AuthContext);
+    const [ userConnected, setUserConnected ] = useState(null);
+
+
+    useEffect(() => {
+       const fetchData = async () => {
+         const user_data = await fetchUser(user.uid);
+         setUserConnected(user_data);
+         console.log('Add post card: user:', user_data);
+       }
+       fetchData();
+    }, []);
+
 
     const openShareFoodScreen = () => {
-        console.log('Share food screen opened');
         navigation.navigate('AddPost');
     }
 
+
     return (
         <View style={styles.container}> 
-            <Image style={styles.profileImage} source={require('../../assets/users/user-1.jpg')} />
+        {/* Add a condition to check if userConnected is null */}
+        {userConnected?.profileImg === '' && <Image style={styles.profileImage} source={require('../../assets/users/user-1.jpg')} />}
+        {userConnected?.profileImg !== '' && <Image style={styles.profileImage} source={{uri:userConnected?.profileImg}} />}
             <View>
                 <TouchableOpacity style={styles.sharePostWrapper} onPress={openShareFoodScreen}>
                     <Text style={styles.mainText}>Share food...</Text>
@@ -43,10 +55,10 @@ const AddPostCard = () => {
   const styles = StyleSheet.create({
     container: {
        width: '100%',
-       height: windowHeight/8,
+       height: windowHeight/7,
        backgroundColor: COLORS.secondaryTheme,
        flexDirection: 'row',
-       marginBottom: 20,
+       marginBottom: 15,
        borderRadius:8,
        ...Platform.select({
         web: {
@@ -87,14 +99,29 @@ const AddPostCard = () => {
         marginHorizontal: 4,
     },
     profileImage:{
-        width: 80,
-        height: 80,
+        width: 75,
+        height: 75,
         borderRadius: 50,
         margin: 12,
     },
   });
 
   export default AddPostCard;
+
+  
+  const fetchUser = async (id) => {
+        try{
+            const docRef = doc(database, "users", id);
+            const docSnap = await getDoc(docRef);
+            if(!docSnap.exists()) {
+                return null;
+            }
+            return docSnap.data();
+        } catch (error) {
+            console.error("fetchUser, Error getting document:", error);
+            return null;
+        }
+  }
 
 
   const Icons = ({handelClick, size, iconStyle, wrapperStyle, color})  => {

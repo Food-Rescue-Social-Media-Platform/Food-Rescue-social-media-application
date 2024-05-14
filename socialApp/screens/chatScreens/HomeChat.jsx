@@ -15,7 +15,7 @@ const HomeChat = ({navigation}) => {
   const { user, logout } = useContext(AuthContext);
   const [ listChats , setListChats] = useState([]);
   const [search, setSearch] = useState('');
-  const [ userConnected, setUserConnected ] = useState(false);
+  const [ userConnected, setUserConnected ] = useState(null);
 
   useEffect(()=>{
     const fetchData = async () => {

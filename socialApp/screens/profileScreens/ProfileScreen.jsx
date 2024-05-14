@@ -1,71 +1,105 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused hook
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
-import {COLORS} from '../../styles/colors';
+import { COLORS } from '../../styles/colors';
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
+  const isFocused = useIsFocused(); // Hook to check if screen is focused
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [userData, setUserData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
   const postUserId = route.params ? route.params.postUserId : user.uid;
-  // console.log(user.uid)
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userDocRef = doc(database, "users", postUserId);
-        const userDocSnap = await getDoc(userDocRef);
-        if (userDocSnap.exists()) {
-          setUserData(userDocSnap.data());
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
+
+  // Fetch user data function
+  const fetchUserData = async () => {
+    try {
+      const userDocRef = doc(database, "users", postUserId);
+      const userDocSnap = await getDoc(userDocRef);
+      if (userDocSnap.exists()) {
+        setUserData(userDocSnap.data());
       }
-    };
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUserData();
-  }, [postUserId]);
+  // Fetch user posts function
+  const fetchUserPosts = async () => {
+    try {
+      const userDocRef = doc(database, "users", postUserId);
+      const userDocSnap = await getDoc(userDocRef);
+      const postsIdArray = userDocSnap.data().postsId;
 
-  useEffect(() => {
-      const fetchUserPosts = async () => {
-          try {
-              // Fetch the user document
-              const userDocRef = doc(database, "users", postUserId);
-              const userDocSnap = await getDoc(userDocRef);
-              
-              // Get the postsId array from the user document
-              const postsIdArray = userDocSnap.data().postsId;
+      const userPostsData = [];
 
-              // Fetch the posts using the IDs from the postsId array
-              const userPostsData = [];
-              for (const postId of postsIdArray) {
-                  const postDocRef = doc(database, "postsTest", postId);
-                  const postDocSnap = await getDoc(postDocRef);
-                  if (postDocSnap.exists()) {
-                      userPostsData.push({ id: postId, ...postDocSnap.data() });
-                  }
-              }
+      // Check if postsIdArray is empty
+      if (postsIdArray.length === 0) {
+        setUserPosts([]); // Set userPosts state to an empty array
+        setLoading(false); // Set loading state to false
+        return; // Exit the function early
+      }
 
-              setUserPosts(userPostsData);
-          } catch (error) {
-              console.error("Error fetching user posts:", error);
-              setError(error.message);
-          } finally {
-              setLoading(false);
+      for (const postId of postsIdArray) {
+        const postDocRef = doc(database, "postsTest", postId);
+        const postDocSnap = await getDoc(postDocRef);
+        if (postDocSnap.exists()) {
+          const postData = postDocSnap.data();
+          // Check if userData is not null before accessing its properties
+          if (userData) {
+            // Update the post data with new user data
+            postData.firstName = userData.firstName;
+            postData.lastName = userData.lastName;
+            postData.userName = userData.userName;
+            postData.userImg = userData.profileImg;
+            // Update the post document in Firestore
+            await updateDoc(postDocRef, {
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              userName: userData.userName,
+              userImg: userData.profileImg // Adjust the field name if needed
+            });
           }
-      };
+          userPostsData.push({ id: postId, ...postData });
+        }
+      }
 
+      setUserPosts(userPostsData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  // Fetch data when screen is focused
+  useEffect(() => {
+    if (isFocused) {
+      setLoading(true);
+      fetchUserData();
       fetchUserPosts();
-  }, [postUserId]); // Fetch data whenever the user ID changes
+    }
+  }, [isFocused]);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    await fetchUserPosts();
+    setRefreshing(false);
+  };
 
   if (loading) {
     return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
@@ -76,7 +110,12 @@ const ProfileScreen = ({ navigation, route }) => {
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
+    <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl
+                                                                        refreshing={refreshing}
+                                                                        onRefresh={onRefresh}
+                                                                      />
+                                                                    }
+    >
       <View style={styles.container}>
       {userData && (
           <View style={styles.header}>
@@ -131,7 +170,7 @@ const ProfileScreen = ({ navigation, route }) => {
         
         { postUserId==user.uid?
             <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile')}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
                 <Text style={styles.buttonText}>Edit Profile</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
@@ -158,7 +197,7 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
         <Container>
           {userPosts.map(post => (
-            <PostCard key={post.id} item={post} isProfilePage={true}/>
+            <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
           ))}
         </Container>
       </View>

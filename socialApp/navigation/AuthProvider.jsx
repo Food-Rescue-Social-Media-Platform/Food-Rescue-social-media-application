@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
                         };
 
                         // Save user info to Firestore under 'users' collection with the UID as the document ID
-                        await setDoc(doc(database, 'users', uid), userInfo);
+                        await setDoc(doc(database, 'users', uid), additionalUserInfo);
                         }
                     } catch (e) {
                         dispatch(removerUserData());

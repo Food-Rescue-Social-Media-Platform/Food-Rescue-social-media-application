@@ -16,7 +16,8 @@ export class Post {
         this.category = category;
         this.postImg = postImg; 
         this.status = "active";
-        this.location = location ;
+        this.location = location;
+        this.postDistance = "";
         this.phoneNumber = phoneNumber;
         this.firstName = "";
         this.lastName = "";

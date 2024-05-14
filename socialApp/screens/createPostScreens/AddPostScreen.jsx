@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -15,55 +15,75 @@ import {Post, addPost} from '../../FirebaseFunctions/collections/post';
 import { windowHeight } from '../../utils/Dimentions';
 import { categories } from '../../utils/categories';
 import * as Location from 'expo-location';
-import { useSelector } from 'react-redux';
-import { set } from 'firebase/database';
+import { AuthContext } from '../../navigation/AuthProvider';
+import { getDoc, doc } from 'firebase/firestore';
+import { database } from '../../firebase';
 
 const AddPostScreen = () => {
-    const navigation = useNavigation();
-    const userData = useSelector(state => state.user.userData);
-    console.log('User Data', userData);
-    const [postInput, setPostInput] = useState('');
-    const [category, setCategory] = useState('');
-    const [location, setLocation] = useState('');
-    const [timeInput , setTimeInput] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [images, setImages] = useState([]);
-    const [modalPhoneVisible, setModalPhoneVisible] = useState(false);
-    const [modalCloseVisible, setModalCloseVisible] = useState(false);
-    const [categoryModalVisible, setCategoryModalVisible] = useState(false);
-    const [isCategorySelected, setCategorySelected] = useState(false);
-    const [showLocationModel, setShowLocationModel] = useState(false);
-    const [imageUrl, setImageUrl] = useState('');
-    const [options, setOptions] = useState(categories.map((category) => ({ value: category })));
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const [isUploading, setIsUploading] = useState(false);
+    const  navigation = useNavigation();
+    const { user, logout } = useContext(AuthContext);
+    const [ userConnected, setUserConnected ] = useState(null);
+    const [ postInput, setPostInput] = useState('');
+    const [ category, setCategory] = useState('');
+    const [ location, setLocation] = useState('');
+    const [ timeInput , setTimeInput] = useState('');
+    const [ phoneNumber, setPhoneNumber] = useState('');
+    const [ images, setImages] = useState([]);
+    const [ modalPhoneVisible, setModalPhoneVisible] = useState(false);
+    const [ modalCloseVisible, setModalCloseVisible] = useState(false);
+    const [ categoryModalVisible, setCategoryModalVisible] = useState(false);
+    const [ showLocationModel, setShowLocationModel] = useState(false);
+    const [ selectedOptions, setSelectedOptions] = useState([]);
+    const [ isUploading, setIsUploading] = useState(false);
+    const options = useState(categories.map((category) => ({ value: category })));
+
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const userData = await fetchUser(user.uid);
+            userData.id = user.uid;
+            console.log('fetchData, User:', userData);
+            setUserConnected(userData);
+        }
+        fetchData();
+    }, []);
+
+
 
     const confirmClose = () => {
-        //console.log('Close');
         setModalCloseVisible(false);
-        // to do: add a modal to ask if the user wants to leave the page
         navigation.navigate('HomePage');
     }
+
+
 
     const handleClose = () => {
         console.log('Close');
         setModalCloseVisible(true);
     }
 
+
+
     const handleCloseCategoryModal = () => {
         setCategory(selectedOptions[0])
         setCategoryModalVisible(false);
     }
 
+
+
     const handleOpenCamera = async () => {
         openCameraAndTakePicture(setImages);
     }
+
     
+
     const handleAddImages = () =>{
         console.log('Images');
         openGalereAndSelectImages(setImages);
         console.log('Images uri', images);
     }
+
 
     const handleAddLocation = async () => {
         console.log('Location', location);
@@ -79,15 +99,20 @@ const AddPostScreen = () => {
         setShowLocationModel(showLocationModel? false: true);     
     }
 
+
+
     const handelAddPhone = () => {
         console.log('Phone');
         setModalPhoneVisible(true)
     }
 
+
+
     const handelAddCategory = () => {
         console.log('Category');
         setCategoryModalVisible(true);
     }
+
 
     const handleAddPost = async () => {
         setIsUploading(true);
@@ -97,13 +122,28 @@ const AddPostScreen = () => {
             for (let i = 0; i < images.length; i++) 
                 imagesUrl.push(await uploadImages(images[i], 'postsImges/', 'image'));
         }
+        console.log("user", userConnected.id, userConnected.userName)
         console.log("text", postInput);
         console.log("time", timeInput);
         console.log("phone", phoneNumber);
         console.log("category", category);
         console.log("image", imagesUrl);
-        
-        const newPost = new Post(userData.id, userData.userName, postInput, timeInput, category, location, phoneNumber, imagesUrl);
+        console.log("location", location);
+
+        const newPost = new Post(
+            userConnected.id,
+            userConnected.userName,
+            userConnected.firstName,
+            userConnected.lastName,
+            userConnected.profileImg,
+            userConnected.phoneNumber,   
+            postInput,
+            timeInput,
+            category,
+            imagesUrl,
+            location
+        );
+
         console.log('Post', newPost);  
         await addPost(newPost);
 
@@ -118,6 +158,7 @@ const AddPostScreen = () => {
         navigation.navigate('HomePage');
     }
 
+
     const handleCheck = (option) => {
         if(selectedOptions.includes(option.value)){
             setSelectedOptions(selectedOptions.filter((item) => item !== option.value));
@@ -126,13 +167,14 @@ const AddPostScreen = () => {
         }
       };
 
-      const handleImagePress = (index) => {
+
+    const handleImagePress = (index) => {
         const newImages = images.filter((image, i) => i !== index)
         setImages(newImages);
-      }
+    }
+
     
-    return (   
-            
+    return (            
         <View> 
             {!isUploading && (
                 <View style={styles.container}>
@@ -171,24 +213,24 @@ const AddPostScreen = () => {
 
                             <View style={{  flex: 1, flexDirection: 'row', flexWrap:'wrap'}}>
                                 {images.map((image, index) => (
-                                    <View key={index} >
-                                    <Image
-                                        source={{ uri: image }}
-                                        style={{ width: 100, height: 100 }}
-                                    />
-                                    <TouchableOpacity
-                                        style={{
-                                        position: 'absolute',
-                                        top: 10,
-                                        right: 10,
-                                        backgroundColor: COLORS.black,
-                                        borderRadius: 50,
-                                        padding: 5,
-                                        }}
-                                        onPress={() => handleImagePress(index)}
-                                    >
-                                        <MaterialIcons name="close" size={24} color="white" />
-                                    </TouchableOpacity>
+                                    <View key={index}>
+                                        <Image
+                                            source={{ uri: image }}
+                                            style={{ width: 100, height: 100 }}
+                                        />
+                                        <TouchableOpacity
+                                            style={{
+                                            position: 'absolute',
+                                            top: 10,
+                                            right: 10,
+                                            backgroundColor: COLORS.black,
+                                            borderRadius: 50,
+                                            padding: 5,
+                                            }}
+                                            onPress={() => handleImagePress(index)}
+                                        >
+                                                <MaterialIcons name="close" size={24} color="white" />
+                                        </TouchableOpacity>
                                     </View>
                                     ))}
                                                                 
@@ -226,14 +268,14 @@ const AddPostScreen = () => {
                     <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
                         <View style={{...styles.modal, marginTop:'50%'}}>
 
-                            <Text style={styles.modalText}>Would you like to post your number {userData.phoneNumber} ?</Text>
-                            <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
-                    
+                                <Text style={styles.modalText}>Would you like to post your number {userConnected?.phoneNumber} ?</Text>
+                                <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
+                        
                                 <MyButton 
                                     style={{backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center'}}
                                     text='Yes'
                                     styleText={{fontSize:17}}
-                                    onPress={()=>{setModalPhoneVisible(false); setPhoneNumber(userData.phoneNumber)}}
+                                    onPress={()=>{setModalPhoneVisible(false); setPhoneNumber(userConnected.phoneNumber)}}
                                 />
                             
                                 <MyButton 
@@ -243,7 +285,6 @@ const AddPostScreen = () => {
                                     onPress={()=>{setModalPhoneVisible(false)}}
                                 />
                             </View>
-
                         </View>
                 </View>
             </Modal>
@@ -307,8 +348,7 @@ const AddPostScreen = () => {
                                 onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}
                             />
         
-                            </View>
-                    
+                            </View>        
                         </View>
                     </View>
                 </Modal>
@@ -319,39 +359,34 @@ const AddPostScreen = () => {
                     transparent={true}
                     visible={modalCloseVisible}
                     >
-                <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                        <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
 
-                    <View style={{...styles.modal, marginTop:'50%'}}>
+                            <View style={{...styles.modal, marginTop:'50%'}}>
 
-                        <Text style={styles.modalText}>Are you sure you want to leave?</Text>
-                        
-                        <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
+                                    <Text style={styles.modalText}>Are you sure you want to leave?</Text>
+                                    
+                                    <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
+                                        <MyButton 
+                                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                            text='Yes'
+                                            styleText={{fontSize:17  }}
+                                            onPress={confirmClose}
+                                        />
 
-                        <MyButton 
-                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                            text='Yes'
-                            styleText={{fontSize:17  }}
-                            onPress={confirmClose}
-                        />
-
-                        <MyButton 
-                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                            text='No'
-                            styleText={{fontSize:17 }}
-                            onPress={()=>{setModalCloseVisible(false)}}
-                        />
-
+                                        <MyButton 
+                                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                            text='No'
+                                            styleText={{fontSize:17 }}
+                                            onPress={()=>{setModalCloseVisible(false)}}
+                                        />
+                                    </View>                       
+                            </View>
                         </View>
-                
-                    </View>
-                </View>
                 </Modal> 
-            </View> 
-        )}        
-        {isUploading && (<Text style={{ fontSize:20, textAlign:'center', marginTop: '60%',}}>Loading...</Text>)}
-
-                 </View>
-            );
+            </View>)} 
+            {isUploading && (<Text style={{ fontSize:20, textAlign:'center', marginTop: '60%',}}>Publish Post...</Text>)}
+        </View>
+        );
     }
 
 
@@ -375,7 +410,6 @@ const AddPostScreen = () => {
         flexDirection:'row',
         width:'100%',
         marginBottom: 10,
-        // height:'8%',
     },  
     iconsWrapper:{
         flexDirection: 'row',
@@ -433,7 +467,6 @@ const AddPostScreen = () => {
         padding: 10,
         backgroundColor: COLORS.white,
         textAlignVertical:'top'       
-
     },
     iconsWrapper: {
         flexDirection: 'row',
@@ -448,8 +481,8 @@ const AddPostScreen = () => {
         borderRadius: 20,
         shadowColor: '#000',
         shadowOffset: {
-        width: 0,
-        height: 3,
+            width: 0,
+            height: 3,
         },
         shadowOpacity: 0.25,
         shadowRadius: 4,
@@ -474,7 +507,7 @@ const AddPostScreen = () => {
         borderRadius: 5,
         alignItems: 'center',
       },
-      locationModal:{
+    locationModal:{
         backgroundColor: COLORS.secondaryBackground,
         position: 'absolute',
         width: '100%',
@@ -485,6 +518,19 @@ const AddPostScreen = () => {
   export default AddPostScreen;
 
 
+  const fetchUser = async (id) => {
+        try{
+        const docRef = doc(database, "users", id);
+        const docSnap = await getDoc(docRef);
+        if(!docSnap.exists()) {
+            return null;
+        }
+        return docSnap.data();
+    } catch (error) {
+        console.error("fetchUser, Error getting document:", error);
+        return null;
+    }
+  }
 
   const MyButton = ({style, text, styleText, onPress}) => {
     return(

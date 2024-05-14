@@ -19,7 +19,6 @@ const AddPostCard = () => {
        const fetchData = async () => {
          const user_data = await fetchUser(user.uid);
          setUserConnected(user_data);
-         console.log('Add post card: user:', user_data);
        }
        fetchData();
     }, []);

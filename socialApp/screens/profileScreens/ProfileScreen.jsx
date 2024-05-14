@@ -91,7 +91,7 @@ const ProfileScreen = ({ navigation, route }) => {
       }
 
       for (const postId of postsIdArray) {
-        const postDocRef = doc(database, "postsTest", postId);
+        const postDocRef = doc(database, "posts", postId);
         const postDocSnap = await getDoc(postDocRef);
         if (postDocSnap.exists()) {
           const postData = postDocSnap.data();

@@ -43,7 +43,7 @@ const EditPostScreen = ({ navigation, route }) => {
     // Function to handle post update
     const handleUpdatePost = async () => {
         try {
-            const postDocRef = doc(database, "postsTest", item.id);
+            const postDocRef = doc(database, "posts", item.id);
             // update the post in the database with the new values
             await updateDoc(postDocRef, {
                 ...item,

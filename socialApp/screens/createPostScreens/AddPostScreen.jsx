@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity, Button } from 'react-native';
+import { View, Modal, StyleSheet, Text, ScrollView,Image, TextInput, TouchableOpacity, Platform } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {COLORS} from '../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
 import {Camera} from 'expo-camera'
@@ -134,47 +134,40 @@ const AddPostScreen = () => {
     return (   
             
         <View> 
-        {!isUploading && (
-            <View style={styles.container}>
-            
-            <View style={styles.header}>
+            {!isUploading && (
+                <View style={styles.container}>
+                
+                <View style={styles.header}>
+                    <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
+                        <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
+                    </TouchableOpacity>
+                        <Text style={{fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%': '27%', marginBottom:5}}>Create Post</Text>
+                    <TouchableOpacity style={styles.button} onPress={handleAddPost}>
+                        <Text style={{fontSize:15}}>Post</Text>
+                    </TouchableOpacity>              
+                </View>
 
-            <TouchableOpacity style={{marginLeft:5}} onPress={handleClose}>
-                <Fontisto name="arrow-right" size={24} color="black" style={{transform: [{ scaleX: -1 }]}} />
-            </TouchableOpacity>
-
-            <Text style={{fontSize: 18, paddingHorizontal: '27%', marginBottom:5}}>Create Post</Text>
-            
-            <MyButton 
-                style={styles.button}
-                text='Post'
-                styleText={{fontSize:15}}
-                onPress={handleAddPost}
-             />                     
-
-        </View> 
-
-        <ScrollView>
-                <View style={{ minHeight:'100%'}}>
-                        <View >
-                            <TextInput
-                                value={postInput}
-                                onChangeText={(text)=>setPostInput(text)}
-                                style={styles.postInput}
-                                placeholder="What food would you like to save today?"
-                                multiline
-                                editable={timeInput.length < 3000}
-                            />
-                            <TextInput
-                                value={timeInput}
-                                onChangeText={(text)=>setTimeInput(text)}
-                                style={styles.timeInput}
-                                placeholder="What are the delivery times?"
-                                multiline
-                                editable={timeInput.length < 30}
-                            />
-                            <Text>{timeInput.length}/30</Text>
-                        </View>
+                <ScrollView>
+                    <View style={{ minHeight:'100%'}}>
+                            <View >
+                                <TextInput
+                                    value={postInput}
+                                    onChangeText={(text)=>setPostInput(text)}
+                                    style={styles.postInput}
+                                    placeholder="What food would you like to save today?"
+                                    multiline
+                                    editable={timeInput.length < 3000}
+                                />
+                                <TextInput
+                                    value={timeInput}
+                                    onChangeText={(text)=>setTimeInput(text)}
+                                    style={styles.timeInput}
+                                    placeholder="What are the delivery times?"
+                                    multiline
+                                    editable={timeInput.length < 30}
+                                />
+                                <Text>{timeInput.length}/30</Text>
+                            </View>
 
                             <View style={{  flex: 1, flexDirection: 'row', flexWrap:'wrap'}}>
                                 {images.map((image, index) => (
@@ -198,168 +191,168 @@ const AddPostScreen = () => {
                                     </TouchableOpacity>
                                     </View>
                                     ))}
-                                                                  
-                              </View>
-                        </View>
+                                                                
+                            </View>
+                    </View>
 
-        </ScrollView>
+            </ScrollView>
 
-        <View style={styles.iconsWrapper}>
+            <View style={styles.iconsWrapper}>
                     <TouchableOpacity>
                         <Entypo name="camera" size={26} color='black' onPress={handleOpenCamera} style={styles.icon}/>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <FontAwesome6 name="images" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
+                        <MaterialIcons name="photo-library" size={26} color='black' onPress={handleAddImages} style={styles.icon}/>
                     </TouchableOpacity>
                     <TouchableOpacity>
-                         <Entypo name="location-pin"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
+                        <MaterialCommunityIcons name="map-marker"  size={26} color='black' onPress={handleAddLocation} style={styles.icon}/>
                     </TouchableOpacity>
                     <TouchableOpacity >
-                        <Entypo name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
+                        <MaterialCommunityIcons name="phone"  size={26} color='black' onPress={handelAddPhone} style={styles.icon}/>
                     </TouchableOpacity>
                     <TouchableOpacity >
                         <MaterialIcons name="category" size={26} color='black' onPress={handelAddCategory} style={styles.icon}/>
                     </TouchableOpacity>
-        </View>
-     
-        <Modal                                
+            </View>
+                        
+            <Modal                                
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalPhoneVisible}
+                    onRequestClose={() => {
+                        console.log('close modal');
+                    }}
+            >   
+                    <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                        <View style={{...styles.modal, marginTop:'50%'}}>
+
+                            <Text style={styles.modalText}>Would you like to post your number {userData.phoneNumber} ?</Text>
+                            <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
+                    
+                                <MyButton 
+                                    style={{backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center'}}
+                                    text='Yes'
+                                    styleText={{fontSize:17}}
+                                    onPress={()=>{setModalPhoneVisible(false); setPhoneNumber(userData.phoneNumber)}}
+                                />
+                            
+                                <MyButton 
+                                    style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                    text='No'
+                                    styleText={{fontSize:17}}
+                                    onPress={()=>{setModalPhoneVisible(false)}}
+                                />
+                            </View>
+
+                        </View>
+                </View>
+            </Modal>
+
+            <Modal
                 animationType="slide"
                 transparent={true}
-                visible={modalPhoneVisible}
-                onRequestClose={() => {
-                    console.log('close modal');
-                }}
-                >   
+                visible={categoryModalVisible}
+            >
                 <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-                    <View style={{...styles.modal, marginTop:'50%'}}>
+                    <View style={{...styles.modal, marginTop:'30%'}}>
 
-                        <Text style={styles.modalText}>Would you like to post your number {userData.phoneNumber} ?</Text>
-                        <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
-                   
-                            <MyButton 
-                                style={{backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center'}}
-                                text='Yes'
-                                styleText={{fontSize:17}}
-                                onPress={()=>{setModalPhoneVisible(false); setPhoneNumber(userData.phoneNumber)}}
-                             />
-                          
-                            <MyButton 
-                                style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                text='No'
-                                styleText={{fontSize:17}}
-                                onPress={()=>{setModalPhoneVisible(false)}}
-                             />
+                        <Text style={styles.modalText}>Select categories</Text>
+                        <View style={{flex:1, flexDirection:'row', flexWrap:'wrap'}}>
+                        {options.map((option) => (
+                            <CheckBox
+                                style={styles.checkboxWrapper}
+                                key={option.value}
+                                title={option.value}
+                                checked={selectedOptions.includes(option.value)}
+                                onPress={() => handleCheck(option)}
+                            />
+                        ))}
                         </View>
+                        
+                        <MyButton 
+                            style={{...styles.button ,borderRadius: 20}}
+                            text='Done'
+                            styleText={{fontSize:15  }}
+                            onPress={handleCloseCategoryModal}
+                        />
 
                     </View>
-               </View>
-        </Modal>
+                </View>
+            </Modal>
 
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={categoryModalVisible}
+            <Modal 
+                animationType="slide"
+                transparent={true}
+                visible={showLocationModel}
             >
             <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-                <View style={{...styles.modal, marginTop:'30%'}}>
 
-                    <Text style={styles.modalText}>Select categories</Text>
-                    <View style={{flex:1, flexDirection:'row', flexWrap:'wrap'}}>
-                    {options.map((option) => (
-                        <CheckBox
-                            style={styles.checkboxWrapper}
-                            key={option.value}
-                            title={option.value}
-                            checked={selectedOptions.includes(option.value)}
-                            onPress={() => handleCheck(option)}
+                    <View style={{...styles.modal, marginTop:'50%'}}>
+
+                        <Text style={styles.modalText}>Should you add your current location to the post?</Text>
+                        
+                        <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
+
+                        <MyButton 
+                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                            text='Yes'
+                            styleText={{fontSize:17  }}
+                            onPress={handleAddLocation}
                         />
-                    ))}
+
+                        <MyButton 
+                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                            text='No'
+                                styleText={{fontSize:17 }}
+                                onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}
+                            />
+        
+                            </View>
+                    
+                        </View>
                     </View>
-                    
-                    <MyButton 
-                        style={{...styles.button ,borderRadius: 20}}
-                        text='Done'
-                        styleText={{fontSize:15  }}
-                        onPress={handleCloseCategoryModal}
-                    />
+                </Modal>
+                
+                
+                <Modal 
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalCloseVisible}
+                    >
+                <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
 
-                   </View>
-                </View>
-         </Modal>
+                    <View style={{...styles.modal, marginTop:'50%'}}>
 
-         <Modal 
-            animationType="slide"
-            transparent={true}
-            visible={showLocationModel}
-         >
-         <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                        <Text style={styles.modalText}>Are you sure you want to leave?</Text>
+                        
+                        <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
 
-                <View style={{...styles.modal, marginTop:'50%'}}>
-
-                    <Text style={styles.modalText}>Should you add your current location to the post?</Text>
-                    
-                    <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
-
-                    <MyButton 
-                        style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                        text='Yes'
-                        styleText={{fontSize:17  }}
-                        onPress={handleAddLocation}
-                    />
-
-                    <MyButton 
-                        style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                        text='No'
-                            styleText={{fontSize:17 }}
-                            onPress={()=>{console.log("no want to add his location."); setShowLocationModel(false)}}
+                        <MyButton 
+                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                            text='Yes'
+                            styleText={{fontSize:17  }}
+                            onPress={confirmClose}
                         />
-    
+
+                        <MyButton 
+                            style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                            text='No'
+                            styleText={{fontSize:17 }}
+                            onPress={()=>{setModalCloseVisible(false)}}
+                        />
+
                         </View>
                 
                     </View>
                 </View>
-            </Modal>
-            
-            
-            <Modal 
-                animationType="slide"
-                transparent={true}
-                visible={modalCloseVisible}
-                >
-            <View style={{flex:1, backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-
-                <View style={{...styles.modal, marginTop:'50%'}}>
-
-                    <Text style={styles.modalText}>Are you sure you want to leave?</Text>
-                    
-                    <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
-
-                    <MyButton 
-                        style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                        text='Yes'
-                        styleText={{fontSize:17  }}
-                        onPress={confirmClose}
-                    />
-
-                    <MyButton 
-                        style={{ backgroundColor: COLORS.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                        text='No'
-                        styleText={{fontSize:17 }}
-                        onPress={()=>{setModalCloseVisible(false)}}
-                    />
-
-                    </View>
-            
-                </View>
-            </View>
-            </Modal> 
+                </Modal> 
             </View> 
         )}        
         {isUploading && (<Text style={{ fontSize:20, textAlign:'center', marginTop: '60%',}}>Loading...</Text>)}
 
                  </View>
             );
-        }
+    }
 
 
   const styles = StyleSheet.create({
@@ -368,6 +361,14 @@ const AddPostScreen = () => {
           height: '100%',
           marginTop: 15,
           padding: 20,      
+          ...Platform.select({
+                web: {
+                    marginTop: 0,
+                },
+            }),
+          paddingLeft: 20,
+          paddingRight: 20,
+          paddingTop: 20,
     },
     header:{
         alignItems: 'center',
@@ -375,6 +376,39 @@ const AddPostScreen = () => {
         width:'100%',
         marginBottom: 10,
         // height:'8%',
+    },  
+    iconsWrapper:{
+        flexDirection: 'row',
+        backgroundColor: COLORS.secondaryBackground,
+        height: 50,
+        width: '100%',
+    },
+    icon:{
+        marginHorizontal: 10,
+        marginVertical: 5,
+        ...Platform.select({
+            web: {
+                marginVertical: 10,
+            },
+        }),
+    },
+    input_images:{
+        flexDirection: 'column',
+        height:'92%',
+        minHeight: windowHeight - 200,
+    },
+    postInput: {
+        height:'50%',    
+        borderWidth: 1,
+        borderColor: 'gray',
+        padding: 10,
+        marginVertical: 14,
+    },
+    timeInput:{
+        borderWidth: 1,
+        padding: 10,
+        borderColor: 'gray',
+        marginVertical: 14,
     },
     button: {
         backgroundColor: COLORS.secondaryBackground,

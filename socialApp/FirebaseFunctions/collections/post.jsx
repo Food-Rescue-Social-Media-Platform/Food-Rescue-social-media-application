@@ -1,4 +1,4 @@
-import { addDoc, setDoc, doc, serverTimestamp, collection } from 'firebase/firestore'; 
+import { addDoc, setDoc, doc, serverTimestamp, collection, deleteDoc, updateDoc, getDoc, arrayRemove } from 'firebase/firestore'; 
 import { database } from '../../firebase.js';
 
 // Post constructor
@@ -44,4 +44,27 @@ export class Post {
     } catch (error) {
       console.error("Error adding post:", error.message);
     }
-  }
+}
+
+export const deletePost = async (postId, postUserId) => {
+    try {
+        const postRef = doc(database, 'postsTest', postId);
+        const userRef = doc(database, 'users', postUserId);
+
+        const userDocSnap = await getDoc(userRef);
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            await updateDoc(userRef, {
+                postsNum: userData.postsNum ? userData.postsNum - 1 : 0,
+                earningPoints: userData.earningPoints ? userData.earningPoints - 3 : 0,
+            });
+        }
+
+        await deleteDoc(postRef);
+        await updateDoc(userRef, {
+            postsId: arrayRemove(postId)
+        });
+    } catch (error) {
+        throw error;
+    }
+}; 

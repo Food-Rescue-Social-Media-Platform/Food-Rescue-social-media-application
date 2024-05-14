@@ -52,8 +52,8 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
 
-    const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
-    const postDate = moment(item.postDate.toDate()).calendar();
+    const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
+    const postDate = item.postDate ? moment(item.postDate.toDate()).calendar() : '';    
     let statusColor;
     switch (item.status) {
         case 'rescued':

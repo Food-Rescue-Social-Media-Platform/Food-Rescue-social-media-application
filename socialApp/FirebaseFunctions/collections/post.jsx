@@ -3,20 +3,24 @@ import { database } from '../../firebase.js';
 
 // Post constructor
 export class Post {
-    constructor(userId, body, timeDelivery, category="other", location="", phoneNumber="", images=[]) {
+    constructor(userId,userName, postText, deliveryRange, category="other", location="", phoneNumber="", postImg=[]) {
         // Set default values (if applicable)
-        if(!body || !userId) {
+        if(!postText || !userId) {
            throw new Error("body and userIid are required for a new post!");
         }
-
+        
         this.userId = userId;
-        this.body = body;
-        this.timeDelivery = timeDelivery;
+        this.userName = userName;
+        this.postText = postText;
+        this.deliveryRange = deliveryRange;
         this.category = category;
-        this.images = images; 
+        this.postImg = postImg; 
         this.status = "active";
         this.location = location ;
         this.phoneNumber = phoneNumber;
+        this.firstName = "";
+        this.lastName = "";
+        this.userImg = "";
         this.createdAt = serverTimestamp();       
     }
 }

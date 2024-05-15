@@ -57,7 +57,7 @@ export class Post {
       };
       console.log("Adding post to database...:", postData);
 
-      const docRef = await addDoc(collection(database, "posts") ,postData);
+      const docRef = await addDoc(collection(database, "postsTest") ,postData);
       console.log("Post added with ID:", docRef.id);
 
       // Update user's postsId array

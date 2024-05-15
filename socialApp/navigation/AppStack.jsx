@@ -249,7 +249,7 @@ const RootStackScreen = () => (
         title: route.params.receiverData.receiver,
         headerTitleAlign: 'center',
       })}
-    />
+    />   
     <RootStack.Screen name="Edit Post" component={EditPostScreen} />
     <RootStack.Screen name="Followers List" component={FollowersList} />
     <RootStack.Screen name="Following List" component={FollowingList} />

@@ -17,7 +17,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [ userConnected, setUserConnected ] = useState(false);
+  const [ userConnected, setUserConnected ] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -91,7 +91,7 @@ const ProfileScreen = ({ navigation, route }) => {
       }
 
       for (const postId of postsIdArray) {
-        const postDocRef = doc(database, "postsTest", postId);
+        const postDocRef = doc(database, "posts", postId);
         const postDocSnap = await getDoc(postDocRef);
         if (postDocSnap.exists()) {
           const postData = postDocSnap.data();

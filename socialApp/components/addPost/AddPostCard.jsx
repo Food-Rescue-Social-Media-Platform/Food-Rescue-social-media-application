@@ -28,11 +28,13 @@ const AddPostCard = () => {
         navigation.navigate('AddPost');
     }
 
+    console.log(("AddPostCard userConnected: ", userConnected))
+
 
     return (
         <View style={styles.container}> 
         {/* Add a condition to check if userConnected is null */}
-        {userConnected?.profileImg === '' && <Image style={styles.profileImage} source={require('../../assets/users/user-1.jpg')} />}
+        {userConnected?.profileImg === '' && <Image style={styles.profileImage} source={require('../../assets/Images/emptyProfieImage.jpg')} />}
         {userConnected?.profileImg !== '' && <Image style={styles.profileImage} source={{uri:userConnected?.profileImg}} />}
             <View>
                 <TouchableOpacity style={styles.sharePostWrapper} onPress={openShareFoodScreen}>

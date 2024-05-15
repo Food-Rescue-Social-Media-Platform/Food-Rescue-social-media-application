@@ -39,7 +39,7 @@ const HomeScreen = () => {
                 userImg: "https://firebasestorage.googleapis.com/v0/b/food-rescue-social-platform.appspot.com/o/usersImages%2F1713776555256?alt=media&token=93c13d46-38f2-4b3c-ad85-6f67c3d0e8d7",
                 userName: "mohammad belbesi"
             };
-            const docRef = await addDoc(collection(database, "posts"), postData);
+            const docRef = await addDoc(collection(database, "postsTest"), postData);
             console.log("Post added with ID:", docRef.id);
         } catch (error) {
             console.error("Error adding post:", error.message);
@@ -49,7 +49,7 @@ const HomeScreen = () => {
     
     const fetchData = async () => {
         try {
-            const querySnapshot = await getDocs(collection(database, "posts"));
+            const querySnapshot = await getDocs(collection(database, "postsTest"));
             const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             data.sort((a, b) => b.createdAt - a.createdAt);
             setPosts([{}, ...data]);

@@ -30,17 +30,26 @@ const HomeChat = ({navigation}) => {
 
 
   const renderItem = ({ item })=> (
+      console.log("Home chat", item),
       <ListItem
           bottomDivider
           containerStyle={{ paddingVertical: 7, marginVertical: 2 }}
           onPress={() => navigation.navigate('SingleChat', {receiverData:item, userConnected:userConnected } )}
       >
-      <Avatar
+        { item.image? 
+        <Avatar
           source={{ uri: item.image }}
           rounded
           title={item.receiver}
           size="medium"
-      />
+        /> : 
+        <Avatar
+          source={require('../../assets/Images/emptyProfieImage.jpg')}
+          title={item.receiver}
+          size="medium"
+          rounded
+        />
+        }
 
       <ListItem.Content>
             <ListItem.Title style={{ fontSize: 14 }}>

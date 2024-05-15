@@ -9,19 +9,18 @@ import { AuthContext } from '../../navigation/AuthProvider';
 const MsgComponent = (props) => {
     const { user, logout } = useContext(AuthContext);
     const { item } = props;
-    const { message, images, sender, sentTime } = item;
-    const userData = useSelector(state => state.user.userData);
-    const formatDate = moment(sentTime).format('LT');
+    const formatDate = moment(item.sentTime).format('LT');
+    console.log("MsgComponent, sender", item.sender, "user", user.uid, "item", item);
     
     return (
-        <View style= {[styles.msgBox, sender === user.id ? styles.right : styles.left ]}>
-            { message?.length > 0 && 
-                (<Text >{message}</Text>)
+        <View style= {[styles.msgBox, item.from === user.uid ? styles.right : styles.left ]}>
+            { item.message?.length > 0 && 
+                (<Text >{item.message}</Text>)
             }
             
-            { images?.length > 0 && 
+            { item.images?.length > 0 && 
                 ( <View style={{flexDirection: 'cul', flexWrap: 'wrap'}}>
-                    { images.map((img, index) => (
+                    { item.images.map((img, index) => (
                         <Image
                             key={index}
                             source={{uri: img}}

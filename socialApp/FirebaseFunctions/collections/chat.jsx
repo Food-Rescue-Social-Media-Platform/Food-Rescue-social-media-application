@@ -1,6 +1,5 @@
 
 import { ref , set , onValue } from 'firebase/database';
-import { serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 export class Chat {
@@ -12,10 +11,10 @@ export class Chat {
       this.id = receiver.id,
       this.sender = sender.firstName + " " + sender.lastName,
       this.receiver = receiver.firstName + " " + receiver.lastName,
-      this.image = receiver.image || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAiRQwXf9TTpgIOStvwMpdGBeEQecgottZew&usqp=CAU',
+      this.image = receiver.profileImg,
       this.emailId = receiver.email,
       this.lastMsg = "",
-      this.createdAt = serverTimestamp(); 
+      this.createdAt = new Date();; 
   }
 }
 

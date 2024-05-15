@@ -72,16 +72,16 @@ const SingleChat = ({ navigation }) => {
                     renderItem={({ item }) => (
                         <MsgComponent item={item} />
                     )}
-                />
+            />
                 
                 
                 
-                <View style={styles.containerFooter}>
+            <View style={styles.containerFooter}>
                     <TouchableOpacity style={styles.icon} onPress={onPressAttach}>
-                    <MaterialIcons name="attach-file" size={24} />
+                       <MaterialIcons name="attach-file" size={24} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.icon} onPress={handleOpenCamera}>
-                    <MaterialCommunityIcons name="camera" size={24} />
+                       <MaterialCommunityIcons name="camera" size={24} />
                     </TouchableOpacity>
                     
                     <View style={styles.windowSend}>
@@ -93,7 +93,7 @@ const SingleChat = ({ navigation }) => {
                                     multiline={true}
                                     numberOfLines={5}
                                     value={msg}
-                                    />
+                                />
                             </ScrollView>
                     </View>
 

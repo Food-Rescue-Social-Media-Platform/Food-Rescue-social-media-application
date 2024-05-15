@@ -35,7 +35,7 @@ const AddPostScreen = () => {
     const [ showLocationModel, setShowLocationModel] = useState(false);
     const [ selectedOptions, setSelectedOptions] = useState([]);
     const [ isUploading, setIsUploading] = useState(false);
-    const options = useState(categories.map((category) => ({ value: category })));
+    const [options, setOptions] = useState(categories.map((category) => ({ value: category })));
 
 
 

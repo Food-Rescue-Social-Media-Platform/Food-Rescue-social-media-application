@@ -106,7 +106,6 @@ const HomeScreen = () => {
                     />
                 }
             />
-            <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
     );
 }

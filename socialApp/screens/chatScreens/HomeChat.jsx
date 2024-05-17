@@ -8,11 +8,14 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import { getListChats } from '../../FirebaseFunctions/collections/chat';
 import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
+import { useSelector } from 'react-redux';
 
 
 
 const HomeChat = ({navigation}) => {
   const { user, logout } = useContext(AuthContext);
+  const userRedux = useSelector((state) => state.user);
+  console.log("HomeChat, userRedux", userRedux);
   const [ listChats , setListChats] = useState([]);
   const [search, setSearch] = useState('');
   const [ userConnected, setUserConnected ] = useState(null);
@@ -30,7 +33,6 @@ const HomeChat = ({navigation}) => {
 
 
   const renderItem = ({ item })=> (
-      console.log("Home chat", item),
       <ListItem
           bottomDivider
           containerStyle={{ paddingVertical: 7, marginVertical: 2 }}

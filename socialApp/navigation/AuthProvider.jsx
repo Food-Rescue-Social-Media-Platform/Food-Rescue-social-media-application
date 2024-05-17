@@ -11,12 +11,18 @@ export const AuthProvider = ({ children }) => {
     const dispatch = useDispatch(); // Get the dispatch function from react-redux
 
     const [user, setUser] = useState(null);
+    const [ location, setLocation ] = useState("122");
+
     
     return (
         <AuthContext.Provider 
             value={{
                 user,
                 setUser,
+                location,
+                setLocation,
+
+
 
                 login: async (email, password) => {
                     try {

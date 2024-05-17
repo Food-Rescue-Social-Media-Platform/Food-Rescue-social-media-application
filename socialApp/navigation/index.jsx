@@ -4,14 +4,18 @@ import { AuthProvider } from "./AuthProvider";
 import { Provider } from 'react-redux';
 import {AppRegistry} from 'react-native';
 import {name} from '../app.json';
-import store from '../redux/store'; 
+import { storePersist, persistor } from "../redux/store/configurationStore"; 
+import { PersistGate } from "redux-persist/integration/react";
+
 
 const Providers = () => {    
     return (
-        <Provider store={store}>
-        <AuthProvider>
-        <Routes />
-        </AuthProvider>
+        <Provider store={storePersist}>
+             <PersistGate loading={null} persistor={persistor}>
+                 <AuthProvider>
+                       <Routes />
+                 </AuthProvider>
+            </PersistGate>
         </Provider>
         );
     }

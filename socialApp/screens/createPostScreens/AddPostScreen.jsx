@@ -16,7 +16,7 @@ import { windowHeight } from '../../utils/Dimentions';
 import { categories } from '../../utils/categories';
 import * as Location from 'expo-location';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, setDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 
 const AddPostScreen = () => {
@@ -96,7 +96,8 @@ const AddPostScreen = () => {
         let location = await Location.getCurrentPositionAsync({});
         setLocation(location);
         console.log('Location', location);
-        setShowLocationModel(showLocationModel? false: true);     
+        setShowLocationModel(showLocationModel? false: true);
+        updateUserLocation(location);
     }
 
 
@@ -531,6 +532,15 @@ const AddPostScreen = () => {
         return null;
     }
   }
+
+    const updateUserLocation = async (location) => {
+        try{
+            const docRef = doc(database, "users", user.uid);
+            await setDoc(docRef, {location: location});
+        } catch (error) {
+            console.error("updateUserLocation, Error getting document:", error);
+        }
+    }
 
   const MyButton = ({style, text, styleText, onPress}) => {
     return(

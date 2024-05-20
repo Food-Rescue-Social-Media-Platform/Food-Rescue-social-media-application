@@ -30,7 +30,7 @@ export class Post {
         this.deliveryRange = deliveryRange;
         this.category = category;
         this.postImg = postImg; 
-        this.status = "active";
+        this.status = "wait for rescue";
         this.location = location;
         this.postDistance = "";
         this.createdAt = serverTimestamp();       

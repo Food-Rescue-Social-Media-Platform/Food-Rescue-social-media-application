@@ -243,31 +243,37 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
-                <View style={styles.iconsWrapper}>
-                    <MaterialCommunityIcons
-                        name="map-marker"
-                        size={22}
-                    />
-                    <Text style={styles.text}>{item.postDistance}</Text>
-                </View>
+                {item.postDistance != null && (
+                    <View style={styles.iconsWrapper}>
+                        <MaterialCommunityIcons
+                            name="map-marker"
+                            size={22}
+                        />
+                        <Text style={styles.text}>{item.postDistance}</Text>
+                    </View>
+                )}
             </InteractionWrapper>
             <Text></Text>
             
             <InteractionWrapper>
-                <View style={styles.iconsWrapper}>
-                    <MaterialCommunityIcons
-                        name="phone"
-                        size={22}
-                    />
-                    <Text style={styles.text}>{item.phoneNumber}</Text>
-                </View>
-                <View style={styles.iconsWrapper}>
-                    <MaterialCommunityIcons
-                        name="bus-clock"
-                        size={22}
-                    />
-                    <Text style={styles.text}>{item.deliveryRange}</Text>
-                </View>
+                {item.phoneNumber != null && (
+                    <View style={styles.iconsWrapper}>
+                        <MaterialCommunityIcons
+                            name="phone"
+                            size={22}
+                        />
+                        <Text style={styles.text}>{item.phoneNumber}</Text>
+                    </View>
+                )}
+                {item.deliveryRange != null && (
+                    <View style={styles.iconsWrapper}>
+                        <MaterialCommunityIcons
+                            name="bus-clock"
+                            size={22}
+                        />
+                        <Text style={styles.text}>{item.deliveryRange}</Text>
+                    </View>
+                )}
                 
             </InteractionWrapper>
             <PostText>{item.postText}</PostText>

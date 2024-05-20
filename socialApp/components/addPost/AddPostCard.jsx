@@ -26,7 +26,7 @@ const AddPostCard = () => {
         navigation.navigate('AddPost');
     }
 
-    console.log("AddPostCard userConnected: ", userConnected);
+    //console.log("AddPostCard userConnected: ", userConnected);
 
     return (
         <View style={styles.container}>

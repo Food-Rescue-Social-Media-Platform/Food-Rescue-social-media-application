@@ -9,10 +9,10 @@ import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 import Popover from 'react-native-popover-view';
-import SelectDropdown from 'react-native-select-dropdown'
+import SelectDropdown from 'react-native-select-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 import { COLORS } from '../../styles/colors';
@@ -55,7 +55,7 @@ const emojisWithIcons = [
     { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
 ];
 
-const PostCard = ({ item , postUserId, isProfilePage}) => {
+const PostCard = ({ item, postUserId, isProfilePage }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
 
@@ -65,7 +65,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
 
     const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
     const postDate = moment(item.createdAt.toDate()).calendar();
-    
+
     const handleUpdateStatus = async (selectedItem) => {
         try {
             const postRef = doc(database, 'postsTest', item.id);
@@ -74,6 +74,29 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
         } catch (error) {
             console.error('Error updating status:', error);
             Alert.alert('Error', 'Failed to update status.');
+        }
+    };
+
+    const handleReport = async () => {
+        try {
+            const report = {
+                reporterId: user.uid,
+                postId: item.id,
+                postUserId: postUserId,
+                post: { 
+                    userName: item.userName,
+                    userImg: item.userImg,
+                    postText: item.postText,
+                    postImg: item.postImg,
+                    phoneNumber: item.phoneNumber 
+                },
+                reportedAt: new Date(),
+            };
+            await addDoc(collection(database, 'reports'), report);
+            Alert.alert('Success', 'Post reported successfully.');
+        } catch (error) {
+            console.error('Error reporting post:', error);
+            Alert.alert('Error', 'Failed to report post.');
         }
     };
 
@@ -89,6 +112,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             statusColor = 'orange';
             break;
     }
+
     const handleDelete = async () => {
         try {
             await deletePost(item.id, postUserId);
@@ -97,15 +121,14 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             console.error('Error deleting post:', error);
             Alert.alert('Error', 'Failed to delete post.');
         }
-    };  
-    
-    // console.log(isProfilePage);
+    };
+
     const handleUserPress = () => {
         if (isProfilePage === undefined) {
             // If isProfilePage is undefined, return null to disable onPress action
             return null;
         }
-        
+
         if (!isProfilePage) {
             // Navigate to ProfileScreen with the postUserId
             navigation.navigate('HomeProfile', { postUserId: postUserId });
@@ -114,6 +137,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             return null;
         }
     };
+
     return (
         <Card>
             <View style={{
@@ -121,7 +145,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                 justifyContent: "space-between",
             }}>
                 <UserInfo>
-                <TouchableOpacity onPress={handleUserPress}>
+                    <TouchableOpacity onPress={handleUserPress}>
                         {/* Conditional rendering for user image */}
                         {isUserImgAvailable ? (
                             <Image source={{ uri: item.userImg }} style={styles.image} />
@@ -130,7 +154,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                         )}
                     </TouchableOpacity>
                     <UserInfoText>
-                    <TouchableOpacity onPress={handleUserPress}>
+                        <TouchableOpacity onPress={handleUserPress}>
                             <UserName>{item.userName}</UserName>
                         </TouchableOpacity>
                         <PostTime>{createdAt}</PostTime>
@@ -149,31 +173,32 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                             )}
                             verticalOffset={-35} // Adjust the vertical offset as needed
                             horizontalOffset={-50} // Adjust the horizontal offset as needed 
-                            >
+                        >
                             <View style={styles.menu}>
-
                                 {user && user.uid === postUserId && (
-                                <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
-                                    <MaterialIcons name="edit" size={20} color="black" />
-                                    <Text style={{ paddingLeft:4}}>Edit</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
+                                        <MaterialIcons name="edit" size={20} color="black" />
+                                        <Text style={{ paddingLeft: 4 }}>Edit</Text>
+                                    </TouchableOpacity>
                                 )}
 
                                 {user && user.uid === postUserId && (
-                                <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
-                                    <FontAwesome6 name="delete-left" size={20} color="black" />
-                                    <Text style={{ paddingLeft:4}}>delete</Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
+                                        <FontAwesome6 name="delete-left" size={20} color="black" />
+                                        <Text style={{ paddingLeft: 4 }}>Delete</Text>
+                                    </TouchableOpacity>
                                 )}
                                 
-                                <TouchableOpacity style={styles.optionButton}>
-                                    <MaterialIcons name="report" size={20} color="black" />
-                                    <Text style={{ paddingLeft:4}}>Report</Text>
-                                </TouchableOpacity>
+                                {user && user.uid != postUserId && (                    
+                                    <TouchableOpacity style={styles.optionButton} onPress={handleReport}>
+                                        <MaterialIcons name="report" size={20} color="black" />
+                                        <Text style={{ paddingLeft: 4 }}>Report</Text>
+                                    </TouchableOpacity>            
+                                )}
 
                                 <TouchableOpacity style={styles.optionButton}>
                                     <MaterialCommunityIcons name="share-variant" size={20} color="black" />
-                                    <Text style={{ paddingLeft:4}}>Share</Text>
+                                    <Text style={{ paddingLeft: 4 }}>Share</Text>
                                 </TouchableOpacity>
                             </View>
                         </Popover>
@@ -184,38 +209,38 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
 
                         {user && user.uid === postUserId && (
                             <SelectDropdown
-                            data={emojisWithIcons}
-                            onSelect={(selectedItem, index) => handleUpdateStatus(selectedItem)}
+                                data={emojisWithIcons}
+                                onSelect={(selectedItem, index) => handleUpdateStatus(selectedItem)}
 
-                            renderButton={(selectedItem, isOpened) => {
-                            return (
-                                <View style={styles.dropdownButtonStyle}>
-                                {selectedItem && (
-                                    <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
-                                )}
-                                <Text style={styles.dropdownButtonTxtStyle}>
-                                    {(selectedItem && selectedItem.title) || item.status}
-                                </Text>
-                                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
-                                </View>
-                            );
-                            }}
+                                renderButton={(selectedItem, isOpened) => {
+                                    return (
+                                        <View style={styles.dropdownButtonStyle}>
+                                            {selectedItem && (
+                                                <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                                            )}
+                                            <Text style={styles.dropdownButtonTxtStyle}>
+                                                {(selectedItem && selectedItem.title) || item.status}
+                                            </Text>
+                                            <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                                        </View>
+                                    );
+                                }}
 
-                            renderItem={(item, index, isSelected) => {
-                            return (
-                                <View style={{...styles.dropdownItemStyle, ...(isSelected && {backgroundColor: '#D2D9DF'})}}>
-                                <Icon name={item.icon} style={styles.dropdownItemIconStyle} />
-                                <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
-                                </View>
-                            );
-                            }}
-                            
-                            showsVerticalScrollIndicator={false}
-                            dropdownStyle={styles.dropdownMenuStyle}
-                        /> 
+                                renderItem={(item, index, isSelected) => {
+                                    return (
+                                        <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                                            <Icon name={item.icon} style={styles.dropdownItemIconStyle} />
+                                            <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                                        </View>
+                                    );
+                                }}
+
+                                showsVerticalScrollIndicator={false}
+                                dropdownStyle={styles.dropdownMenuStyle}
+                            />
                         )}
 
-                      </View>
+                    </View>
                 </UserInfoText>
 
             </View>
@@ -243,7 +268,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
-                {item.postDistance != "" && (
+                {item.postDistance && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="map-marker"
@@ -254,9 +279,9 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                 )}
             </InteractionWrapper>
             <Text></Text>
-            
+
             <InteractionWrapper>
-                {item.phoneNumber != "" && (
+                {item.phoneNumber && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="phone"
@@ -265,7 +290,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                         <Text style={styles.text}>{item.phoneNumber}</Text>
                     </View>
                 )}
-                {item.deliveryRange != "" && (
+                {item.deliveryRange && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="bus-clock"
@@ -274,7 +299,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                         <Text style={styles.text}>{item.deliveryRange}</Text>
                     </View>
                 )}
-                
+
             </InteractionWrapper>
             <PostText>{item.postText}</PostText>
         </Card>

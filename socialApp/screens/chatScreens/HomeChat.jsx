@@ -44,7 +44,7 @@ const HomeChat = ({navigation}) => {
           size="medium"
         /> : 
         <Avatar
-          source={require('../../assets/Images/emptyProfieImage.jpg')}
+          source={require('../../assets/Images/emptyProfieImage.png')}
           title={item.receiver}
           size="medium"
           rounded

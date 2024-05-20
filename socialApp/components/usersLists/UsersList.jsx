@@ -60,7 +60,7 @@ const UsersList = ({ usersIds }) => {
 
     return (
         <>
-            {loading ? ( // Check if loading is true
+            {loading ? (
                 <View style={[styles.loadingContainer, styles.horizontal]}>
                     <ActivityIndicator size="large" color="#0000ff" />
                 </View>
@@ -74,7 +74,11 @@ const UsersList = ({ usersIds }) => {
                                 data={usersData}
                                 renderItem={({ item }) => (
                                     <View style={styles.userContainer}>
-                                        <Image source={{ uri: item.profileImg }} style={styles.profileImage} />
+                                        {item.profileImg && typeof item.profileImg === 'string' && item.profileImg.trim() !== '' ? (
+                                            <Image source={{ uri: item.profileImg }} style={styles.profileImage} />
+                                        ) : (
+                                            <Image source={require('../../assets/Images/emptyProfieImage.png')} style={styles.profileImage} /> // Ensure this path is correct
+                                        )}
                                         <Text style={styles.userName}>{item.userName}</Text>
                                     </View>
                                 )}
@@ -83,8 +87,7 @@ const UsersList = ({ usersIds }) => {
                                 onEndReachedThreshold={0.1}
                                 ListFooterComponent={renderFooter}
                                 showsVerticalScrollIndicator={false}
-                                contentContainerStyle={{ paddingHorizontal: 50}} // Adjust the padding as needed
-
+                                contentContainerStyle={{ paddingHorizontal: 50 }} // Adjust the padding as needed
                             />
                         </View>
                     )}

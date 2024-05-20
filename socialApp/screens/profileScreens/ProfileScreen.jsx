@@ -275,7 +275,7 @@ const createNewChat = async () => {
             <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/cover.png')} style={styles.coverImage} />              
             <View style={styles.overlay}>
               <View style={styles.avatarContainer}>
-                <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../../assets/Images/avatar.png')} style={styles.avatar} />
+                <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../../assets/Images/emptyProfieImage.png')} style={styles.avatar} />
               </View>
               <Text style={styles.name}>{userData?.userName}</Text>
             </View>

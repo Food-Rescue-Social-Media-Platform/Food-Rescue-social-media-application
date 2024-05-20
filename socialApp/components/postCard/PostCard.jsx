@@ -243,7 +243,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
-                {item.postDistance != null && (
+                {item.postDistance != "" && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="map-marker"
@@ -256,7 +256,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
             <Text></Text>
             
             <InteractionWrapper>
-                {item.phoneNumber != null && (
+                {item.phoneNumber != "" && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="phone"
@@ -265,7 +265,7 @@ const PostCard = ({ item , postUserId, isProfilePage}) => {
                         <Text style={styles.text}>{item.phoneNumber}</Text>
                     </View>
                 )}
-                {item.deliveryRange != null && (
+                {item.deliveryRange != "" && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="bus-clock"

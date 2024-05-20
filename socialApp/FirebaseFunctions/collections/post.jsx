@@ -82,7 +82,7 @@ export class Post {
 export const deletePost = async (postId, postUserId) => {
     try {
         console.log("Deleting post with id: ", postId);
-        const postRef = doc(database, 'posts', postId);
+        const postRef = doc(database, 'postsTest', postId);
         const userRef = doc(database, 'users', postUserId);
 
         const userDocSnap = await getDoc(userRef);

@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
         alignItems: 'left', // You can remove this if not necessary
         justifyContent: 'left', // You can remove this if not necessary
         width: '30%', // Adjust the width as needed
-        marginTop:'-83.5%',
+        marginTop:'-146.5%',
       },
       sideContainerOther:{
         backgroundColor: COLORS.appBackGroundColor,

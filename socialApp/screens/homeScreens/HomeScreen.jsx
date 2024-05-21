@@ -27,17 +27,17 @@ const HomeScreen = () => {
                 category: "Seafood",
                 createdAt: new Date("2024-04-10T09:26:46Z"), // UTC time equivalent to 12:26:46 UTC+3
                 deliveryRange: "every day from 10:00 to 14:00",
-                firstName: "mohammad",
-                lastName: "belbesi",
+                firstName: "Abo",
+                lastName: "Yousef",
                 location: "jerusalem",
                 phoneNumber: "0558729400",
                 postDistance: "3km",
-                postImg: "",
+                postImg: "https://firebasestorage.googleapis.com/v0/b/food-rescue-social-platform.appspot.com/o/postsImges%2Fpost-img-6.jpg?alt=media&token=7ba23e50-791c-4e53-ab92-367907ef17a9",
                 postText: "after a big party. we have a big box of fresh sushi.",
                 status: "rescued",
-                userId: "2YzEk9svzTNpvFlYKfSNAes5I1x1",
+                userId: "zsERzWzcK7cp50c1bzIoSqxpBsA2",
                 userImg: "https://firebasestorage.googleapis.com/v0/b/food-rescue-social-platform.appspot.com/o/usersImages%2F1713776555256?alt=media&token=93c13d46-38f2-4b3c-ad85-6f67c3d0e8d7",
-                userName: "mohammad belbesi"
+                userName: "Abo Yousef"
             };
             const docRef = await addDoc(collection(database, "postsTest"), postData);
             console.log("Post added with ID:", docRef.id);
@@ -74,6 +74,7 @@ const HomeScreen = () => {
         setRefreshing(true);
         await fetchData();
         setRefreshing(false);
+        // addPostToCollection();
     };
 
     if (loading) {

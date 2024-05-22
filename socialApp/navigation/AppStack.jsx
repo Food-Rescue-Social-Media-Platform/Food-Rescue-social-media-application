@@ -20,7 +20,8 @@ import SingleChat from '../screens/chatScreens/SingleChat';
 import EditPostScreen from '../screens/editPost/EditPostScreen';
 import FollowersList from '../screens/profileScreens/FollowersList';
 import FollowingList from '../screens/profileScreens/FollowingList';
-import AdminScreen from '../screens/AdminScreen'; // Import your AdminScreen component
+import AdminScreen from '../screens/adminScreens/AdminScreen'; // Import your AdminScreen component
+import Rating from '../screens/profileScreens/Rating';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -291,6 +292,7 @@ const RootStackScreen = () => {
           <RootStack.Screen name="Edit Post" component={EditPostScreen} />
           <RootStack.Screen name="Followers List" component={FollowersList} />
           <RootStack.Screen name="Following List" component={FollowingList} />
+          <RootStack.Screen name="Rating" component={Rating} />
         </>
       )}
     </RootStack.Navigator>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, Platform } from 'react-native';
-import { AuthContext } from '../navigation/AuthProvider';
+import { AuthContext } from '../../navigation/AuthProvider';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { deletePost } from '../FirebaseFunctions/collections/post'; // Adjust the path to your hook file
-import FormButton from '../components/formButtonsAndInput/FormButton';
-import { database } from '../firebase';
+import { deletePost } from '../../FirebaseFunctions/collections/post'; // Adjust the path to your hook file
+import FormButton from '../../components/formButtonsAndInput/FormButton';
+import { database } from '../../firebase';
 
 const AdminScreen = () => {
   const { logout } = useContext(AuthContext);

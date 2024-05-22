@@ -23,6 +23,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [refreshing, setRefreshing] = useState(false);
   const postUserId = route.params ? route.params.postUserId : user.uid;
   const [isFollowing, setIsFollowing] = useState(false);
+  const [rating, setRating] = useState();
 
   // Fetch user data function
   const fetchUserData = async () => {
@@ -54,6 +55,8 @@ const ProfileScreen = ({ navigation, route }) => {
           user_data.id = postUserId;
           // console.log('user_data', user_data);
           setUserData(user_data);
+          setRating(user_data.rating);
+
     }
   };
 
@@ -178,6 +181,26 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   };
   
+  // Function to render stars based on the rating value
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push(
+          <MaterialCommunityIcons key={i} name="star" size={22} color={COLORS.black} />
+        );
+      } else if (i - rating < 1) {
+        stars.push(
+          <MaterialCommunityIcons key={i} name="star-half-full" size={22} color={COLORS.black} />
+        );
+      } else {
+        stars.push(
+          <MaterialCommunityIcons key={i} name="star-outline" size={22} color={COLORS.black} />
+        );
+      }
+    }
+    return stars;
+  };
 
   // Fetch data when screen is focused
   useEffect(() => {
@@ -185,6 +208,7 @@ const ProfileScreen = ({ navigation, route }) => {
       setLoading(true);
       fetchUserData();
       fetchUserPosts();
+
       const checkFollowingStatus = async () => {
         try {
           const loggedInUserDocRef = doc(database, "users", user.uid);
@@ -285,13 +309,22 @@ const createNewChat = async () => {
           <View style={styles.stats}>
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'star'} size={22} color={COLORS.black} />
-                <MaterialCommunityIcons name={'star'} size={22} color={COLORS.black} />
-                <MaterialCommunityIcons name={'star'} size={22} color={COLORS.black} />
-                <MaterialCommunityIcons name={'star-half-full'} size={22} color={COLORS.black} />
-                <MaterialCommunityIcons name={'star-outline'} size={22} color={COLORS.black} />
-              </View>
-              <Text style={styles.wordStat}>Rating</Text>
+                { postUserId === user.uid ? (
+                  <View>
+                    <View style={styles.iconContainer}>
+                      {renderStars()}
+                    </View>
+                    <Text style={styles.wordRatingStat}>Rating</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={() => navigation.navigate('Rating', { userData })}>
+                    <View style={styles.iconContainer}>
+                      {renderStars()}
+                    </View>
+                    <Text style={styles.wordRatingStat}>Rating</Text>
+                  </TouchableOpacity>
+                )}
+            </View>
             </View>
             
             <View style={styles.userInfoContainer}>
@@ -475,6 +508,11 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: COLORS.black,
   },
+  wordRatingStat:{
+    marginTop: 4,
+    color: COLORS.black,
+    marginLeft: 35,
+  },  
   stats: {
     flexDirection: 'row',
     width: '100%',
@@ -567,7 +605,7 @@ const styles = StyleSheet.create({
         alignItems: 'left', // You can remove this if not necessary
         justifyContent: 'left', // You can remove this if not necessary
         width: '30%', // Adjust the width as needed
-        marginTop:'-83.5%',
+        marginTop:'-146.5%',
       },
       sideContainerOther:{
         backgroundColor: COLORS.appBackGroundColor,

@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }) => {
                             followersUsersId: [],
                             followingNum: 0,
                             followersNum: 0,
+                            ratingNumber: 0,
                             ...userInfo // Merge with provided userInfo
                         };
 

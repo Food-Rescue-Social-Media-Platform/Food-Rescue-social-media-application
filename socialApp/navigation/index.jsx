@@ -6,7 +6,6 @@ import {AppRegistry} from 'react-native';
 import {name} from '../app.json';
 import store from "../redux/store";
 
-
 const Providers = () => {    
     return (
         <Provider store={store}>

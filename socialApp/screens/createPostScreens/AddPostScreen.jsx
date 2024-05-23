@@ -22,6 +22,8 @@ import { database } from '../../firebase';
 const AddPostScreen = () => {
     const  navigation = useNavigation();
     const { user, logout } = useContext(AuthContext);
+    console.log("AddPostScreen user: ", user.uid);
+
     const [ userConnected, setUserConnected ] = useState(null);
     const [ postInput, setPostInput] = useState('');
     const [ category, setCategory] = useState('');

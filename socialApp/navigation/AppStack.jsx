@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {COLORS} from '../styles/colors';
+import { database } from '../firebase';
+import { AuthContext } from './AuthProvider';
+import { doc, getDoc } from 'firebase/firestore';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { View} from 'react-native';
@@ -17,6 +20,8 @@ import SingleChat from '../screens/chatScreens/SingleChat';
 import EditPostScreen from '../screens/editPost/EditPostScreen';
 import FollowersList from '../screens/profileScreens/FollowersList';
 import FollowingList from '../screens/profileScreens/FollowingList';
+import AdminScreen from '../screens/adminScreens/AdminScreen'; // Import your AdminScreen component
+import Rating from '../screens/profileScreens/Rating';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -236,26 +241,62 @@ const AppStack = () => {
 };
 
 const RootStack = createStackNavigator();
+const RootStackScreen = () => {
+  const { user } = useContext(AuthContext); // Assuming you have access to the authenticated user
+  const [isAdmin, setIsAdmin] = useState(false);
 
-const RootStackScreen = () => (
-  <RootStack.Navigator>
-    <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }}/>
-    <RootStack.Screen name="Edit Profile" component={EditProfile} />
-    <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false}} />
-    <RootStack.Screen
-      name="SingleChat"
-      component={SingleChat}
-      options={({ route }) => ({
-        title: route.params.receiverData.receiver,
-        headerTitleAlign: 'center',
-      })}
-    />   
-    <RootStack.Screen name="Edit Post" component={EditPostScreen} />
-    <RootStack.Screen name="Followers List" component={FollowersList} />
-    <RootStack.Screen name="Following List" component={FollowingList} />
+  const fetchUser = async (id) => {
+    try {
+        const docRef = doc(database, "users", id); // Use 'firestore' instead of 'database'
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+            return null;
+        }
+        return docSnap.data();
+    } catch (error) {
+        console.error("fetchUser, Error getting document:", error);
+        return null;
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+      fetchUser(user.uid).then((userData) => {
+        if (userData && userData.isAdmin) {
+          setIsAdmin(userData.isAdmin);
+        }
+      }).catch((error) => {
+        console.error('Error fetching user data:', error);
+      });
+    }
+  }, [user]);
 
 
-  </RootStack.Navigator>
-);
+  return (
+    <RootStack.Navigator>
+      {isAdmin ? (
+        <RootStack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
+      ) : (
+        <>
+          <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }} />
+          <RootStack.Screen name="Edit Profile" component={EditProfile} />
+          <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false}} />
+          <RootStack.Screen
+            name="SingleChat"
+            component={SingleChat}
+            options={({ route }) => ({
+              title: route.params.receiverData.receiver,
+              headerTitleAlign: 'center',
+            })}
+          />
+          <RootStack.Screen name="Edit Post" component={EditPostScreen} />
+          <RootStack.Screen name="Followers List" component={FollowersList} />
+          <RootStack.Screen name="Following List" component={FollowingList} />
+          <RootStack.Screen name="Rating" component={Rating} />
+        </>
+      )}
+    </RootStack.Navigator>
+  );
+};
 
 export default RootStackScreen;

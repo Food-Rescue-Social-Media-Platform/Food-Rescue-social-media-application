@@ -18,7 +18,7 @@ const EditProfile = ({ navigation, route }) => {
     const { userData } = route.params;
     const { user, logout } = useContext(AuthContext);
     const [userProfileCover, setUserProfileCover] = useState(userData?.profileCover || require('../../assets/Images/cover.png'));
-    const [userProfileImage, setUserProfileImage] = useState(userData?.profileImg || require('../../assets/Images/avatar.png'));
+    const [userProfileImage, setUserProfileImage] = useState(userData?.profileImg || require('../../assets/Images/emptyProfieImage.png'));
     const [firstName, setFirstName] = useState(userData?.firstName || '');
     const [lastName, setLastName] = useState(userData?.lastName || '');
     const [phone, setPhone] = useState(userData?.phoneNumber || '');

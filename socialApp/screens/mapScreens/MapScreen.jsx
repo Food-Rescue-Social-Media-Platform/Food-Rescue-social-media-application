@@ -5,61 +5,40 @@ import {
     Platform,
     StyleSheet,
     ToastAndroid,
-    PermissionsAndroid,
+    Button,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import {TouchableOpacity} from 'react-native'
 import { useNavigation } from '@react-navigation/native';
-import GeoLocation from 'react-native-geolocation-service';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { getDoc, doc } from 'firebase/firestore';
-import { database } from '../../firebase';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
+import * as Location from 'expo-location';
+import Feather from 'react-native-vector-icons/Feather';
 
 const MapScreen = () => {
     const { user, login } = useContext(AuthContext);
     const mapRef = useRef(null);
     const [position, setPosition] = useState(null);
     const [locationMarkers, setLocationMarkers] = useState([]);
+    const [region, setRegion] = useState({
+        latitude: 37.4220737,
+        longitude: -122.084923,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    });
     const navigation = useNavigation();
-    const radiusInMeters = 100000;
+    const radiusInMeters = 10000;
 
     const hasPermission = async () => {
-        if (Platform.OS === 'android' && Platform.Version < 23) {
-            return true;
-        }
-
-        const hasPermission = await PermissionsAndroid.check(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        );
-
-        if (hasPermission) {
-            return true;
-        }
-
-        const status = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        );
-
-        if (status === PermissionsAndroid.RESULTS.GRANTED) {
-            return true;
-        }
-
-        if (status === PermissionsAndroid.RESULTS.DENIED) {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
             ToastAndroid.show('Location permission denied by user.', ToastAndroid.LONG);
-        } else if (status === PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN) {
-            ToastAndroid.show('Location permission revoked by user.', ToastAndroid.LONG);
+            return false;
         }
-
-        return false;
+        return true;
     };
 
     const getLocation = async () => {
-        const userConnected = await fetchUser(user.uid);
-        if (!userConnected) {
-            console.error('User not found in database');
-            return;
-        }
-        
         const hasLocationPermission = await hasPermission();
 
         if (!hasLocationPermission) {
@@ -69,73 +48,84 @@ const MapScreen = () => {
         console.log('Permission granted by user');
 
         try {
-            GeoLocation.getCurrentPosition(
-                ({ coords }) => {
-                    setPosition({ latitude: coords.latitude, longitude: coords.longitude });
-                    console.log("getCurrentPosition, coords:", coords);
-                },
-                error => {
-                    setPosition(null);
-                    ToastAndroid.show(
-                        "We couldn't fetch your location. Please check your device location service!",
-                        ToastAndroid.LONG,
-                    );
-                    console.log(error);
-                },
-                {
-                    accuracy: {
-                        android: 'high',
-                    },
-                    enableHighAccuracy: false,
-                    timeout: 30000,
-                    maximumAge: 10000,
-                    distanceFilter: 0,
-                    forceRequestLocation: true,
-                    forceLocationManager: false,
-                    showLocationDialog: true,
-                },
-            );
+            const location = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.High,
+            });
+            setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+            setRegion({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+            });
+            console.log("getCurrentPosition, coords:", location.coords);
         } catch (error) {
             console.error('Error getting location:', error);
+            ToastAndroid.show(
+                "We couldn't fetch your location. Please check your device location service!",
+                ToastAndroid.LONG,
+            );
         }
+    };
+
+    const watchLocation = async () => {
+        const hasLocationPermission = await hasPermission();
+        if (!hasLocationPermission) {
+            return;
+        }
+
+        Location.watchPositionAsync(
+            {
+                accuracy: Location.Accuracy.High,
+                timeInterval: 10000, // עדכון כל 10 שניות
+                distanceInterval: 10, // עדכון כל 10 מטרים
+            },
+            (location) => {
+                setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+                setRegion((prevRegion) => ({
+                    ...prevRegion,
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude,
+                }));
+                console.log("watchPosition, coords:", location.coords);
+            }
+        );
     };
 
     useEffect(() => {
         const focusListener = navigation.addListener('focus', async () => {
             await getLocation();
-            const posts = await getPostsNearby([37.4220737, -122.084923], radiusInMeters);
+            watchLocation();
+            const posts = await getPostsNearby([position ? position.latitude : 37.4220737, position ? position.longitude : -122.084923], radiusInMeters);
             console.log('Nearby posts:', posts);
             setLocationMarkers(posts.map(post => ({
                 id: post.id,
-                latitude: post.coordinates[0],
-                longitude: post.coordinates[1],
-                title: post.postText,
+                latitude: post.coordinates.latitude,
+                longitude: post.coordinates.longitude,
+                title: post.title,
             })));
         });
-        focusListener();
-        // const blurListener = navigation.addListener('blur', () => {
-        //     clearInterval(interval.current);
-        //     interval.current = null;
-        // });
 
         return () => {
             focusListener();
-            // blurListener;
         };
     }, [navigation]);
 
-    // useEffect(() => {
-    //     getLocation();
-    //     getPostsNearby([position.latitude, position.longitude], radiusInMeters).then(posts => {
-    //         console.log('Nearby posts:', posts);
-    //         setLocationMarkers(posts.map(post => ({
-    //             id: post.id,
-    //             latitude: post.coordinates[0],
-    //             longitude: post.coordinates[1],
-    //             title: post.postText,
-    //         })));
-    //     });
-    // }, [position]);
+    const zoomIn = () => {
+        setRegion((prevRegion) => ({
+            ...prevRegion,
+            latitudeDelta: prevRegion.latitudeDelta / 2,
+            longitudeDelta: prevRegion.longitudeDelta / 2,
+        }));
+    };
+
+    const zoomOut = () => {
+        setRegion((prevRegion) => ({
+            ...prevRegion,
+            latitudeDelta: prevRegion.latitudeDelta * 2,
+            longitudeDelta: prevRegion.longitudeDelta * 2,
+        }));
+    };
 
     return (
         <KeyboardAvoidingView
@@ -143,23 +133,34 @@ const MapScreen = () => {
             style={styles.container}>
             <View style={styles.container}>
                 <MapView
-                    region={{
-                        latitude: 37.4220737,
-                        longitude: -122.084923,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
+                    region={region}
                     style={{ flex: 1, opacity: 0.6 }}
+                    ref={mapRef}
                 >
+                    {position && (
+                        <Marker
+                            coordinate={{ latitude: position.latitude, longitude: position.longitude }}
+                            title="You are here"
+                            pinColor="red"
+                        />
+                    )}
                     {locationMarkers.map(location => (
                         <Marker
                             key={location.id}
-                            coordinate={location.coordinates}
+                            coordinate={{latitude: location.latitude, longitude: location.longitude}}
                             title={location.title}
                             pinColor='blue'
                         />
                     ))}
                 </MapView>
+                <View style={styles.zoomButtons}>
+                    <TouchableOpacity onPress={zoomIn}>
+                        <Feather name="zoom-in" size={22} color='black' style={styles.iconStyle} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={zoomOut}>
+                        <Feather name="zoom-out" size={22} color='black' style={styles.iconStyle} />
+                    </TouchableOpacity>
+                </View>
             </View>
         </KeyboardAvoidingView>
     );
@@ -167,20 +168,15 @@ const MapScreen = () => {
 
 const styles = StyleSheet.create({
     container: { height: '100%', width: '100%' },
+    zoomButtons: {
+        position: 'absolute',
+        bottom: 20,
+        right: 20,
+        flexDirection: 'column',
+    },
+    iconStyle :{
+       margin: 5,
+    }
 });
 
 export default MapScreen;
-
-const fetchUser = async (id) => {
-    try {
-        const docRef = doc(database, "users", id);
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) {
-            return null;
-        }
-        return docSnap.data();
-    } catch (error) {
-        console.error("fetchUser, Error getting document:", error);
-        return null;
-    }
-};

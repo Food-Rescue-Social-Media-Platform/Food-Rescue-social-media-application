@@ -29,14 +29,11 @@ export class Post {
         this.postText = postText;
         this.deliveryRange = deliveryRange;
         this.category = category;
-        this.postImg = postImg; 
+        this.postImg = postImg;
         this.status = "wait for rescue";
         this.location = location;
-        const latitude = 37.4220736;
-        const longitude = -122.084922;
-        // const { latitude, longitude } = location.coords;
-        this.coordinates = [latitude, longitude];
-        this.geohash = geofire.geohashForLocation([latitude, longitude]);
+        this.coordinates = [location.coords.latitude, location.coords.longitude];
+        this.geohash = geofire.geohashForLocation([location.coords.latitude, location.coords.longitude]);
         this.postDistance = "";
         this.createdAt = serverTimestamp();       
     }
@@ -55,9 +52,8 @@ export class Post {
         category : post.category,
         postImg : post.postImg, 
         status : post.status,
-        location : post.location,
-        geohash : post.geohash,
         coordinates : post.coordinates,
+        geohash : post.geohash,
         postDistance : post.postDistance,
         createdAt : post.createdAt 
       };
@@ -129,7 +125,6 @@ export async function getPostsNearby(center, radiusInM) {
         promises.push(getDocs(q));
     });
 
-
     const snapshots = await Promise.all(promises);
     console.log("snapshots:", snapshots);
     const matchingDocs = [];
@@ -139,12 +134,12 @@ export async function getPostsNearby(center, radiusInM) {
             console.log("doc:", doc.data());
             const lat = parseFloat(doc.get('coordinates')[0]);
             const lng = parseFloat(doc.get('coordinates')[1]);
-        
+
             if (isNaN(lat) || isNaN(lng)) {
                 console.error("Invalid coordinates:", lat, lng);
                 return;
             }
-            
+
             const distanceInKm = geofire.distanceBetween([lat, lng], center);
             const distanceInM = distanceInKm * 1000;
 
@@ -153,11 +148,10 @@ export async function getPostsNearby(center, radiusInM) {
                     id: doc.id,
                     title: doc.get('postText'),
                     coordinates: { latitude: lat, longitude: lng },
-            });
+                });
             }
         });
     });
-
 
     console.log("matchingDocs:", matchingDocs);
     return matchingDocs;

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +17,7 @@ import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, Interaction
 import moment from 'moment';
 import { COLORS } from '../../styles/colors';
 import { deletePost } from '../../FirebaseFunctions/collections/post';
+import { getDistance } from '../../hooks/helpersMap/getDistance';
 
 const getCategoryIcon = (category) => {
     switch (category) {
@@ -55,7 +56,7 @@ const emojisWithIcons = [
     { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
 ];
 
-const PostCard = ({ item, postUserId, isProfilePage }) => {
+const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
 
@@ -137,6 +138,15 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
             return null;
         }
     };
+
+
+
+
+    // Calculate distance between location of post to location of user
+    const handleDistanceUserToPost = () => {
+        const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude);
+        return distance;
+    }
 
     return (
         <Card>
@@ -268,13 +278,13 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
-                {item.postDistance && (
+                {item.coordinates && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="map-marker"
                             size={22}
                         />
-                        <Text style={styles.text}>{item.postDistance}</Text>
+                        <Text style={styles.text}>{handleDistanceUserToPost}</Text>
                     </View>
                 )}
             </InteractionWrapper>

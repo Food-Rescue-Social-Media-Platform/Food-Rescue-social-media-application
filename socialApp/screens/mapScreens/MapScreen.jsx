@@ -61,7 +61,6 @@ const MapScreen = () => {
     
     useEffect(() => {
         if (position) {
-            console.trace() 
             fetchPosts(position);
         }
     }, [position]);

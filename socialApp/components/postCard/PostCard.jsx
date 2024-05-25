@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -59,6 +59,13 @@ const emojisWithIcons = [
 const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
+    const [ distance, setDistance ] = useState(0);
+
+    useEffect(() => {
+        handleDistanceUserToPost();
+    }, [userLocation]);
+
+    console.info("post card, userLocation:", userLocation);
 
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
@@ -144,9 +151,30 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
 
     // Calculate distance between location of post to location of user
     const handleDistanceUserToPost = () => {
-        const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude);
-        return distance;
-    }
+        if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
+            setDistance('Calculating...');
+            return;
+        }
+    
+        console.info('User location:', userLocation);
+        console.info('Post location:', item.coordinates[0], item.coordinates[1]);
+    
+        const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1]);
+        console.info('Distance:', distance);
+        
+        // Check if the distance is less than 1 km
+        if (distance < 1) {
+            const distanceInMeters = distance * 1000; // Convert to meters
+            setDistance(`${distanceInMeters.toFixed(0)} m`);
+        } else {
+            setDistance(`${distance.toFixed(2)} km`);
+        }
+    };
+    // const handleDistanceUserToPost = () => {
+    //     const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude);
+    //     console.info('Distance:', distance);
+    //     return distance;
+    // }
 
     return (
         <Card>
@@ -278,13 +306,13 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
-                {item.coordinates && (
+                {(item.coordinates !== 'undefined' && item.coordinates ) && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="map-marker"
                             size={22}
                         />
-                        <Text style={styles.text}>{handleDistanceUserToPost}</Text>
+                        <Text style={styles.text}>{distance}</Text>
                     </View>
                 )}
             </InteractionWrapper>

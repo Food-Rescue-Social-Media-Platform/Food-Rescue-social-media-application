@@ -10,6 +10,8 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 // import { windowWidth } from '../../utils/Dimentions';
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { watchLocation } from '../../hooks/helpersMap/watchLocation';
+import { getLocation } from '../../hooks/helpersMap/getLocation';
 
 const HomeScreen = () => {
     const { logout } = useContext(AuthContext);
@@ -19,6 +21,8 @@ const HomeScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [position, setPosition] = useState(null);
+
 
 
     const addPostToCollection = async () => {
@@ -64,9 +68,12 @@ const HomeScreen = () => {
     // Fetch data when screen is focused
     useEffect(() => {
         if (isFocused) {
-            setLoading(true);
-            fetchData();
-
+            const fetchLocationAndPosts = async () => {
+                await getLocation(setPosition);
+                watchLocation(setPosition);
+                fetchData();
+            }
+            fetchLocationAndPosts();
         }
     }, [isFocused]);
     
@@ -94,7 +101,7 @@ const HomeScreen = () => {
                         return <AddPostCard />                        
                     }
                     else {
-                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />;
+                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
                     }
                 }}
                 keyExtractor={(item, index) => index.toString()}

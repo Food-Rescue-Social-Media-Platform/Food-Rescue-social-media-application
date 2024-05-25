@@ -31,8 +31,8 @@ export class Post {
         this.category = category;
         this.postImg = postImg;
         this.status = "wait for rescue";
-        this.coordinates = [37.4219903, -122.084];
-        this.geohash = geofire.geohashForLocation([37.4219903, -122.084]);
+        this.coordinates = [location.coords.latitude, location.coords.longitude];
+        this.geohash = geofire.geohashForLocation([location.coords.latitude, location.coords.longitude]);
         this.createdAt = serverTimestamp();       
     }
 }

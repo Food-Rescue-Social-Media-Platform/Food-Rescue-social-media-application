@@ -5,10 +5,10 @@ import {
     Platform,
     StyleSheet,
     ToastAndroid,
-    Button,
+    ActivityIndicator,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import {TouchableOpacity} from 'react-native'
+import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
@@ -26,6 +26,7 @@ const MapScreen = () => {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
     });
+    const [loading, setLoading] = useState(false);
     const navigation = useNavigation();
     const radiusInMeters = 10000;
 
@@ -52,6 +53,7 @@ const MapScreen = () => {
                 accuracy: Location.Accuracy.High,
             });
             setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+            console.log('Location:', location);
             setRegion({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
@@ -77,8 +79,8 @@ const MapScreen = () => {
         Location.watchPositionAsync(
             {
                 accuracy: Location.Accuracy.High,
-                timeInterval: 10000, // עדכון כל 10 שניות
-                distanceInterval: 10, // עדכון כל 10 מטרים
+                timeInterval: 10000,
+                distanceInterval: 10,
             },
             (location) => {
                 setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
@@ -92,39 +94,70 @@ const MapScreen = () => {
         );
     };
 
+    // Function to slightly offset markers to avoid overlap
+    const offsetMarkers = (markers) => {
+        const offsetDistance = 0.0001; // adjust this value as needed
+        return markers.map((marker, index) => {
+            const offsetAngle = (index * 2 * Math.PI) / markers.length;
+            const offsetLat = offsetDistance * Math.sin(offsetAngle);
+            const offsetLng = offsetDistance * Math.cos(offsetAngle);
+            return {
+                ...marker,
+                latitude: marker.latitude + offsetLat,
+                longitude: marker.longitude + offsetLng,
+            };
+        });
+    };
+
     useEffect(() => {
-        const focusListener = navigation.addListener('focus', async () => {
+        const fetchData = async () => {
+            setLoading(true);
             await getLocation();
             watchLocation();
-            const posts = await getPostsNearby([position ? position.latitude : 37.4220737, position ? position.longitude : -122.084923], radiusInMeters);
-            console.log('Nearby posts:', posts);
-            setLocationMarkers(posts.map(post => ({
-                id: post.id,
-                latitude: post.coordinates.latitude,
-                longitude: post.coordinates.longitude,
-                title: post.title,
-            })));
-        });
+            if (position) {
+                const posts = await getPostsNearby([position.latitude, position.longitude], radiusInMeters);
+                // Apply offset to markers to prevent overlap
+                const offsetPosts = offsetMarkers(posts.map(post => ({
+                    id: post.id,
+                    latitude: post.coordinates.latitude,
+                    longitude: post.coordinates.longitude,
+                    title: post.title,
+                })));
+                setLocationMarkers(offsetPosts);
+                console.log('Posts:', offsetPosts);
+            }
+            setLoading(false);
+        };
+
+        const focusListener = navigation.addListener('focus', fetchData);
 
         return () => {
             focusListener();
         };
-    }, [navigation]);
+    }, [navigation, position]);
 
     const zoomIn = () => {
-        setRegion((prevRegion) => ({
-            ...prevRegion,
-            latitudeDelta: prevRegion.latitudeDelta / 2,
-            longitudeDelta: prevRegion.longitudeDelta / 2,
-        }));
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                ...region,
+                latitudeDelta: region.latitudeDelta / 2,
+                longitudeDelta: region.longitudeDelta / 2,
+            }, 500); // duration of the animation in ms
+        }
     };
 
     const zoomOut = () => {
-        setRegion((prevRegion) => ({
-            ...prevRegion,
-            latitudeDelta: prevRegion.latitudeDelta * 2,
-            longitudeDelta: prevRegion.longitudeDelta * 2,
-        }));
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                ...region,
+                latitudeDelta: region.latitudeDelta * 2,
+                longitudeDelta: region.longitudeDelta * 2,
+            }, 500); // duration of the animation in ms
+        }
+    };
+
+    const handleRegionChange = (newRegion) => {
+        setRegion(newRegion);
     };
 
     return (
@@ -134,7 +167,9 @@ const MapScreen = () => {
             <View style={styles.container}>
                 <MapView
                     region={region}
-                    style={{ flex: 1, opacity: 0.6 }}
+                    onRegionChangeComplete={handleRegionChange}
+                    style={{ flex: 1, opacity: loading ? 0.6 : 1 }}
+                    zoomEnabled={true}
                     ref={mapRef}
                 >
                     {position && (
@@ -144,21 +179,27 @@ const MapScreen = () => {
                             pinColor="red"
                         />
                     )}
+                    
                     {locationMarkers.map(location => (
                         <Marker
                             key={location.id}
-                            coordinate={{latitude: location.latitude, longitude: location.longitude}}
+                            coordinate={{ latitude: location.latitude, longitude: location.longitude }}
                             title={location.title}
-                            pinColor='blue'
+                            pinColor="blue"
                         />
                     ))}
                 </MapView>
+                {loading && (
+                    <View style={styles.loading}>
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    </View>
+                )}
                 <View style={styles.zoomButtons}>
-                    <TouchableOpacity onPress={zoomIn}>
-                        <Feather name="zoom-in" size={22} color='black' style={styles.iconStyle} />
+                    <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>
+                        <Feather name="zoom-in" size={27} color='black' />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={zoomOut}>
-                        <Feather name="zoom-out" size={22} color='black' style={styles.iconStyle} />
+                    <TouchableOpacity onPress={zoomOut} style={styles.iconStyle}>
+                        <Feather name="zoom-out" size={27} color='black' />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -174,8 +215,27 @@ const styles = StyleSheet.create({
         right: 20,
         flexDirection: 'column',
     },
-    iconStyle :{
-       margin: 5,
+    iconStyle: {
+        margin: 1,
+        backgroundColor: 'white',
+        width: 35,
+        height: 35,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    loading: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: [{ translateX: -25 }, { translateY: -25 }],
     }
 });
 

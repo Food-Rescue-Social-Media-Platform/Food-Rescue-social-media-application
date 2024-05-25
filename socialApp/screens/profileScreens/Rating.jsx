@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { doc, updateDoc } from "firebase/firestore";
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS } from '../../styles/colors';
+import { COLORS, DARKCOLORS } from '../../styles/colors';
+import { useDarkMode } from '../../styles/DarkModeContext';
 
 // Function to capitalize the first letter of each word
 const capitalizeFirstLetterOfEachWord = (string) => {
@@ -17,6 +18,9 @@ const Rating = ({ route }) => {
   const [ratingNumber, setRatingNumber] = useState(userData.ratingNumber || 0);
   const [selectedRating, setSelectedRating] = useState(0);
   const navigation = useNavigation(); // Get navigation object
+  const { isDarkMode } = useDarkMode();
+
+  const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
   const handleRatingPress = (newRating) => {
     setSelectedRating(newRating);
@@ -50,7 +54,7 @@ const Rating = ({ route }) => {
           <MaterialCommunityIcons
             name={i <= selectedRating ? 'star' : 'star-outline'}
             size={30}
-            color={i <= selectedRating ? COLORS.secondaryBackground : '#000'}
+            color={i <= selectedRating ? themeColors.secondaryBackground : themeColors.black}
           />
         </TouchableOpacity>
       );
@@ -59,15 +63,17 @@ const Rating = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Rate {capitalizeFirstLetterOfEachWord(userData.userName)}</Text>
+    <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]}>
+      <Text style={[styles.title, { color: themeColors.primaryText }]}>
+        Rate {capitalizeFirstLetterOfEachWord(userData.userName)}
+      </Text>
       <View style={styles.starContainer}>
         {renderStars()}
       </View>
-      <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={submitRating}>
-        <Text style={styles.buttonText}>Submit Rating</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={submitRating}>
+        <Text style={[styles.buttonText, { color: themeColors.primaryText }]}>Submit Rating</Text>
       </TouchableOpacity>
-      <Text style={styles.currentRating}>
+      <Text style={[styles.currentRating, { color: themeColors.primaryText }]}>
         Current Rating: {rating.toFixed(1)} ({ratingNumber} ratings)
       </Text>
     </View>
@@ -82,7 +88,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: COLORS.appBackGroundColor,
   },
   title: {
     fontSize: 24,
@@ -93,21 +98,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 20,
   },
-  // submitButton: {
-  //   backgroundColor: '#2196F3',
-  //   padding: 10,
-  //   borderRadius: 5,
-  // },
-  // submitButtonText: {
-  //   color: '#fff',
-  //   fontSize: 18,
-  // },
   currentRating: {
     marginTop: 20,
     fontSize: 16,
   },
   button: {
-    backgroundColor: COLORS.secondaryTheme,
     padding: 13,
     borderRadius: 10,
     width: '56%',

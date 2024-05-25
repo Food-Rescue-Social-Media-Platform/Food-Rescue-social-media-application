@@ -16,3 +16,22 @@ export const COLORS = {
     appBackGroundColor: '#f9fafd',
     lightGray: '#f5f5f5',
 }
+
+export const DARKCOLORS = {
+    white: '#000', // Typically the "white" equivalent in dark mode is black
+    black: '#fff', // Typically the "black" equivalent in dark mode is white
+    theme: '#37474F', // Darker theme color
+    secondaryTheme: '#263238', // Darker secondary theme color
+    secondaryBackground: '#37474F', // Darker secondary background
+    primaryText: '#fff', // Light text for dark backgrounds
+    secondaryText: '#000', // Dark text for lighter elements in dark mode
+    borderColor: '#fff', // Light border color
+    themeColor: '#4CAF50', // Adjusted dark mode theme color
+    messageNotME: '#424242', // Dark mode message background
+    searchChat: '#2E7D32', // Darker search chat color
+    navBar: '#388E3C', // Darker nav bar color
+    headerChat: '#37474F', // Darker header chat color
+    blueHeaderText: '#1E88E5', // Adjusted blue header text color
+    appBackGroundColor: '#121212', // Very dark background
+    lightGray: '#424242', // Darker gray for light gray elements
+};

@@ -31,10 +31,8 @@ export class Post {
         this.category = category;
         this.postImg = postImg;
         this.status = "wait for rescue";
-        this.location = location;
         this.coordinates = [location.coords.latitude, location.coords.longitude];
         this.geohash = geofire.geohashForLocation([location.coords.latitude, location.coords.longitude]);
-        this.postDistance = "";
         this.createdAt = serverTimestamp();       
     }
 }
@@ -54,7 +52,6 @@ export class Post {
         status : post.status,
         coordinates : post.coordinates,
         geohash : post.geohash,
-        postDistance : post.postDistance,
         createdAt : post.createdAt 
       };
       console.log("Adding post to database...:", postData);
@@ -62,9 +59,6 @@ export class Post {
       try{
         const docRef = await addDoc(collection(database, "postsTest") ,postData);
         console.log("Post added with ID:", docRef.id);
-
-        // Update post's id
-        // await update(docRef, { "id": docRef.id });
 
         // Update user's postsId array
         const userRef = doc(database, 'users', post.userId);

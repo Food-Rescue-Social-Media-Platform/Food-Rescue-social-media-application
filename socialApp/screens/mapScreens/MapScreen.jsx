@@ -1,22 +1,22 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
-    ToastAndroid,
     ActivityIndicator,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../navigation/AuthProvider';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
-import * as Location from 'expo-location';
+import {getDistance} from '../../hooks/helpersMap/getDistance';
+import {watchLocation} from '../../hooks/helpersMap/watchLocation';
+import { getLocation } from '../../hooks/helpersMap/getLocation';
 import Feather from 'react-native-vector-icons/Feather';
+import {offsetMarkers} from '../../hooks/helpersMap/offsetMarkers'
 
 const MapScreen = () => {
-    const { user, login } = useContext(AuthContext);
     const mapRef = useRef(null);
     const [position, setPosition] = useState(null);
     const [locationMarkers, setLocationMarkers] = useState([]);
@@ -30,102 +30,24 @@ const MapScreen = () => {
     const navigation = useNavigation();
     const radiusInMeters = 10000;
 
-    const hasPermission = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            ToastAndroid.show('Location permission denied by user.', ToastAndroid.LONG);
-            return false;
-        }
-        return true;
+    const fetchPosts = async (pos) => {
+        if (!pos) return;
+        const posts = await getPostsNearby([pos.latitude, pos.longitude], radiusInMeters);
+        const offsetPosts = offsetMarkers(posts.map(post => ({
+            id: post.id,
+            latitude: post.coordinates.latitude,
+            longitude: post.coordinates.longitude,
+            title: post.title,
+        })));
+        setLocationMarkers(offsetPosts);
     };
 
-    const getLocation = async () => {
-        const hasLocationPermission = await hasPermission();
-
-        if (!hasLocationPermission) {
-            console.log('Permission denied by user');
-            return;
-        }
-        console.log('Permission granted by user');
-
-        try {
-            const location = await Location.getCurrentPositionAsync({
-                accuracy: Location.Accuracy.High,
-            });
-            setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
-            console.log('Location:', location);
-            setRegion({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-            });
-            console.log("getCurrentPosition, coords:", location.coords);
-        } catch (error) {
-            console.error('Error getting location:', error);
-            ToastAndroid.show(
-                "We couldn't fetch your location. Please check your device location service!",
-                ToastAndroid.LONG,
-            );
-        }
-    };
-
-    const watchLocation = async () => {
-        const hasLocationPermission = await hasPermission();
-        if (!hasLocationPermission) {
-            return;
-        }
-
-        Location.watchPositionAsync(
-            {
-                accuracy: Location.Accuracy.High,
-                timeInterval: 10000,
-                distanceInterval: 10,
-            },
-            (location) => {
-                setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
-                setRegion((prevRegion) => ({
-                    ...prevRegion,
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                }));
-                console.log("watchPosition, coords:", location.coords);
-            }
-        );
-    };
-
-    // Function to slightly offset markers to avoid overlap
-    const offsetMarkers = (markers) => {
-        const offsetDistance = 0.0001; // adjust this value as needed
-        return markers.map((marker, index) => {
-            const offsetAngle = (index * 2 * Math.PI) / markers.length;
-            const offsetLat = offsetDistance * Math.sin(offsetAngle);
-            const offsetLng = offsetDistance * Math.cos(offsetAngle);
-            return {
-                ...marker,
-                latitude: marker.latitude + offsetLat,
-                longitude: marker.longitude + offsetLng,
-            };
-        });
-    };
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
-            await getLocation();
-            watchLocation();
-            if (position) {
-                const posts = await getPostsNearby([position.latitude, position.longitude], radiusInMeters);
-                // Apply offset to markers to prevent overlap
-                const offsetPosts = offsetMarkers(posts.map(post => ({
-                    id: post.id,
-                    latitude: post.coordinates.latitude,
-                    longitude: post.coordinates.longitude,
-                    title: post.title,
-                })));
-                setLocationMarkers(offsetPosts);
-                console.log('Posts:', offsetPosts);
-            }
+            await getLocation(setPosition, setRegion);
+            watchLocation(setPosition, setRegion);
             setLoading(false);
         };
 
@@ -134,7 +56,15 @@ const MapScreen = () => {
         return () => {
             focusListener();
         };
-    }, [navigation, position]);
+    }, [navigation]);
+
+    
+    useEffect(() => {
+        if (position) {
+            console.trace() 
+            fetchPosts(position);
+        }
+    }, [position]);
 
     const zoomIn = () => {
         if (mapRef.current) {
@@ -156,8 +86,12 @@ const MapScreen = () => {
         }
     };
 
-    const handleRegionChange = (newRegion) => {
+     const handleRegionChange = (newRegion) => {
         setRegion(newRegion);
+        const distance = getDistance(region.latitude, region.longitude, newRegion.latitude, newRegion.longitude);
+        if (distance > radiusInMeters) {
+            fetchPosts({ latitude: newRegion.latitude, longitude: newRegion.longitude });
+        }
     };
 
     return (
@@ -177,6 +111,7 @@ const MapScreen = () => {
                             coordinate={{ latitude: position.latitude, longitude: position.longitude }}
                             title="You are here"
                             pinColor="red"
+                            style={{ zIndex: 1 }}
                         />
                     )}
                     

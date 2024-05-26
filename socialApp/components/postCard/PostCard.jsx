@@ -60,6 +60,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
     const [ distance, setDistance ] = useState(0);
+    console.log("ITEM", item);
 
     useEffect(() => {
         handleDistanceUserToPost();
@@ -147,6 +148,21 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     };
 
 
+    const handleClickLocationPost = () => {
+        if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
+            return;
+        }
+        navigation.navigate('MapTab',{
+            screen: 'Map',
+            params: { 
+                id: item.id, 
+                latitude: item.coordinates[0],
+                longitude: item.coordinates[1],
+                title: item.postText,
+                image: item.postImg[0],
+            }
+        });
+    }
 
 
     // Calculate distance between location of post to location of user
@@ -170,11 +186,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             setDistance(`${distance.toFixed(2)} km`);
         }
     };
-    // const handleDistanceUserToPost = () => {
-    //     const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude);
-    //     console.info('Distance:', distance);
-    //     return distance;
-    // }
+
 
     return (
         <Card>
@@ -308,11 +320,13 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                 </View>
                 {(item.coordinates !== 'undefined' && item.coordinates ) && (
                     <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                            name="map-marker"
-                            size={22}
-                        />
-                        <Text style={styles.text}>{distance}</Text>
+                        <TouchableOpacity onPress={handleClickLocationPost}>
+                            <MaterialCommunityIcons
+                                name="map-marker"
+                                size={22}
+                            />
+                            <Text style={styles.text}>{distance}</Text>
+                        </TouchableOpacity> 
                     </View>
                 )}
             </InteractionWrapper>

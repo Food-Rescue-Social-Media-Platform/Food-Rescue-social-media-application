@@ -12,14 +12,13 @@ export class Post {
          phoneNumber,
          postText,
          deliveryRange,
-         category="other",
-         postImg=[],
-         location = { coords: { latitude: 0, longitude: 0 } }
+         category,
+         postImg,
+         postLocation
         ) {
         if(!postText || !userId) {
            throw new Error("body and userIid are required for a new post!");
         }
-        
         this.userId = userId;
         this.userName = userName;
         this.firstName = firstName;
@@ -28,9 +27,11 @@ export class Post {
         this.phoneNumber = phoneNumber;
         this.postText = postText;
         this.deliveryRange = deliveryRange;
-        this.category = category;
+        this.category = category || "Other";
         this.postImg = postImg;
         this.status = "wait for rescue";
+        
+        const location = postLocation || { coords: { latitude: 0, longitude: 0 } };
         this.coordinates = [location.coords.latitude, location.coords.longitude];
         this.geohash = geofire.geohashForLocation([location.coords.latitude, location.coords.longitude]);
         this.createdAt = serverTimestamp();       
@@ -142,6 +143,7 @@ export async function getPostsNearby(center, radiusInM) {
                     id: doc.id,
                     title: doc.get('postText'),
                     coordinates: { latitude: lat, longitude: lng },
+                    Image: doc.get('postImg')[0],
                 });
             }
         });

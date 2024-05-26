@@ -22,6 +22,8 @@ export const watchLocation = async (setPosition, setRegion = null) => {
                 ...prevRegion,
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
             }));
             }
             console.log("watchPosition, coords:", location.coords);

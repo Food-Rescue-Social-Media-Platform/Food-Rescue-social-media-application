@@ -20,8 +20,8 @@ export const getLocation = async ( setPosition, setRegion=null ) => {
             setRegion({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
             });
         }
         console.log("getCurrentPosition, coords:", location.coords);

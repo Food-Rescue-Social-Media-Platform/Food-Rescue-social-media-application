@@ -143,7 +143,7 @@ export async function getPostsNearby(center, radiusInM) {
                     id: doc.id,
                     title: doc.get('postText'),
                     coordinates: { latitude: lat, longitude: lng },
-                    Image: doc.get('postImg')[0],
+                    image: doc.get('postImg')[0],
                 });
             }
         });

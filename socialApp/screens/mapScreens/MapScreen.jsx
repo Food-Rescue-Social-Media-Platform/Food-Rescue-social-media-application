@@ -6,7 +6,7 @@ import {
     StyleSheet,
     ActivityIndicator,
 } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { TouchableOpacity, Image ,Text} from 'react-native';
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
@@ -15,7 +15,8 @@ import {watchLocation} from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import Feather from 'react-native-vector-icons/Feather';
 import {offsetMarkers} from '../../hooks/helpersMap/offsetMarkers'
-import { CardMap } from '../../components/map/CardMap';
+import PostModal from '../../components/map/PostModal';
+
 const MapScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
@@ -32,7 +33,7 @@ const MapScreen = () => {
     const [loading, setLoading] = useState(false);
     const [postFromFeed, setPostFromFeed] = useState(null);
     const [selectedPost, setSelectedPost] = useState(null);  // State to manage the selected post
-    console.clear();
+    const [isModalVisible, setModalVisible] = useState(false);
     const radiusInMeters = 10000;
     
     const fetchPosts = async (pos) => {
@@ -44,8 +45,9 @@ const MapScreen = () => {
             latitude: post.coordinates.latitude,
             longitude: post.coordinates.longitude,
             title: post.title,
-            image: post.Image,
+            image: post.image,
         })));
+        console.log("posts", posts)
         setLocationMarkers(offsetPosts);
         setLoading(false);
 
@@ -113,9 +115,15 @@ const MapScreen = () => {
             fetchPosts({ latitude: newRegion.latitude, longitude: newRegion.longitude });
         }
     };
-
+    
     const handleMarkerPress = (post) => {
         setSelectedPost(post);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedPost(null);
     };
 
     return (
@@ -138,22 +146,14 @@ const MapScreen = () => {
                             style={{ zIndex: 1 }}
                         />
                     )}
-                    
-                    {locationMarkers.map(location => (
+                    {locationMarkers.map(post => (
                         <Marker
-                            key={location.id}
-                            coordinate={{ latitude: location.latitude, longitude: location.longitude }}
-                            title={location.title}
+                            key={post.id}
+                            coordinate={{ latitude: post.latitude, longitude: post.longitude }}
+                            title={post.title}
                             pinColor="green"
-                            onPress={() => handleMarkerPress(location)}  // Handle marker press
-                        >
-                            <Callout>
-                            <View style={styles.callout}>
-                                {location.image && <Image source={{ uri: location.image }} style={styles.calloutImage} />}
-                                <Text style={styles.calloutTitle}>{location.title}</Text>
-                            </View>
-                        </Callout>
-                        </Marker>
+                            onPress={() => handleMarkerPress(post)}  // Handle marker press
+                        />
                     ))}
                     {postFromFeed && (
                         <Marker
@@ -163,28 +163,22 @@ const MapScreen = () => {
                             pinColor="purple"
                             style={{ zIndex: 1}}
                             onPress={() => handleMarkerPress(postFromFeed)}  // Handle marker press
-                        >
-                            <Callout>
-                                <View style={styles.callout}>
-                                    {postFromFeed.image && <Image source={{ uri: postFromFeed.image }} style={styles.calloutImage} />}
-                                    <Text style={styles.calloutTitle}>{postFromFeed.title}</Text>
-                                </View>
-                            </Callout>
-                        </Marker>
+                        />            
                     )}
                 </MapView>
+
+                <PostModal
+                    setVisible={setModalVisible}
+                    visible={isModalVisible}
+                    post={selectedPost}
+                    onClose={closeModal}
+                />
                  
                 {loading && (
                     <View style={styles.loading}>
                         <ActivityIndicator size="large" color="#0000ff" />
                     </View>
                 )}
-
-             {/*
-             {selectedPost && (
-                    <CardMap title={selectedPost.title} image={selectedPost.image} />
-                )} 
-                */}
                 
                 <View style={styles.zoomButtons}>
                     <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>
@@ -225,26 +219,10 @@ const styles = StyleSheet.create({
     },
     loading: {
         position: 'absolute',
-        top: '50%',
+        top: '17%',
         left: '50%',
         transform: [{ translateX: -25 }, { translateY: -25 }],
     },
-    callout: {
-        width: 150,
-        alignItems: 'center',
-    },
-    calloutImage: {
-        width: 120,
-        height: 80,
-        resizeMode: 'cover',
-        borderRadius: 10,
-    },
-    calloutTitle: {
-        marginTop: 5,
-        fontSize: 14,
-        fontWeight: 'bold',
-        textAlign: 'center',
-    }
 });
 
 export default MapScreen;

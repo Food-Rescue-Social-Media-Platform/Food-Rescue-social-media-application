@@ -72,7 +72,11 @@ const HomeScreen = () => {
     };
 
     if (loading) {
-        return <ActivityIndicator style={styles.loadingIndicator} size="large" color={theme.primaryText} />;
+        return (
+            <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
+                <ActivityIndicator size="large" color={theme.primaryText} />
+            </View>
+        );
     }
 
     if (error) {
@@ -97,6 +101,7 @@ const HomeScreen = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
+                        tintColor={theme.primaryText} // Added to style the RefreshControl spinner
                     />
                 }
             />
@@ -116,7 +121,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         paddingBottom: 5,
     },
-    loadingIndicator: {
+    loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -125,7 +130,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 5,
-        marginRight:'82%',
+        marginRight: '82%',
     },
 });
 

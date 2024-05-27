@@ -22,7 +22,7 @@ export const DARKCOLORS = {
     black: '#fff', // Typically the "black" equivalent in dark mode is white
     theme: '#37474F', // Darker theme color
     secondaryTheme: '#263238', // Darker secondary theme color
-    secondaryBackground: '#37474F', // Darker secondary background
+    secondaryBackground: '#A7EAAE', // Darker secondary background
     primaryText: '#fff', // Light text for dark backgrounds
     secondaryText: '#000', // Dark text for lighter elements in dark mode
     borderColor: '#fff', // Light border color

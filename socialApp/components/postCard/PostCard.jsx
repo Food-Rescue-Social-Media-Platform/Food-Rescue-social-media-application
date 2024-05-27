@@ -15,37 +15,36 @@ import { database } from '../../firebase'; // Import the Firestore instance from
 import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
-import { COLORS } from '../../styles/colors';
-import { deletePost } from '../../FirebaseFunctions/collections/post';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 
-const getCategoryIcon = (category) => {
+const getCategoryIcon = (category,categoryColor) => {
     switch (category) {
         case 'Bread':
-            return <FontAwesome6 name="bread-slice" size={22} />;
+            return <FontAwesome6 name="bread-slice" size={22} color={categoryColor}/>;
         case 'Cooked':
-            return <MaterialCommunityIcons name="food-takeout-box" size={22} />;
+            return <MaterialCommunityIcons name="food-takeout-box" size={22} color={categoryColor} />;
         case 'Chicken':
-            return <MaterialCommunityIcons name="food-turkey" size={22} />;
+            return <MaterialCommunityIcons name="food-turkey" size={22} color={categoryColor}/>;
         case 'Fast Food':
-            return <MaterialCommunityIcons name="food" size={22} />;
+            return <MaterialCommunityIcons name="food" size={22} color={categoryColor}/>;
         case 'Rice':
-            return <MaterialCommunityIcons name="rice" size={22} />;
+            return <MaterialCommunityIcons name="rice" size={22} color={categoryColor}/>;
         case 'Milky':
-            return <MaterialCommunityIcons name="cow" size={22} />;
+            return <MaterialCommunityIcons name="cow" size={22} color={categoryColor}/>;
         case 'Meat':
-            return <MaterialCommunityIcons name="food-steak" size={22} />;
+            return <MaterialCommunityIcons name="food-steak" size={22} color={categoryColor}/>;
         case 'Sweets':
-            return <MaterialCommunityIcons name="cupcake" size={22} />;
+            return <MaterialCommunityIcons name="cupcake" size={22} color={categoryColor}/>;
         case 'Seafood':
-            return <Ionicons name="fish" size={22} />;
+            return <Ionicons name="fish" size={22} color={categoryColor}/>;
         case 'Vegetables':
-            return <FontAwesome5 name="carrot" size={22} />;
-        case 'Fruites':
-            return <MaterialCommunityIcons name="food-apple" size={22} />;
+            return <FontAwesome5 name="carrot" size={22} color={categoryColor}/>;
+        case 'Fruits':
+            return <MaterialCommunityIcons name="food-apple" size={22} color={categoryColor}/>;
         case 'Drinks':
-            return <MaterialCommunityIcons name="bottle-wine" size={22} />;
+            return <MaterialCommunityIcons name="bottle-wine" size={22} color={categoryColor}/>;
         default:
-            return <MaterialIcons name="category" size={22} />;
+            return <MaterialIcons name="category" size={22} color={categoryColor}/>;
     }
 };
 
@@ -58,6 +57,7 @@ const emojisWithIcons = [
 const PostCard = ({ item, postUserId, isProfilePage }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
+    const { theme } = useDarkMode(); // Access the current theme
 
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
@@ -139,7 +139,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
     };
 
     return (
-        <Card>
+        <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
             <View style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -155,9 +155,9 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                     </TouchableOpacity>
                     <UserInfoText>
                         <TouchableOpacity onPress={handleUserPress}>
-                            <UserName>{item.userName}</UserName>
+                            <UserName style={{ color: theme.primaryText }}>{item.userName}</UserName>
                         </TouchableOpacity>
-                        <PostTime>{createdAt}</PostTime>
+                        <PostTime style={{ color: theme.primaryText }}>{createdAt}</PostTime>
                     </UserInfoText>
                 </UserInfo>
                 <UserInfoText>
@@ -168,6 +168,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                                     <SimpleLineIcons
                                         name="options"
                                         size={23}
+                                        color={theme.primaryText}
                                     />
                                 </TouchableOpacity>
                             )}
@@ -177,28 +178,28 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                             <View style={styles.menu}>
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
-                                        <MaterialIcons name="edit" size={20} color="black" />
-                                        <Text style={{ paddingLeft: 4 }}>Edit</Text>
+                                        <MaterialIcons name="edit" size={20} color='black' />
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Edit</Text>
                                     </TouchableOpacity>
                                 )}
 
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
-                                        <FontAwesome6 name="delete-left" size={20} color="black" />
-                                        <Text style={{ paddingLeft: 4 }}>Delete</Text>
+                                        <FontAwesome6 name="delete-left" size={20} color='black' />
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Delete</Text>
                                     </TouchableOpacity>
                                 )}
                                 
                                 {user && user.uid != postUserId && (                    
                                     <TouchableOpacity style={styles.optionButton} onPress={handleReport}>
-                                        <MaterialIcons name="report" size={20} color="black" />
-                                        <Text style={{ paddingLeft: 4 }}>Report</Text>
+                                        <MaterialIcons name="report" size={20} color='black' />
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Report</Text>
                                     </TouchableOpacity>            
                                 )}
 
                                 <TouchableOpacity style={styles.optionButton}>
-                                    <MaterialCommunityIcons name="share-variant" size={20} color="black" />
-                                    <Text style={{ paddingLeft: 4 }}>Share</Text>
+                                    <MaterialCommunityIcons name="share-variant" size={20} color='black' />
+                                    <Text style={{ paddingLeft: 4, color: 'black' }}>Share</Text>
                                 </TouchableOpacity>
                             </View>
                         </Popover>
@@ -214,29 +215,31 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
 
                                 renderButton={(selectedItem, isOpened) => {
                                     return (
-                                        <View style={styles.dropdownButtonStyle}>
+                                        <View style={[styles.dropdownButtonStyle, { backgroundColor: theme.secondaryBackground }]}>
                                             {selectedItem && (
-                                                <Icon name={selectedItem.icon} style={styles.dropdownButtonIconStyle} />
+                                                <Icon name={selectedItem.icon} style={[styles.dropdownButtonIconStyle, { color: theme.primaryText }]} />
                                             )}
-                                            <Text style={styles.dropdownButtonTxtStyle}>
+                                            <Text style={[styles.dropdownButtonTxtStyle, { color: theme.primaryText }]}>
                                                 {(selectedItem && selectedItem.title) || item.status}
                                             </Text>
-                                            <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                                            <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={[styles.dropdownButtonArrowStyle, { color: theme.primaryText }]} />
                                         </View>
                                     );
                                 }}
 
                                 renderItem={(item, index, isSelected) => {
                                     return (
-                                        <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                                            <Icon name={item.icon} style={styles.dropdownItemIconStyle} />
-                                            <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                                        <View style={{ 
+                                            ...styles.dropdownItemStyle, 
+                                            backgroundColor: isSelected ? '#D2D9DF' : theme.appBackGroundColor 
+                                        }}>
+                                            <Icon name={item.icon} style={[styles.dropdownItemIconStyle, { color: theme.primaryText }]} />
+                                            <Text style={[styles.dropdownItemTxtStyle, { color: theme.primaryText }]}>{item.title}</Text>
                                         </View>
                                     );
                                 }}
-
                                 showsVerticalScrollIndicator={false}
-                                dropdownStyle={styles.dropdownMenuStyle}
+                                dropdownStyle={[styles.dropdownMenuStyle, { backgroundColor: theme.secondaryBackground }]}
                             />
                         )}
 
@@ -250,44 +253,47 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                 <>
                     <Image source={{ uri: item.postImg }} style={styles.postImage} />
                     {/* Additional UI components under the post image */}
-                    <Text>{item.additionalInfo}</Text>
+                    <Text style={{ color: theme.primaryText }}>{item.additionalInfo}</Text>
                     {/* Add more UI components as needed */}
                 </>
             ) : (
                 <Divider />
             )}
-            <InteractionWrapper>
+            <InteractionWrapper >
                 <View style={styles.iconsWrapper}>
-                    {getCategoryIcon(item.category)}
-                    <Text style={styles.text}>{item.category}</Text>
+                    {getCategoryIcon(item.category,theme.primaryText)}
+                    <Text style={[styles.text, { color: theme.primaryText }]}>{item.category}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
                         name="clock"
                         size={22}
+                        color={theme.primaryText}
                     />
-                    <Text style={styles.text}>{postDate}</Text>
+                    <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
                 </View>
                 {item.postDistance && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="map-marker"
                             size={22}
+                            color={theme.primaryText}
                         />
-                        <Text style={styles.text}>{item.postDistance}</Text>
+                        <Text style={[styles.text, { color: theme.primaryText }]}>{item.postDistance}</Text>
                     </View>
                 )}
             </InteractionWrapper>
             <Text></Text>
 
-            <InteractionWrapper>
+            <InteractionWrapper style={backgroundColor = theme.secondaryBackground}>
                 {item.phoneNumber && (
                     <View style={styles.iconsWrapper}>
                         <MaterialCommunityIcons
                             name="phone"
                             size={22}
+                            color={theme.primaryText}
                         />
-                        <Text style={styles.text}>{item.phoneNumber}</Text>
+                        <Text style={[styles.text, { color: theme.primaryText }]}>{item.phoneNumber}</Text>
                     </View>
                 )}
                 {item.deliveryRange && (
@@ -295,13 +301,14 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                         <MaterialCommunityIcons
                             name="bus-clock"
                             size={22}
+                            color={theme.primaryText}
                         />
-                        <Text style={styles.text}>{item.deliveryRange}</Text>
+                        <Text style={[styles.text, { color: theme.primaryText }]}>{item.deliveryRange}</Text>
                     </View>
                 )}
 
             </InteractionWrapper>
-            <PostText>{item.postText}</PostText>
+            <PostText style={{ color: theme.primaryText }}>{item.postText}</PostText>
         </Card>
     );
 }
@@ -309,9 +316,13 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
 export default PostCard;
 
 const styles = StyleSheet.create({
+    card: {
+        borderRadius: 10,
+        padding: 10,
+        marginVertical: 10,
+    },
     text: {
         fontSize: 12,
-        color: "black"
     },
     iconsWrapper: {
         flexDirection: "row",
@@ -352,36 +363,31 @@ const styles = StyleSheet.create({
         marginBottom:5,
 
     },
-
-    ///////////////////////////////////////////////
     dropdownButtonStyle: {
         width: 130,
         height: 30,
-        backgroundColor: COLORS.secondaryBackground,
         borderRadius: 10,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 8,
     },
-        dropdownButtonTxtStyle: {
+    dropdownButtonTxtStyle: {
         flex: 1,
         fontSize: 10,
         fontWeight: '500',
-        color: COLORS.black,
     },
-        dropdownButtonArrowStyle: {
+    dropdownButtonArrowStyle: {
         fontSize: 28,
     },
-        dropdownButtonIconStyle: {
+    dropdownButtonIconStyle: {
         fontSize: 28,
         marginRight: 5,
     },
-        dropdownMenuStyle: {
-        backgroundColor: '#E9ECEF',
+    dropdownMenuStyle: {
         borderRadius: 8,
     },
-        dropdownItemStyle: {
+    dropdownItemStyle: {
         width: '98%',
         flexDirection: 'row',
         paddingHorizontal: 6,
@@ -389,13 +395,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingVertical: 10,
     },
-        dropdownItemTxtStyle: {
+    dropdownItemTxtStyle: {
         flex: 1,
         fontSize: 14,
         fontWeight: '500',
-        color: COLORS.black,
     },
-        dropdownItemIconStyle: {
+    dropdownItemIconStyle: {
         fontSize: 20,
     },
 });

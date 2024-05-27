@@ -13,7 +13,7 @@ const CustomDrawerContent = (props) => {
         <Text style={{ color: isDarkMode ? theme.lightGray : theme.primaryText }}>Dark Mode</Text>
         <Switch
           value={isDarkMode}
-          onValueChange={() => setIsDarkMode((prev) => !prev)}
+          onValueChange={(value) => setIsDarkMode(value)} // Ensure value is passed directly
         />
       </View>
     </DrawerContentScrollView>

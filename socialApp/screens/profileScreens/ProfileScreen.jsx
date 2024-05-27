@@ -210,7 +210,11 @@ const ProfileScreen = ({ navigation, route }) => {
   };
 
   if (loading) {
-    return <ActivityIndicator style={styles.loadingIndicator} size="large" color={themeColors.blueHeaderText} />;
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
+          <ActivityIndicator size="large" color={theme.primaryText} />
+      </View>
+    );
   }
 
   if (error) {
@@ -503,7 +507,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginLeft: '5%',
   },
-  loadingIndicator: {
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -671,7 +675,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
       },
-      loadingIndicator: {
+      loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',

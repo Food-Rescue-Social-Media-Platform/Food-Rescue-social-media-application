@@ -1,3 +1,4 @@
+import 'intl-pluralrules';
 import React, { useContext, useState, useEffect } from 'react';
 import { Text, View, Switch } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -24,6 +25,8 @@ import CustomDrawerContent from './CustomDrawerContent';
 import { AuthContext } from './AuthProvider';
 import { database } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../i18n';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -314,31 +317,34 @@ const RootStackScreen = () => {
   }, [user]);
 
   return (
-    <DarkModeProvider>
-      <RootStack.Navigator>
-        {isAdmin ? (
-          <RootStack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
-        ) : (
-          <>
-            <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }} />
-            <RootStack.Screen name="Edit Profile" component={EditProfile} />
-            <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false }} />
-            <RootStack.Screen
-              name="SingleChat"
-              component={SingleChat}
-              options={({ route }) => ({
-                title: route.params.receiverData.receiver,
-                headerTitleAlign: 'center',
-              })}
-            />
-            <RootStack.Screen name="Edit Post" component={EditPostScreen} />
-            <RootStack.Screen name="Followers List" component={FollowersList} />
-            <RootStack.Screen name="Following List" component={FollowingList} />
-            <RootStack.Screen name="Rating" component={Rating} />
-          </>
-        )}
-      </RootStack.Navigator>
-    </DarkModeProvider>
+    <I18nextProvider i18n={i18n}>
+      <DarkModeProvider>
+        <RootStack.Navigator>
+          {isAdmin ? (
+            <RootStack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
+          ) : (
+            <>
+              <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }} />
+              <RootStack.Screen name="Edit Profile" component={EditProfile} />
+              <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false }} />
+              <RootStack.Screen
+                name="SingleChat"
+                component={SingleChat}
+                options={({ route }) => ({
+                  title: route.params.receiverData.receiver,
+                  headerTitleAlign: 'center',
+                })}
+              />
+              <RootStack.Screen name="Edit Post" component={EditPostScreen} />
+              <RootStack.Screen name="Followers List" component={FollowersList} />
+              <RootStack.Screen name="Following List" component={FollowingList} />
+              <RootStack.Screen name="Rating" component={Rating} />
+            </>
+          )}
+        </RootStack.Navigator>
+      </DarkModeProvider>
+    </I18nextProvider>
+
   );
 };
 

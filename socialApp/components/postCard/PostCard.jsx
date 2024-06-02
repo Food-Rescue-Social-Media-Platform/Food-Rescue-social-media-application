@@ -61,15 +61,12 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { user } = useContext(AuthContext);
     const [ distance, setDistance ] = useState(0);
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
-    console.log("ITEM", item);
 
     useEffect(() => {
         if((item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
         setHaveSharedLocation(true)
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1], setDistance);
     }, [userLocation]);
-
-    console.info("post card, userLocation:", userLocation);
 
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
@@ -166,29 +163,6 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             }
         });
     }
-
-
-    // Calculate distance between location of post to location of user
-    // const handleDistanceUserToPost = () => {
-    //     if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
-    //         setDistance('Calculating...');
-    //         return;
-    //     }
-    
-    //     console.info('User location:', userLocation);
-    //     console.info('Post location:', item.coordinates[0], item.coordinates[1]);
-    
-    //     const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1]);
-    //     console.info('Distance:', distance);
-        
-    //     // Check if the distance is less than 1 km
-    //     if (distance < 1) {
-    //         const distanceInMeters = distance * 1000; // Convert to meters
-    //         setDistance(`${distanceInMeters.toFixed(0)} m`);
-    //     } else {
-    //         setDistance(`${distance.toFixed(2)} km`);
-    //     }
-    // };
 
 
     return (

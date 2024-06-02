@@ -47,7 +47,6 @@ const MapScreen = () => {
             title: post.title,
             image: post.image,
         })));
-        console.log("posts", posts)
         setLocationMarkers(offsetPosts);
         setLoading(false);
         // setModalVisible(false);  // Close the modal when the posts are fetched

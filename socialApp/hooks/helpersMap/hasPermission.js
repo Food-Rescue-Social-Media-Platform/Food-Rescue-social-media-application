@@ -1,10 +1,18 @@
 import * as Location from 'expo-location';
-import { ToastAndroid } from 'react-native';
+import { Platform, Alert, ToastAndroid } from 'react-native';
 
 export const hasPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
-        ToastAndroid.show('Location permission denied by user.', ToastAndroid.LONG);
+        if (Platform.OS === 'android') {
+            ToastAndroid.show('Location permission denied by user.', ToastAndroid.LONG);
+        } else {
+            Alert.alert(
+                "Permission Denied",
+                "Location permission denied by user.",
+                [{ text: "OK" }]
+            );
+        }
         return false;
     }
     return true;

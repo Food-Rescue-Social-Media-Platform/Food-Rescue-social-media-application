@@ -7,7 +7,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { TouchableOpacity, Image ,Text} from 'react-native';
+import { TouchableOpacity} from 'react-native';
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
 import {getDistance} from '../../hooks/helpersMap/getDistance';
@@ -50,6 +50,7 @@ const MapScreen = () => {
         console.log("posts", posts)
         setLocationMarkers(offsetPosts);
         setLoading(false);
+        // setModalVisible(false);  // Close the modal when the posts are fetched
 
     };
 
@@ -126,6 +127,16 @@ const MapScreen = () => {
         setSelectedPost(null);
     };
 
+    const handleMapPress = (event) => {
+        const { coordinate } = event.nativeEvent;
+        const pressedMarker = locationMarkers.find(marker =>
+            marker.latitude === coordinate.latitude && marker.longitude === coordinate.longitude
+        );
+        if (!pressedMarker) {
+            closeModal();
+        }
+    };
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -137,6 +148,7 @@ const MapScreen = () => {
                     style={{ flex: 1, opacity: loading ? 0.6 : 1 }}
                     zoomEnabled={true}
                     ref={mapRef}
+                    onPress={handleMapPress}
                 >
                     {position && (
                         <Marker
@@ -172,6 +184,7 @@ const MapScreen = () => {
                     visible={isModalVisible}
                     post={selectedPost}
                     onClose={closeModal}
+                    userLocation={position}
                 />
                  
                 {loading && (

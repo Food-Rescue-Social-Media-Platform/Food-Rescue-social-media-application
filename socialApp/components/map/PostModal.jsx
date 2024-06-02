@@ -4,7 +4,9 @@ import ReadMore from 'react-native-read-more-text';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { windowWidth } from '../../utils/Dimentions';
 
-const PostModal = ({ setVisible, visible, post, onClose }) => {
+const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
+ 
+
   const renderTruncatedFooter = () => {
     return (
       <Text style={styles.readMore} onPress={handleReadMorePress}>
@@ -37,7 +39,7 @@ const PostModal = ({ setVisible, visible, post, onClose }) => {
                 />
               )}
               <View style={styles.textContainer}>
-                <View style={[styles.titleContainer, !post.image && { height: '80%' }]}>
+                <View style={[styles.titleContainer, !post.image && { height: '45%' }]}>
                   <ReadMore
                     numberOfLines={2}
                     renderTruncatedFooter={renderTruncatedFooter}
@@ -66,7 +68,9 @@ const styles = StyleSheet.create({
   modalContent: {
     width: windowWidth / 1.4,
     alignSelf: 'center',
+    marginTop: '17%',
     marginBottom: '17%',
+    marginHorizontal: '17%',
     backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {

@@ -1,8 +1,8 @@
-import { hasPermission } from "./hasPermission";
-import { ToastAndroid} from 'react-native'
 import * as Location from 'expo-location';
+import { Platform, ToastAndroid, Alert } from 'react-native';
+import { hasPermission } from './hasPermission';
 
-export const getLocation = async ( setPosition, setRegion=null ) => {
+export const getLocation = async (setPosition, setRegion = null) => {
     const hasLocationPermission = await hasPermission();
 
     if (!hasLocationPermission) {
@@ -16,7 +16,7 @@ export const getLocation = async ( setPosition, setRegion=null ) => {
             accuracy: Location.Accuracy.High,
         });
         setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
-        if(setRegion) {
+        if (setRegion) {
             setRegion({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
@@ -27,9 +27,17 @@ export const getLocation = async ( setPosition, setRegion=null ) => {
         console.log("getCurrentPosition, coords:", location.coords);
     } catch (error) {
         console.error('Error getting location:', error);
-        ToastAndroid.show(
-            "We couldn't fetch your location. Please check your device location service!",
-            ToastAndroid.LONG,
-        );
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(
+                "We couldn't fetch your location. Please check your device location service!",
+                ToastAndroid.LONG,
+            );
+        } else {
+            Alert.alert(
+                "Error",
+                "We couldn't fetch your location. Please check your device location service!",
+                [{ text: "OK" }]
+            );
+        }
     }
 };

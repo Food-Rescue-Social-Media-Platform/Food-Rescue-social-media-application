@@ -179,13 +179,13 @@ const MapScreen = () => {
                     )}
                 </MapView>
 
-                <PostModal
+                { selectedPost? (<PostModal
                     setVisible={setModalVisible}
                     visible={isModalVisible}
                     post={selectedPost}
                     onClose={closeModal}
                     userLocation={position}
-                />
+                />): null}
                  
                 {loading && (
                     <View style={styles.loading}>

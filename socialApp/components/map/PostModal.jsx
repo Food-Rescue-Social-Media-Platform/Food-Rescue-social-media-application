@@ -1,16 +1,26 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet, View, Text, Image, Modal, TouchableOpacity } from 'react-native';
 import ReadMore from 'react-native-read-more-text';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { windowWidth } from '../../utils/Dimentions';
+import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 
 const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
- 
+  const [ distance, setDistance ] = useState('Calculating...');
+  const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
 
+  useEffect(() => {
+    const fetchDistance = async () => {
+      if(post.latitude === 0 && post.longitude === 0) return;
+      setHaveSharedLocation(true);
+      calDistanceUserToPost(userLocation.latitude, userLocation.longitude, post.latitude, post.longitude, setDistance )
+    }
+    fetchDistance();  
+  }, []); 
   const renderTruncatedFooter = () => {
     return (
       <Text style={styles.readMore} onPress={handleReadMorePress}>
-        Read more
+      Read 
       </Text>
     );
   };
@@ -47,10 +57,15 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
                     <Text style={styles.title}>{post.title}</Text>
                   </ReadMore>
                 </View>
-                <View style={[styles.distanceContainer, !post.image && { height: '20%' }]}>
-                  <MaterialCommunityIcons name="map-marker" size={26} color='black' />
-                  <Text style={styles.distanceText}>distance: 10 km</Text>
-                </View>
+
+                {haveSharedLocation? (
+                   <View style={[styles.distanceContainer, !post.image && { height: '20%' }]}>
+                      <MaterialCommunityIcons name="map-marker" size={26} color='black' />
+                      <Text style={styles.distanceText}>{distance}</Text>
+                  </View>
+                ): null
+                 }
+
               </View>
             </>
           )}

@@ -17,7 +17,7 @@ import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, Interaction
 import moment from 'moment';
 import { COLORS } from '../../styles/colors';
 import { deletePost } from '../../FirebaseFunctions/collections/post';
-import { getDistance } from '../../hooks/helpersMap/getDistance';
+import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 
 const getCategoryIcon = (category) => {
     switch (category) {
@@ -60,10 +60,13 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
     const [ distance, setDistance ] = useState(0);
+    const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
     console.log("ITEM", item);
 
     useEffect(() => {
-        handleDistanceUserToPost();
+        if((item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
+        setHaveSharedLocation(true)
+        calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1], setDistance);
     }, [userLocation]);
 
     console.info("post card, userLocation:", userLocation);
@@ -166,26 +169,26 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
 
 
     // Calculate distance between location of post to location of user
-    const handleDistanceUserToPost = () => {
-        if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
-            setDistance('Calculating...');
-            return;
-        }
+    // const handleDistanceUserToPost = () => {
+    //     if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
+    //         setDistance('Calculating...');
+    //         return;
+    //     }
     
-        console.info('User location:', userLocation);
-        console.info('Post location:', item.coordinates[0], item.coordinates[1]);
+    //     console.info('User location:', userLocation);
+    //     console.info('Post location:', item.coordinates[0], item.coordinates[1]);
     
-        const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1]);
-        console.info('Distance:', distance);
+    //     const distance = getDistance(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1]);
+    //     console.info('Distance:', distance);
         
-        // Check if the distance is less than 1 km
-        if (distance < 1) {
-            const distanceInMeters = distance * 1000; // Convert to meters
-            setDistance(`${distanceInMeters.toFixed(0)} m`);
-        } else {
-            setDistance(`${distance.toFixed(2)} km`);
-        }
-    };
+    //     // Check if the distance is less than 1 km
+    //     if (distance < 1) {
+    //         const distanceInMeters = distance * 1000; // Convert to meters
+    //         setDistance(`${distanceInMeters.toFixed(0)} m`);
+    //     } else {
+    //         setDistance(`${distance.toFixed(2)} km`);
+    //     }
+    // };
 
 
     return (
@@ -318,7 +321,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     />
                     <Text style={styles.text}>{postDate}</Text>
                 </View>
-                {(item.coordinates !== 'undefined' && item.coordinates ) && (
+                { haveSharedLocation ? (
                     <View style={styles.iconsWrapper}>
                         <TouchableOpacity onPress={handleClickLocationPost}>
                             <MaterialCommunityIcons
@@ -328,7 +331,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                             <Text style={styles.text}>{distance}</Text>
                         </TouchableOpacity> 
                     </View>
-                )}
+                ): null}
             </InteractionWrapper>
             <Text></Text>
 

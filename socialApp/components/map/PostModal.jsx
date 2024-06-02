@@ -11,7 +11,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
 
   useEffect(() => {
     const fetchDistance = async () => {
-      if(post.latitude === 0 && post.longitude === 0) return;
+      if((post.latitude === 0 && post.longitude === 0) || !userLocation) return;
       setHaveSharedLocation(true);
       calDistanceUserToPost(userLocation.latitude, userLocation.longitude, post.latitude, post.longitude, setDistance )
     }

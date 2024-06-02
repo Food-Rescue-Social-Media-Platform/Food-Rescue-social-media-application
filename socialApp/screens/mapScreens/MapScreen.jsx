@@ -131,6 +131,18 @@ const MapScreen = () => {
         setSelectedPost(null);
     };
 
+    const handleCurrentLocationPress = () => {
+        if (position) {
+            const currentRegion = {
+                ...region,
+                latitude: position.latitude,
+                longitude: position.longitude,
+            };
+            mapRef.current.animateToRegion(currentRegion, 500); // duration of the animation in ms
+            setRegion(currentRegion);
+        }
+    };
+
     const handleMapPress = (event) => {
         const { coordinate } = event.nativeEvent;
         const pressedMarker = locationMarkers.find(marker =>
@@ -203,6 +215,9 @@ const MapScreen = () => {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={zoomOut} style={styles.iconStyle}>
                         <Feather name="zoom-out" size={27} color='black' />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleCurrentLocationPress} style={styles.iconStyle}>
+                        <Feather name="navigation" size={24} color='black' />
                     </TouchableOpacity>
                 </View>
             </View>

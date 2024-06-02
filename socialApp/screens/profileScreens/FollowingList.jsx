@@ -1,22 +1,26 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import UsersList from '../../components/usersLists/UsersList';
+import { useDarkMode } from '../../styles/DarkModeContext';
+import { COLORS, DARKCOLORS } from '../../styles/colors';
 
 const FollowingList = ({ route }) => {
     const { userData } = route.params;
+    const { isDarkMode } = useDarkMode();
+
+    const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
     return (
-            <View style={styles.container}>
-                <UsersList usersIds={userData.followingUsersId} />
-            </View>
+        <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]}>
+            <UsersList usersIds={userData.followingUsersId} />
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        alignItems: 'center', // Align items to the left
-        backgroundColor: 'white',
+        alignItems: 'center', // Align items to the center
     },
 });
 

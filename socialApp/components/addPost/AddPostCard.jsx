@@ -2,17 +2,20 @@ import React, { useEffect, useState, useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Platform, Image } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { COLORS } from '../../styles/colors';
+import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { windowHeight } from '../../utils/Dimentions';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
 
 const AddPostCard = () => {
     const navigation = useNavigation();
     const { user, logout } = useContext(AuthContext);
     const [userConnected, setUserConnected] = useState(null);
+    const { isDarkMode } = useDarkMode();
+    const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -29,7 +32,7 @@ const AddPostCard = () => {
     //console.log("AddPostCard userConnected: ", userConnected);
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: themeColors.secondaryTheme }]}>
             <Image
                 style={styles.profileImage}
                 source={
@@ -39,12 +42,12 @@ const AddPostCard = () => {
                 }
             />
             <View>
-                <TouchableOpacity style={styles.sharePostWrapper} onPress={openShareFoodScreen}>
-                    <Text style={styles.mainText}>Share food...</Text>
+                <TouchableOpacity style={[styles.sharePostWrapper, { backgroundColor: themeColors.secondaryBackground, borderColor: themeColors.black }]} onPress={openShareFoodScreen}>
+                    <Text style={[styles.mainText, { color: themeColors.primaryText }]}>Share food...</Text>
                 </TouchableOpacity>
                 <Icons
                     size={20}
-                    color={'black'}
+                    color={themeColors.black}
                     handelClick={openShareFoodScreen}
                     iconStyle={styles.icon}
                     wrapperStyle={styles.iconsWrapper}
@@ -58,7 +61,6 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: windowHeight / 7,
-        backgroundColor: COLORS.secondaryTheme,
         flexDirection: 'row',
         marginBottom: 15,
         borderRadius: 8,
@@ -71,10 +73,8 @@ const styles = StyleSheet.create({
     },
     sharePostWrapper: {
         width: '100%',
-        backgroundColor: COLORS.secondaryBackground,
         borderWidth: 0.5,
         borderRadius: 20,
-        borderColor: COLORS.black,
         paddingVertical: 10,
         paddingHorizontal: 15,
         paddingRight: 150,

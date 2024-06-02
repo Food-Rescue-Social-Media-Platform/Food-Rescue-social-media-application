@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { COLORS } from '../../styles/colors';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
@@ -11,7 +11,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const EditPostScreen = ({ navigation, route }) => {
     const { item } = route.params; // Get the item object from route params
-    const { colors } = useTheme();
+    const { theme } = useDarkMode(); // Access the current theme
 
     // Initialize state variables with existing values
     const [category, setCategory] = useState(item.category);
@@ -61,15 +61,14 @@ const EditPostScreen = ({ navigation, route }) => {
     };
 
     return (
-        
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
             {/* UI components for editing fields */}
             <View style={styles.inputContainer}>
-                <FontAwesome name="phone" color={colors.text} size={25} />
+                <FontAwesome name="phone" color={theme.primaryText} size={25} />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Phone"
-                    placeholderTextColor="#666666"
+                    placeholderTextColor={theme.secondaryText}
                     keyboardType="number-pad"
                     value={phoneNumber}
                     onChangeText={(text) => setPhoneNumber(text)}
@@ -77,22 +76,22 @@ const EditPostScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.inputContainer}>
-                <MaterialCommunityIcons name="bus-clock" size={22}/>
+                <MaterialCommunityIcons name="bus-clock" size={22} color={theme.primaryText} />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Delivery Time"
-                    placeholderTextColor="#666666"
+                    placeholderTextColor={theme.secondaryText}
                     value={deliveryTime}
                     onChangeText={(text) => setDeliveryTime(text)}
                 />
             </View>
 
             <View style={styles.inputContainer}>
-                <MaterialCommunityIcons name="post" size={22}/>
+                <MaterialCommunityIcons name="post" size={22} color={theme.primaryText} />
                 <TextInput
-                    style={[styles.input, { height: 100 }]}
+                    style={[styles.input, { height: 100, color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Post Text"
-                    placeholderTextColor="#666666"
+                    placeholderTextColor={theme.secondaryText}
                     multiline
                     value={postText}
                     onChangeText={(text) => setPostText(text)}
@@ -100,11 +99,11 @@ const EditPostScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.inputContainer}>
-                <MaterialIcons name="category" size={22} />
+                <MaterialIcons name="category" size={22} color={theme.primaryText} />
                 <TextInput
-                    style={styles.input}
+                    style={[styles.input, { color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Category"
-                    placeholderTextColor="#666666"
+                    placeholderTextColor={theme.secondaryText}
                     value={category}
                     editable={false} // Disable editing
                     onChangeText={(text) => setCategory(text)}
@@ -120,28 +119,25 @@ const EditPostScreen = ({ navigation, route }) => {
                         title={item.label}
                         checked={selectedCategory === item.value}
                         onPress={() => handleCheck(item)}
-                        containerStyle={styles.checkboxContainer}
-                        textStyle={styles.checkBox}
+                        containerStyle={[styles.checkboxContainer, { backgroundColor: theme.appBackGroundColor, borderColor: theme.borderColor }]}
+                        textStyle={[styles.checkBox, { color: theme.primaryText }]}
                     />
                 )}
                 keyExtractor={(item) => item.value}
             />
 
             {/* Button to update the post */}
-            <TouchableOpacity style={styles.button} onPress={handleUpdatePost}>
-                <Text style={styles.buttonText}>Update Post</Text>
+            <TouchableOpacity style={[styles.button, { backgroundColor: theme.secondaryBackground }]} onPress={handleUpdatePost}>
+                <Text style={[styles.buttonText, { color: theme.primaryText }]}>Update Post</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
-export default EditPostScreen;
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: COLORS.white,
     },
     inputContainer: {
         flexDirection: 'row',
@@ -150,32 +146,25 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        borderColor: 'gray',
         borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         flex: 1,
     },
     button: {
-        backgroundColor: COLORS.secondaryBackground,
         padding: 13,
         borderRadius: 10,
         alignItems: 'center',
         marginLeft: 21,
     },
     buttonText: {
-        color: COLORS.black,
         fontSize: 17,
         fontWeight: 'bold',
-        color: 'black',
     },
     checkboxContainer: {
-        backgroundColor: COLORS.white,
         marginLeft: 20,
         marginRight: 0, // Adjust the margin between checkboxes
         borderRadius: 10,
-        color: COLORS.black,
-        borderColor: 'gray',
         flex: 1, // Take up equal space in the column
         flexDirection: 'row', // Align checkboxes horizontally
         alignItems: 'center', // Center checkboxes vertically
@@ -184,3 +173,5 @@ const styles = StyleSheet.create({
         marginLeft: 5, // Adjust the space between the checkbox and label
     },
 });
+
+export default EditPostScreen;

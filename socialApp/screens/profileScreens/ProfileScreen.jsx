@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl, Platform } from 'react-native';
-import { useIsFocused } from '@react-navigation/native'; // Import useIsFocused hook
+import { useIsFocused } from '@react-navigation/native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
+import { database } from '../../firebase';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
 import { Container } from '../../styles/feedStyles';
-import { COLORS } from '../../styles/colors';
+import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
-import  uuid from 'react-native-uuid';
+import uuid from 'react-native-uuid';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
+  const { isDarkMode, theme } = useDarkMode(); // Use the hook to get the current theme
+  const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
   const isFocused = useIsFocused();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,59 +28,38 @@ const ProfileScreen = ({ navigation, route }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [rating, setRating] = useState();
 
-  // Fetch user data function
   const fetchUserData = async () => {
-    // try {
-    //   const userDocRef = doc(database, "users", postUserId);
-    //   const userDocSnap = await getDoc(userDocRef);
-    //   if (userDocSnap.exists()) {
-    //     const user = userDocSnap.data();
-    //     user.id = postUserId;
-    //     setUserData(user);
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching user data:", error);
-    //   setError(error.message);
-    // } finally {
-    //   setLoading(false);
-    // }
     let user_data;
     if(route.params) {
       user_data = await fetchUser(user.uid);
       if(user_data) {
           user_data.id = user.uid;
-          console.log('user_data', user_data);
           setUserConnected(user_data);
       }
     }
     user_data = await fetchUser(postUserId);
     if(user_data) {
           user_data.id = postUserId;
-          // console.log('user_data', user_data);
           setUserData(user_data);
           setRating(user_data.rating);
-
     }
   };
 
-
   const fetchUser = async (id) => {
     try{
-    const docRef = doc(database, "users", id);
-    const docSnap = await getDoc(docRef);
-    if(!docSnap.exists()) {
-        return;
+      const docRef = doc(database, "users", id);
+      const docSnap = await getDoc(docRef);
+      if(!docSnap.exists()) {
+          return;
+      }
+      return docSnap.data();
+    } catch (error) {
+      console.error("fetchUser, Error getting document:", error);
+      setError(error.message);
+      return null;
     }
-    return docSnap.data();
- } catch (error) {
-    console.error("fetchUser, Error getting document:", error);
-    setError(error.message);
-    return null;
- }
-}
+  };
 
-
-  // Fetch user posts function
   const fetchUserPosts = async () => {
     try {
       const userDocRef = doc(database, "users", postUserId);
@@ -86,11 +68,10 @@ const ProfileScreen = ({ navigation, route }) => {
 
       const userPostsData = [];
 
-      // Check if postsIdArray is empty
       if (postsIdArray.length === 0) {
-        setUserPosts([]); // Set userPosts state to an empty array
-        setLoading(false); // Set loading state to false
-        return; // Exit the function early
+        setUserPosts([]);
+        setLoading(false);
+        return;
       }
 
       for (const postId of postsIdArray) {
@@ -98,19 +79,16 @@ const ProfileScreen = ({ navigation, route }) => {
         const postDocSnap = await getDoc(postDocRef);
         if (postDocSnap.exists()) {
           const postData = postDocSnap.data();
-          // Check if userData is not null before accessing its properties
           if (userData) {
-            // Update the post data with new user data
             postData.firstName = userData.firstName;
             postData.lastName = userData.lastName;
             postData.userName = userData.userName;
             postData.userImg = userData.profileImg;
-            // Update the post document in Firestore
             await updateDoc(postDocRef, {
               firstName: userData.firstName,
               lastName: userData.lastName,
               userName: userData.userName,
-              userImg: userData.profileImg // Adjust the field name if needed
+              userImg: userData.profileImg
             });
           }
           userPostsData.push({ id: postId, ...postData });
@@ -129,86 +107,58 @@ const ProfileScreen = ({ navigation, route }) => {
   const handleFollowButton = async () => {
     try {
       setIsFollowing(!isFollowing);
-      // Reference to the logged-in user's document
       const loggedInUserDocRef = doc(database, "users", user.uid);
-  
-      // Reference to the followed user's document
       const followedUserDocRef = doc(database, "users", postUserId);
-  
-      // Get data of the logged-in user
       const loggedInUserDocSnap = await getDoc(loggedInUserDocRef);
       const loggedInUserData = loggedInUserDocSnap.data();
-  
-      // Get data of the followed user
       const followedUserDocSnap = await getDoc(followedUserDocRef);
       const followedUserData = followedUserDocSnap.data();
-  
+
       if (isFollowing) {
-        // Remove followed user's ID from the follower's following list
         const updatedFollowingUsersId = loggedInUserData.followingUsersId.filter(id => id !== postUserId);
-        // Decrease the count of following by 1
         const updatedFollowingNum = loggedInUserData.followingNum - 1;
-  
-        // Remove follower's ID from the followed user's followers list
         const updatedFollowersUsersId = followedUserData.followersUsersId.filter(id => id !== user.uid);
-        // Decrease the count of followers by 1
         const updatedFollowersNum = followedUserData.followersNum - 1;
-  
-        // Update logged-in user's following list and count
         await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId, followingNum: updatedFollowingNum });
-  
-        // Update followed user's followers list and count
         await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId, followersNum: updatedFollowersNum });
       } else {
-        // Add followed user's ID to the follower's following list
         const updatedFollowingUsersId = [...loggedInUserData.followingUsersId, postUserId];
-        // Increase the count of following by 1
         const updatedFollowingNum = loggedInUserData.followingNum + 1;
-  
-        // Add follower's ID to the followed user's followers list
         const updatedFollowersUsersId = [...followedUserData.followersUsersId, user.uid];
-        // Increase the count of followers by 1
         const updatedFollowersNum = followedUserData.followersNum + 1;
-  
-        // Update logged-in user's following list and count
         await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId, followingNum: updatedFollowingNum });
-  
-        // Update followed user's followers list and count
         await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId, followersNum: updatedFollowersNum });
       }
     } catch (error) {
       console.error("Error updating follow status:", error);
     }
   };
-  
-  // Function to render stars based on the rating value
+
   const renderStars = () => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (i <= rating) {
         stars.push(
-          <MaterialCommunityIcons key={i} name="star" size={22} color={COLORS.black} />
+          <MaterialCommunityIcons key={i} name="star" size={22} color={themeColors.black} />
         );
       } else if (i - rating < 1) {
         stars.push(
-          <MaterialCommunityIcons key={i} name="star-half-full" size={22} color={COLORS.black} />
+          <MaterialCommunityIcons key={i} name="star-half-full" size={22} color={themeColors.black} />
         );
       } else {
         stars.push(
-          <MaterialCommunityIcons key={i} name="star-outline" size={22} color={COLORS.black} />
+          <MaterialCommunityIcons key={i} name="star-outline" size={22} color={themeColors.black} />
         );
       }
     }
     return stars;
   };
 
-  // Fetch data when screen is focused
   useEffect(() => {
     if (isFocused) {
       setLoading(true);
       fetchUserData();
       fetchUserPosts();
-
       const checkFollowingStatus = async () => {
         try {
           const loggedInUserDocRef = doc(database, "users", user.uid);
@@ -225,13 +175,8 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   }, [isFocused]);
 
-  // Render button text based on follow status
   const renderButtonText = () => {
-    if (isFollowing) {
-      return 'Following';
-    } else {
-      return 'Follow';
-    }
+    return isFollowing ? 'Following' : 'Follow';
   };
 
   const onRefresh = async () => {
@@ -241,67 +186,57 @@ const ProfileScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
-
   const handleOpenChat = async () => {
-    // Check if the user has a chat with the receiver
     fetchChat(userConnected.id, userData.id, async (chat) => {
       if (chat !== null) {
-        // If chat exists, navigate to the chat screen
-        navigation.navigate('SingleChat', { receiverData: chat, userConnected : userConnected });
+        navigation.navigate('SingleChat', { receiverData: chat, userConnected: userConnected });
       } else {
-        // If chat does not exist, create a new chat
         await createNewChat();
-      
-        // fetch chat again to get the new chat 
         fetchChat(userConnected.uid, userData.id, async (newChat) => {
           if (newChat !== null) {
-            // If chat is created, navigate to the chat screen
-            navigation.navigate('SingleChat', { receiverData: newChat, userConnected : userConnected });
+            navigation.navigate('SingleChat', { receiverData: newChat, userConnected: userConnected });
           }
-        }
-      
-    );
-  }
-})};
+        });
+      }
+    });
+  };
 
-
-
-const createNewChat = async () => {
-    // generate a new roomID
+  const createNewChat = async () => {
     const roomID = uuid.v4();
-
     const chat = new Chat(roomID, userConnected, userData);
     await addChat(chat, 'chatsList/' + userConnected.id + '/' + userData.id);
-
     const chat2 = new Chat(roomID, userData, userConnected);
     await addChat(chat2, 'chatsList/' + userData.id + '/' + userConnected.id);
-}
-
+  };
 
   if (loading) {
-    return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
+          <ActivityIndicator size="large" color={theme.primaryText} />
+      </View>
+    );
   }
 
   if (error) {
-    return <Text>Error: {error}</Text>;
+    return <Text style={{ color: themeColors.black }}>Error: {error}</Text>;
   }
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl
-                                                                        refreshing={refreshing}
-                                                                        onRefresh={onRefresh}
-                                                                      />
-                                                                    }
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={themeColors.black} />
+      }
     >
-      <View style={styles.container}>
-      {userData && (
+      <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]}>
+        {userData && (
           <View style={styles.header}>
             <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/cover.png')} style={styles.coverImage} />              
             <View style={styles.overlay}>
               <View style={styles.avatarContainer}>
                 <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../../assets/Images/emptyProfieImage.png')} style={styles.avatar} />
               </View>
-              <Text style={styles.name}>{userData?.userName}</Text>
+              <Text style={[styles.name, { color: themeColors.black }]}>{userData?.userName}</Text>
             </View>
           </View>
         )}
@@ -309,133 +244,133 @@ const createNewChat = async () => {
           <View style={styles.stats}>
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                { postUserId === user.uid ? (
+                {postUserId === user.uid ? (
                   <View>
                     <View style={styles.iconContainer}>
                       {renderStars()}
                     </View>
-                    <Text style={styles.wordRatingStat}>Rating</Text>
+                    <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>Rating</Text>
                   </View>
                 ) : (
                   <TouchableOpacity onPress={() => navigation.navigate('Rating', { userData })}>
                     <View style={styles.iconContainer}>
                       {renderStars()}
                     </View>
-                    <Text style={styles.wordRatingStat}>Rating</Text>
+                    <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>Rating</Text>
                   </TouchableOpacity>
                 )}
+              </View>
             </View>
-            </View>
-            
+
             <View style={styles.userInfoContainer}>
               <TouchableOpacity onPress={() => navigation.navigate('Following List', { userData })}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name={'heart'} size={22} color={COLORS.black} />
-                  <Text style={styles.statNumValue}>{userData?.followingNum || 0}</Text>
+                  <MaterialCommunityIcons name={'heart'} size={22} color={themeColors.black} />
+                  <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followingNum || 0}</Text>
                 </View>
-                <Text style={styles.wordStat}>Following</Text>
+                <Text style={[styles.wordStat, { color: themeColors.black }]}>Following</Text>
               </TouchableOpacity>
             </View>
 
             <View style={styles.userInfoContainer}>
               <TouchableOpacity onPress={() => navigation.navigate('Followers List', { userData })}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name={'account-group'} size={22} color={COLORS.black} />
-                  <Text style={styles.statNumValue}>{userData?.followersNum || 0}</Text>
+                  <MaterialCommunityIcons name={'account-group'} size={22} color={themeColors.black} />
+                  <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followersNum || 0}</Text>
                 </View>
-                <Text style={styles.wordStat}>Followers</Text>
+                <Text style={[styles.wordStat, { color: themeColors.black }]}>Followers</Text>
               </TouchableOpacity>
             </View>
-            
+
             <View style={styles.userInfoContainer}>
               <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'send'} size={22} color={COLORS.black} />
-                <Text style={styles.statNumValue}>{userData?.postsNum || 0}</Text>
+                <MaterialCommunityIcons name={'send'} size={22} color={themeColors.black} />
+                <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.postsNum || 0}</Text>
               </View>
-              <Text style={styles.wordStat}>Posts</Text>
+              <Text style={[styles.wordStat, { color: themeColors.black }]}>Posts</Text>
             </View>
 
           </View>
         </View>
         {Platform.OS === 'web' && (
-          <Container style={styles.CardContainerAndSideContainer}> 
+          <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
             <Container style={postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther}>
-              { postUserId==user.uid?
-                  <View style={styles.buttons}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData})}>
-                      <Text style={styles.buttonText}>Edit Profile</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
-                      <Text style={styles.buttonText}>Logout</Text>
-                    </TouchableOpacity>
-                  </View>
-                  :
-                  <View style={styles.buttons}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleOpenChat()}>
-                      <Text style={styles.buttonText}>Chat</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>
-                      <Text style={styles.buttonText}>{renderButtonText()}</Text>
-                    </TouchableOpacity>
-                  </View>    
+              {postUserId === user.uid ?
+                <View style={styles.buttons}>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>Edit Profile</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>Logout</Text>
+                  </TouchableOpacity>
+                </View>
+                :
+                <View style={styles.buttons}>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>Chat</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
+                  </TouchableOpacity>
+                </View>
               }
 
               <View>
-                <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
               </View>
-              <View style={styles.bio}>
-                <Text style={styles.bioText}>Bio</Text>
-                <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
+              <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
+                <Text style={[styles.bioText, { color: themeColors.black }]}>Bio</Text>
+                <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
               </View>
             </Container>
             <Container style={styles.CardContainer}>
               {postUserId === user.uid && <AddPostCard />}
-              <Text style={styles.PostsTitleText}>Posts</Text>
+              <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>Posts</Text>
               {userPosts.map(post => (
-                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
+                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
               ))}
             </Container>
-          </Container>
+          </View>
         )}
         {Platform.OS !== 'web' && (
-          <Container>
+          <View style={backgroundColor=themeColors.appBackGroundColor}>
             {postUserId === user.uid ? (
               <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                  <Text style={styles.buttonText}>Edit Profile</Text>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>Edit Profile</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={logout}>
-                  <Text style={styles.buttonText}>Logout</Text>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>Logout</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleOpenChat}>
-                  <Text style={styles.buttonText}>Chat</Text>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>Chat</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: COLORS.secondaryTheme }]} onPress={handleFollowButton}>
-                  <Text style={styles.buttonText}>{renderButtonText()}</Text>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
                 </TouchableOpacity>
               </View>
             )}
             <View>
-              <Text style={styles.earningsPoints}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+              <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
             </View>
-            <View style={styles.bio}>
-              <Text style={styles.bioText}>Bio</Text>
-              <Text style={styles.bioContent}>{userData?.bio || '...'}</Text>
+            <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
+              <Text style={[styles.bioText, { color: themeColors.black }]}>Bio</Text>
+              <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
             </View>
-            {postUserId === user.uid && <AddPostCard />}
-            <Text style={styles.PostsTitleText}>Posts</Text>
-            {userPosts.map(post => (
-              <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true}/>
-            ))}
-          </Container>
+            <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
+              {postUserId === user.uid && <AddPostCard />}
+            </View>
+            <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>Posts</Text>
+            <View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
+              {userPosts.map(post => (
+                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
+              ))}
+            </View>
+          </View>
         )}
-
-
-
-        
       </View>
     </ScrollView>
   );
@@ -444,11 +379,9 @@ const createNewChat = async () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.appBackGroundColor,
   },
   lowerContainer: {
     flex: 1,
-    backgroundColor: COLORS.appBackGroundColor,
   },
   header: {
     position: 'relative',
@@ -485,13 +418,11 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: COLORS.black,
     marginTop: 24,
   },
   profileInfo: {
     alignItems: 'center',
-    marginTop:-10,
-    marginLeft:14,
+    marginLeft: 14,
   },
   userInfoContainer: {
     alignItems: 'center',
@@ -506,13 +437,11 @@ const styles = StyleSheet.create({
   },
   wordStat: {
     marginTop: 4,
-    color: COLORS.black,
   },
-  wordRatingStat:{
+  wordRatingStat: {
     marginTop: 4,
-    color: COLORS.black,
     marginLeft: 35,
-  },  
+  },
   stats: {
     flexDirection: 'row',
     width: '100%',
@@ -521,9 +450,8 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: 'bold',
     marginHorizontal: 20,
-    backgroundColor: COLORS.secondaryTheme,
     height: 45,
-    width:372,
+    width: 372,
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
@@ -533,16 +461,17 @@ const styles = StyleSheet.create({
   },
   buttons: {
     flexDirection: 'row',
-    gap:10,
-    marginBottom:'3%',
+    gap: 10,
+    marginBottom: '3%',
+    marginTop: '3%',
+
     justifyContent: 'center',
     alignItems: 'center',
   },
   button: {
-    backgroundColor: COLORS.secondaryTheme,
     padding: 13,
     borderRadius: 10,
-    width: '48%',
+    width: '44%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -553,12 +482,10 @@ const styles = StyleSheet.create({
   bio: {
     marginTop: '3%',
     marginBottom: '6%',
-
     fontSize: 17,
     fontWeight: 'bold',
     marginHorizontal: 20,
-    backgroundColor: COLORS.secondaryTheme,
-    width:372,
+    width: 372,
     justifyContent: 'center',
     alignItems: 'left',
     paddingVertical: 10,
@@ -578,47 +505,53 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 5,
-    marginRight:'82%',
+    marginLeft: '5%',
   },
-  loadingIndicator: {
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  /////////////////////////////////////////////////////////////
+  AddPostCardContainer:{
+    marginBottom:15,
+    marginTop:15,
+    marginLeft:20,
+    marginRight:20,
+  },
+  postCardContainer:{
+    marginBottom:15,
+    marginTop:15,
+    marginLeft:18,
+    marginRight:18,
+  },
   ...Platform.select({
     web: {
       container: {
         flex: 1,
-        backgroundColor: COLORS.appBackGroundColor,
       },
-      // Inside the Platform.select block for web styles
       CardContainer: {
-        backgroundColor: COLORS.appBackGroundColor,
-        width: '70%', // Adjust the width as needed
-        alignItems: 'left', // You can remove this if not necessary
-        marginLeft:'-5%',
+        width: '70%',
+        alignItems: 'left',
+        marginLeft: '-5%',
       },
       sideContainerUser: {
-        backgroundColor: COLORS.appBackGroundColor,
-        zIndex: 2, // Ensure it's above the hidden content
-        alignItems: 'left', // You can remove this if not necessary
-        justifyContent: 'left', // You can remove this if not necessary
-        width: '30%', // Adjust the width as needed
-        marginTop:'-146.5%',
+        zIndex: 2,
+        alignItems: 'left',
+        justifyContent: 'left',
+        width: '30%',
+        marginTop: '-146.5%',
       },
-      sideContainerOther:{
-        backgroundColor: COLORS.appBackGroundColor,
-        zIndex: 2, // Ensure it's above the hidden content
-        alignItems: 'left', // You can remove this if not necessary
-        justifyContent: 'left', // You can remove this if not necessary
-        width: '30%', // Adjust the width as needed
-        marginTop:'-65.5%',
+      sideContainerOther: {
+        zIndex: 2,
+        alignItems: 'left',
+        justifyContent: 'left',
+        width: '30%',
+        marginTop: '-65.5%',
       },
       CardContainerAndSideContainer: {
-        flexDirection: 'row', // Ensure the containers are positioned beside each other
+        flexDirection: 'row',
         width: '70%',
-        alignItems: 'center', // You can adjust this based on your design
+        alignItems: 'center',
       },
       header: {
         position: 'relative',
@@ -655,13 +588,12 @@ const styles = StyleSheet.create({
       name: {
         fontSize: 30,
         fontWeight: 'bold',
-        color: COLORS.black,
         marginTop: 28,
       },
       profileInfo: {
         alignItems: 'center',
-        marginTop:-40,
-        marginLeft:'13%',
+        marginTop: -40,
+        marginLeft: '13%',
       },
       userInfoContainer: {
         alignItems: 'center',
@@ -676,7 +608,6 @@ const styles = StyleSheet.create({
       },
       wordStat: {
         marginTop: 4,
-        color: COLORS.black,
       },
       stats: {
         flexDirection: 'row',
@@ -686,7 +617,6 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: 'bold',
         marginHorizontal: 20,
-        backgroundColor: COLORS.secondaryTheme,
         height: 45,
         justifyContent: 'center',
         alignItems: 'center',
@@ -695,19 +625,18 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
         marginLeft: '1%',
-        zIndex: 2, // Ensure it's above the hidden content
+        zIndex: 2,
       },
       buttons: {
         flexDirection: 'row',
-        gap:10,
-        marginBottom:'1%',
+        gap: 10,
+        marginBottom: '1%',
         justifyContent: 'center',
         alignItems: 'center',
-        zIndex: 2, // Ensure it's above the hidden content
-        marginLeft:'-5%',
+        zIndex: 2,
+        marginLeft: '-5%',
       },
       button: {
-        backgroundColor: COLORS.secondaryTheme,
         padding: 13,
         borderRadius: 10,
         width: '42%',
@@ -723,14 +652,13 @@ const styles = StyleSheet.create({
         fontSize: 17,
         fontWeight: 'bold',
         marginHorizontal: 20,
-        backgroundColor: COLORS.secondaryTheme,
-        marginLeft: '1%',     
+        marginLeft: '1%',
         justifyContent: 'center',
         alignItems: 'left',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 10,
-        zIndex: 2, // Ensure it's above the hidden content
+        zIndex: 2,
       },
       bioText: {
         fontSize: 30,
@@ -741,19 +669,19 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 5,
-        marginLeft:'15%',
+        marginLeft: '15%',
       },
       bioContent: {
         fontSize: 16,
         fontWeight: '500',
       },
-      loadingIndicator: {
+      loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
       },
     },
-  })
+  }),
 });
 
 export default ProfileScreen;

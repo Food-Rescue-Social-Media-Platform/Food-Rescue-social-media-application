@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl} from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
-
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import { database } from '../../firebase';
 import { collection, getDocs, addDoc } from "firebase/firestore";
-// import { windowWidth } from '../../utils/Dimentions';
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 
 const HomeScreen = () => {
     const { logout } = useContext(AuthContext);
@@ -24,6 +23,7 @@ const HomeScreen = () => {
     const [position, setPosition] = useState(null);
 
 
+    const { theme } = useDarkMode(); // Access the current theme
 
     const addPostToCollection = async () => {
         try {
@@ -50,14 +50,12 @@ const HomeScreen = () => {
         }
     };
 
-    
     const fetchData = async () => {
         try {
             const querySnapshot = await getDocs(collection(database, "postsTest"));
             const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             data.sort((a, b) => b.createdAt - a.createdAt);
             setPosts([{}, ...data]);
-            // addPostToCollection();
             setLoading(false);
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -65,7 +63,6 @@ const HomeScreen = () => {
         }
     };
 
-    // Fetch data when screen is focused
     useEffect(() => {
         if (isFocused) {
             const fetchLocationAndPosts = async () => {
@@ -76,24 +73,27 @@ const HomeScreen = () => {
             fetchLocationAndPosts();
         }
     }, [isFocused]);
-    
+
     const onRefresh = async () => {
         setRefreshing(true);
         await fetchData();
         setRefreshing(false);
-        // addPostToCollection();
     };
 
     if (loading) {
-        return <ActivityIndicator style={styles.loadingIndicator} size="large" color="#0000ff" />;
+        return (
+            <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
+                <ActivityIndicator size="large" color={theme.primaryText} />
+            </View>
+        );
     }
 
     if (error) {
-        return <Text>Error: {error}</Text>;
+        return <Text style={{ color: theme.primaryText }}>Error: {error}</Text>;
     }
 
     return (
-        <Container style={styles.container}>
+        <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
             <FlatList
                 data={posts}
                 renderItem={({ item, index }) => {
@@ -107,10 +107,11 @@ const HomeScreen = () => {
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
-                refreshControl={ // Add RefreshControl component
+                refreshControl={
                     <RefreshControl
-                        refreshing={refreshing} // Set refreshing state
-                        onRefresh={onRefresh} // Handle refresh action
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={theme.primaryText} // Added to style the RefreshControl spinner
                     />
                 }
             />
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         paddingBottom: 5,
     },
-    loadingIndicator: {
+    loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 5,
-        marginRight:'82%',
+        marginRight: '82%',
     },
 });
 

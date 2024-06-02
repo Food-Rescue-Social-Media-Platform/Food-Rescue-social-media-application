@@ -7,14 +7,14 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { TouchableOpacity} from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
-import {getDistance} from '../../hooks/helpersMap/getDistance';
-import {watchLocation} from '../../hooks/helpersMap/watchLocation';
+import { getDistance } from '../../hooks/helpersMap/getDistance';
+import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import Feather from 'react-native-vector-icons/Feather';
-import {offsetMarkers} from '../../hooks/helpersMap/offsetMarkers'
+import { offsetMarkers } from '../../hooks/helpersMap/offsetMarkers';
 import PostModal from '../../components/map/PostModal';
 
 const MapScreen = () => {
@@ -91,32 +91,36 @@ const MapScreen = () => {
 
     const zoomIn = () => {
         if (mapRef.current) {
-            mapRef.current.animateToRegion({
+            const currentRegion = {
                 ...region,
                 latitudeDelta: region.latitudeDelta / 2,
                 longitudeDelta: region.longitudeDelta / 2,
-            }, 500); // duration of the animation in ms
+            };
+            mapRef.current.animateToRegion(currentRegion, 500); // duration of the animation in ms
+            setRegion(currentRegion);
         }
     };
 
     const zoomOut = () => {
         if (mapRef.current) {
-            mapRef.current.animateToRegion({
+            const currentRegion = {
                 ...region,
                 latitudeDelta: region.latitudeDelta * 2,
                 longitudeDelta: region.longitudeDelta * 2,
-            }, 500); // duration of the animation in ms
+            };
+            mapRef.current.animateToRegion(currentRegion, 500); // duration of the animation in ms
+            setRegion(currentRegion);
         }
     };
 
-     const handleRegionChange = (newRegion) => {
-        setRegion(newRegion);
+    const handleRegionChange = (newRegion) => {
         const distance = getDistance(region.latitude, region.longitude, newRegion.latitude, newRegion.longitude);
         if (distance > radiusInMeters) {
+            setRegion(newRegion);
             fetchPosts({ latitude: newRegion.latitude, longitude: newRegion.longitude });
         }
     };
-    
+
     const handleMarkerPress = (post) => {
         setSelectedPost(post);
         setModalVisible(true);
@@ -162,7 +166,6 @@ const MapScreen = () => {
                         <Marker
                             key={post.id}
                             coordinate={{ latitude: post.latitude, longitude: post.longitude }}
-                            title={post.title}
                             pinColor="green"
                             onPress={() => handleMarkerPress(post)}  // Handle marker press
                         />
@@ -171,21 +174,22 @@ const MapScreen = () => {
                         <Marker
                             key={postFromFeed.id}
                             coordinate={{ latitude: postFromFeed.latitude, longitude: postFromFeed.longitude }}
-                            title={postFromFeed.title}
                             pinColor="purple"
-                            style={{ zIndex: 1}}
+                            style={{ zIndex: 1 }}
                             onPress={() => handleMarkerPress(postFromFeed)}  // Handle marker press
                         />            
                     )}
                 </MapView>
 
-                { selectedPost? (<PostModal
-                    setVisible={setModalVisible}
-                    visible={isModalVisible}
-                    post={selectedPost}
-                    onClose={closeModal}
-                    userLocation={position}
-                />): null}
+                { selectedPost ? (
+                    <PostModal
+                        setVisible={setModalVisible}
+                        visible={isModalVisible}
+                        post={selectedPost}
+                        onClose={closeModal}
+                        userLocation={position}
+                    />
+                ) : null }
                  
                 {loading && (
                     <View style={styles.loading}>

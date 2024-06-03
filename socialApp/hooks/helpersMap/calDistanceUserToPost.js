@@ -5,11 +5,7 @@ export function calDistanceUserToPost(latitudeUser, longitudeUser, latitudePost,
         return;
     }
 
-    console.info('User location:', longitudeUser, latitudeUser);
-    console.info('Post location:', longitudePost, latitudePost);
-
     const distance = getDistance(latitudeUser, longitudeUser, latitudePost , longitudePost);
-    console.info('Distance:', distance);
     
     // Check if the distance is less than 1 km
     if (distance < 1) {

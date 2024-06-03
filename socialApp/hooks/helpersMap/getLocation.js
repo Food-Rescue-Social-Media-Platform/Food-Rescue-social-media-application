@@ -1,5 +1,12 @@
 import * as Location from 'expo-location';
-import { Platform, ToastAndroid, Alert } from 'react-native';
+import { Platform, Alert } from 'react-native';
+
+// שימוש בתנאי כדי להימנע מהשגיאה בתצורת ווב
+let ToastAndroid;
+if (Platform.OS === 'android') {
+    ToastAndroid = require('react-native').ToastAndroid;
+}
+
 import { hasPermission } from './hasPermission';
 
 export const getLocation = async (setPosition, setRegion = null) => {
@@ -32,6 +39,8 @@ export const getLocation = async (setPosition, setRegion = null) => {
                 "We couldn't fetch your location. Please check your device location service!",
                 ToastAndroid.LONG,
             );
+        } else if (Platform.OS === 'web') {
+            alert("We couldn't fetch your location. Please check your device location service!");
         } else {
             Alert.alert(
                 "Error",

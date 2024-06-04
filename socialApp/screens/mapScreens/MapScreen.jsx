@@ -28,6 +28,7 @@ const MapScreen = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [MapComponent, setMapComponent] = useState(null);
+  const [ hasLocationPermission, setHasLocationPermission ] = useState(false);
   const radiusInMeters = 10000;
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const MapScreen = () => {
   }, []);
 
   const fetchPosts = async (pos) => {
-    if (!pos) return;
+    if (!pos || hasLocationPermission) return;
     setLoading(true);
     const posts = await getPostsNearby([pos.latitude, pos.longitude], radiusInMeters);
     const offsetPosts = offsetMarkers(posts.map(post => ({
@@ -61,9 +62,16 @@ const MapScreen = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    await getLocation(setPosition, setRegion);
-    watchLocation(setPosition, setRegion);
-    setLoading(false);
+    const loc = await getLocation(setPosition, setRegion);
+    if(loc){
+      watchLocation(setPosition, setRegion);
+      setLoading(false);
+      setHasLocationPermission(true);
+    }
+    else{
+      setHasLocationPermission(false);
+    }
+
   };
 
   useEffect(() => {
@@ -78,7 +86,7 @@ const MapScreen = () => {
   }, [isFocused]);
 
   useEffect(() => {
-    if (position) {
+    if (hasLocationPermission && position) {
       fetchPosts(position);
     }
   }, [position]);

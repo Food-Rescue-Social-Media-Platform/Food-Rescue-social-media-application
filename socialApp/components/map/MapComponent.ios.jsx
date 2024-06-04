@@ -1,3 +1,0 @@
-const MapView = () => {
-  return null;
-};

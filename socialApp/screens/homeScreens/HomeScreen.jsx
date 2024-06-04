@@ -66,10 +66,10 @@ const HomeScreen = () => {
     useEffect(() => {
         if (isFocused) {
             const fetchLocationAndPosts = async () => {
-                // await getLocation(setPosition);
-                // if(position) {
-                //     watchLocation(setPosition);
-                // }
+                await getLocation(setPosition);
+                if(position) {
+                    watchLocation(setPosition);
+                }
                 fetchData();
             }
             fetchLocationAndPosts();

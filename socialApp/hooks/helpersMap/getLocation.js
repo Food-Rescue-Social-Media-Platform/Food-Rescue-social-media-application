@@ -33,7 +33,6 @@ export const getLocation = async (setPosition, setRegion = null) => {
             });
         }
     } catch (error) {
-        console.error('Error getting location:', error);
         if (Platform.OS === 'android') {
             ToastAndroid.show(
                 "We couldn't fetch your location. Please check your device location service!",

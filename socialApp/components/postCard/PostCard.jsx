@@ -15,7 +15,6 @@ import { database } from '../../firebase'; // Import the Firestore instance from
 import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
-import { COLORS } from '../../styles/colors';
 import { deletePost } from '../../FirebaseFunctions/collections/post';
 import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context

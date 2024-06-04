@@ -1,7 +1,6 @@
 import * as Location from 'expo-location';
 import { Platform, Alert } from 'react-native';
 
-// שימוש בתנאי כדי להימנע מהשגיאה בתצורת ווב
 let ToastAndroid;
 if (Platform.OS === 'android') {
     ToastAndroid = require('react-native').ToastAndroid;
@@ -13,10 +12,12 @@ export const getLocation = async (setPosition, setRegion = null) => {
     const hasLocationPermission = await hasPermission();
 
     if (!hasLocationPermission) {
-        console.log('Permission denied by user');
+        setPosition(null);
+        if (setRegion) {
+            setRegion(null);
+        }
         return;
     }
-    console.log('Permission granted by user');
 
     try {
         const location = await Location.getCurrentPositionAsync({
@@ -31,7 +32,6 @@ export const getLocation = async (setPosition, setRegion = null) => {
                 longitudeDelta: 0.01,
             });
         }
-        console.log("getCurrentPosition, coords:", location.coords);
     } catch (error) {
         console.error('Error getting location:', error);
         if (Platform.OS === 'android') {

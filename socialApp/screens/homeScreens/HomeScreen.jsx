@@ -8,6 +8,8 @@ import { database } from '../../firebase';
 import { collection, getDocs, addDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { watchLocation } from '../../hooks/helpersMap/watchLocation';
+import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 
 const HomeScreen = () => {
@@ -18,6 +20,9 @@ const HomeScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [position, setPosition] = useState(null);
+
+
     const { theme } = useDarkMode(); // Access the current theme
 
     const addPostToCollection = async () => {
@@ -60,8 +65,14 @@ const HomeScreen = () => {
 
     useEffect(() => {
         if (isFocused) {
-            setLoading(true);
-            fetchData();
+            const fetchLocationAndPosts = async () => {
+                await getLocation(setPosition);
+                if(position) {
+                    watchLocation(setPosition);
+                }
+                fetchData();
+            }
+            fetchLocationAndPosts();
         }
     }, [isFocused]);
 
@@ -89,9 +100,10 @@ const HomeScreen = () => {
                 data={posts}
                 renderItem={({ item, index }) => {
                     if (index === 0) {
-                        return <AddPostCard />;
-                    } else {
-                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} />;
+                        return <AddPostCard />                        
+                    }
+                    else {
+                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
                     }
                 }}
                 keyExtractor={(item, index) => index.toString()}

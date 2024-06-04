@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -15,6 +15,8 @@ import { database } from '../../firebase'; // Import the Firestore instance from
 import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
+import { deletePost } from '../../FirebaseFunctions/collections/post';
+import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 
 const getCategoryIcon = (category,categoryColor) => {
@@ -54,10 +56,18 @@ const emojisWithIcons = [
     { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
 ];
 
-const PostCard = ({ item, postUserId, isProfilePage }) => {
+const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
-    const { theme } = useDarkMode(); // Access the current theme
+    const [ distance, setDistance ] = useState(0);
+    const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
+    const { theme } = useDarkMode(); // Use the useDarkMode hook to get the current theme
+
+    useEffect(() => {
+        if((item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
+        setHaveSharedLocation(true)
+        calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1], setDistance);
+    }, [userLocation]);
 
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
@@ -137,6 +147,24 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
             return null;
         }
     };
+
+
+    const handleClickLocationPost = () => {
+        if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
+            return;
+        }
+        navigation.navigate('MapTab',{
+            screen: 'Map',
+            params: { 
+                id: item.id, 
+                latitude: item.coordinates[0],
+                longitude: item.coordinates[1],
+                title: item.postText,
+                image: item.postImg[0],
+            }
+        });
+    }
+
 
     return (
         <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
@@ -272,16 +300,18 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                     />
                     <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
                 </View>
-                {item.postDistance && (
+                { haveSharedLocation ? (
                     <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons
-                            name="map-marker"
-                            size={22}
-                            color={theme.primaryText}
-                        />
-                        <Text style={[styles.text, { color: theme.primaryText }]}>{item.postDistance}</Text>
+                        <TouchableOpacity onPress={handleClickLocationPost}>
+                            <MaterialCommunityIcons
+                                name="map-marker"
+                                size={22}
+                                color={theme.primaryText}
+                            />
+                            <Text style={[styles.text, { color: theme.primaryText }]}>{distance}</Text>
+                        </TouchableOpacity>   
                     </View>
-                )}
+                ): null}
             </InteractionWrapper>
             <Text></Text>
 

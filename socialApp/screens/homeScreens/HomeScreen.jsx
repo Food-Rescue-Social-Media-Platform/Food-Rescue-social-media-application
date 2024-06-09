@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text, Button, I18nManager } from 'react-native';
-import FormButton from '../../components/formButtonsAndInput/FormButton';
-import { AuthContext } from '../../navigation/AuthProvider';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import { database } from '../../firebase';
@@ -10,11 +8,8 @@ import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNRestart from 'react-native-restart';
 
 const HomeScreen = () => {
-  const { logout } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -22,7 +17,7 @@ const HomeScreen = () => {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const { theme } = useDarkMode();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const addPostToCollection = async () => {
     try {
@@ -75,21 +70,6 @@ const HomeScreen = () => {
     setRefreshing(false);
   };
 
-  const changeLanguage = async (lng) => {
-    try {
-      await i18n.changeLanguage(lng);
-      await AsyncStorage.setItem('user-language', lng);
-      if (lng === 'ar' || lng === 'he') {
-        I18nManager.forceRTL(true);
-      } else {
-        I18nManager.forceRTL(false);
-      }
-      RNRestart.Restart();
-    } catch (error) {
-      console.error("Error changing language:", error);
-    }
-  };
-
   if (loading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
@@ -124,10 +104,6 @@ const HomeScreen = () => {
           />
         }
       />
-      <FormButton buttonTitle={t('logout')} onPress={() => logout()} />
-      <Button title={t('english')} onPress={() => changeLanguage('en')} />
-      <Button title={t('arabic')} onPress={() => changeLanguage('ar')} />
-      <Button title={t('hebrew')} onPress={() => changeLanguage('he')} />
     </Container>
   );
 }

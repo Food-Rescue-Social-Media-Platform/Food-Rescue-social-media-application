@@ -1,9 +1,29 @@
 {
-    "english": "الإنجليزية",
-    "arabic": "العربية",
-    "hebrew": "العبرية",
-    "welcome": "أهلا بك",
-    "logout": "تسجيل خروج",
-    "home": "الصفحة الرئيسية"
-  }
-  
+  "Dark Mode": "الوضع الداكن",
+  "Language": "لغة",
+  "Select Language": "اختر اللغة",
+  "english": "إنجليزي",
+  "arabic": "عربي",
+  "logout": "تسجيل خروج",
+  "hebrew": "عبري",
+  "Edit": "تعديل",
+  "Share": "مشاركة",
+  "Report": "إبلاغ",
+  "Delete": "حذف",
+  "wait for rescue": "بانتظار الإنقاذ",
+  "rescued": "تم إنقاذه",
+  "wasted": "مهدر",
+  "Bread": "خبز",
+  "Cooked": "مطبوخ",
+  "Chicken": "دجاج",
+  "Fast Food": "وجبات سريعة",
+  "Rice": "أرز",
+  "Milky": "حلبي",
+  "Meat": "لحم",
+  "Sweets": "حلويات",
+  "Seafood": "مأكولات بحرية",
+  "Vegetables": "خضروات",
+  "Fruits": "فواكه",
+  "Drinks": "مشروبات",
+  "Other": "أخرى"
+}

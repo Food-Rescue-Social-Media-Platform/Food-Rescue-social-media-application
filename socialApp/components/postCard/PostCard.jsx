@@ -16,6 +16,7 @@ import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { Card, UserInfo, UserName, PostTime, UserInfoText, PostText, InteractionWrapper, Divider } from '../../styles/feedStyles';
 import moment from 'moment';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useTranslation } from 'react-i18next';
 
 const getCategoryIcon = (category,categoryColor) => {
     switch (category) {
@@ -58,6 +59,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
     const { theme } = useDarkMode(); // Access the current theme
+    const { t } = useTranslation();
 
     // Check if userImg and postImg are available
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
@@ -179,33 +181,33 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
                                         <MaterialIcons name="edit" size={20} color='black' />
-                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Edit</Text>
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Edit')}</Text>
                                     </TouchableOpacity>
                                 )}
 
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
                                         <FontAwesome6 name="delete-left" size={20} color='black' />
-                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Delete</Text>
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Delete')}</Text>
                                     </TouchableOpacity>
                                 )}
                                 
                                 {user && user.uid != postUserId && (                    
                                     <TouchableOpacity style={styles.optionButton} onPress={handleReport}>
                                         <MaterialIcons name="report" size={20} color='black' />
-                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Report</Text>
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Report')}</Text>
                                     </TouchableOpacity>            
                                 )}
 
                                 <TouchableOpacity style={styles.optionButton}>
                                     <MaterialCommunityIcons name="share-variant" size={20} color='black' />
-                                    <Text style={{ paddingLeft: 4, color: 'black' }}>Share</Text>
+                                    <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Share')}</Text>
                                 </TouchableOpacity>
                             </View>
                         </Popover>
 
                         {user && user.uid != postUserId && (
-                            <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
+                            <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{t(item.status)}</Text>
                         )}
 
                         {user && user.uid === postUserId && (
@@ -220,7 +222,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                                                 <Icon name={selectedItem.icon} style={[styles.dropdownButtonIconStyle, { color: theme.primaryText }]} />
                                             )}
                                             <Text style={[styles.dropdownButtonTxtStyle, { color: theme.primaryText }]}>
-                                                {(selectedItem && selectedItem.title) || item.status}
+                                                {(selectedItem && t(selectedItem.title)) || t(item.status)}
                                             </Text>
                                             <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={[styles.dropdownButtonArrowStyle, { color: theme.primaryText }]} />
                                         </View>
@@ -234,7 +236,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
                                             backgroundColor: isSelected ? '#D2D9DF' : theme.appBackGroundColor 
                                         }}>
                                             <Icon name={item.icon} style={[styles.dropdownItemIconStyle, { color: theme.primaryText }]} />
-                                            <Text style={[styles.dropdownItemTxtStyle, { color: theme.primaryText }]}>{item.title}</Text>
+                                            <Text style={[styles.dropdownItemTxtStyle, { color: theme.primaryText }]}>{t(item.title)}</Text>
                                         </View>
                                     );
                                 }}
@@ -252,9 +254,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
             {isPostImgAvailable ? (
                 <>
                     <Image source={{ uri: item.postImg }} style={styles.postImage} />
-                    {/* Additional UI components under the post image */}
                     <Text style={{ color: theme.primaryText }}>{item.additionalInfo}</Text>
-                    {/* Add more UI components as needed */}
                 </>
             ) : (
                 <Divider />
@@ -262,7 +262,7 @@ const PostCard = ({ item, postUserId, isProfilePage }) => {
             <InteractionWrapper >
                 <View style={styles.iconsWrapper}>
                     {getCategoryIcon(item.category,theme.primaryText)}
-                    <Text style={[styles.text, { color: theme.primaryText }]}>{item.category}</Text>
+                    <Text style={[styles.text, { color: theme.primaryText }]}>{t(item.category)}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons

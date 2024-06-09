@@ -1,9 +1,29 @@
 {
-    "english": "English",
-    "arabic": "Arabic",
-    "hebrew": "Hebrew",
-    "welcome": "Welcome",
-    "logout": "Logout",
-    "home": "Home"
-  }
-  
+  "Dark Mode": "Dark Mode",
+  "Language": "Language",
+  "Select Language": "Select Language",
+  "english": "English",
+  "arabic": "Arabic",
+  "logout": "Logout",
+  "hebrew": "Hebrew",
+  "Edit": "Edit",
+  "Share": "Share",
+  "Report": "Report",
+  "Delete": "Delete",
+  "wait for rescue": "wait for rescue",
+  "rescued": "rescued",
+  "wasted": "wasted",
+  "Bread": "Bread",
+  "Cooked": "Cooked",
+  "Chicken": "Chicken",
+  "Fast Food": "Fast Food",
+  "Rice": "Rice",
+  "Milky": "Milky",
+  "Meat": "Meat",
+  "Sweets": "Sweets",
+  "Seafood": "Seafood",
+  "Vegetables": "Vegetables",
+  "Fruits": "Fruits",
+  "Drinks": "Drinks",
+  "Other": "Other"
+}

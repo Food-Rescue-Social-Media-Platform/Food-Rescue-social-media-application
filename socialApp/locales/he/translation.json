@@ -1,9 +1,30 @@
 {
+    "Dark Mode": "מצב כהה",
+    "Language": "שפה",
+    "Select Language": "בחר שפה",
     "english": "אנגלית",
     "arabic": "ערבית",
-    "hebrew": "עברית",
-    "welcome": "ברוך הבא",
     "logout": "להתנתק",
-    "home": "דף הבית"
+    "hebrew": "עברית",
+    "Edit": "עריכה",
+    "Share": "שתף",
+    "Report": "דווח",
+    "Delete": "מחק",
+    "wait for rescue": "מחכה להצלה",
+    "rescued": "נוצל",
+    "wasted": "בוזבז",
+    "Bread": "לחם",
+    "Cooked": "מבושל",
+    "Chicken": "עוף",
+    "Fast Food": "מזון מהיר",
+    "Rice": "אורז",
+    "Milky": "חלב",
+    "Meat": "בשר",
+    "Sweets": "ממתקים",
+    "Seafood": "פירות ים",
+    "Vegetables": "ירקות",
+    "Fruits": "פירות",
+    "Drinks": "משקאות",
+    "Other": "אחר"
   }
   

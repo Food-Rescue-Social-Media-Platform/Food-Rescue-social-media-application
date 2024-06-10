@@ -105,7 +105,7 @@ export const deletePost = async (postId, postUserId) => {
 }; 
 
 
-export async function getPostsNearby(center, radiusInM) {
+export async function getPostsNearby(center, radiusInM, userIdToExclude) {
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
 
@@ -114,7 +114,8 @@ export async function getPostsNearby(center, radiusInM) {
             collection(database, 'postsTest'),
             orderBy('geohash'),
             startAt(b[0]),
-            endAt(b[1])
+            endAt(b[1]),
+            userIdToExclude && where('userId', '!=', userIdToExclude) // Exclude posts by the specified user
         );
 
         promises.push(getDocs(q));
@@ -151,4 +152,27 @@ export async function getPostsNearby(center, radiusInM) {
 
     console.log("matchingDocs:", matchingDocs);
     return matchingDocs;
+}
+
+
+export async function getPostsByCategory(category) {
+    const posts = [];
+    const promises = [];
+    category.map((cat) => {
+        const q = query(collection(database, 'postsTest'), where('category', '==', cat));
+        promises.push(getDocs(q));
+    });
+    const querySnapshot = await Promise.all(promises);
+    querySnapshot.forEach((doc) => {
+        posts.push({ id: doc.id, ...doc.data() });
+    });
+    return posts;
+}
+
+
+export async function getPostByUserId(userId) {
+    const q = query(collection(database, 'postsTest'), where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    const posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return posts;
 }

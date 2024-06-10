@@ -10,9 +10,7 @@ import { useDarkMode } from '../../styles/DarkModeContext';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 
-
 const HomeScreen = () => {
-    const { logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
     const navigation = useNavigation();
     const isFocused = useIsFocused();
@@ -48,27 +46,27 @@ const HomeScreen = () => {
     };
 
     const fetchData = async () => {
-        try {
-            const querySnapshot = await getDocs(collection(database, "postsTest"));
-            const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            data.sort((a, b) => b.createdAt - a.createdAt);
-            setPosts([{}, ...data]);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setLoading(false);
-        }
+      try {
+          const querySnapshot = await getDocs(collection(database, "postsTest"));
+          const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          data.sort((a, b) => b.createdAt - a.createdAt);
+          setPosts([{}, ...data]);
+          setLoading(false);
+      } catch (error) {
+          console.error("Error fetching data:", error);
+          setLoading(false);
+      }
     };
 
     useEffect(() => {
         if (isFocused) {
             const fetchLocationAndPosts = async () => {
                 await getLocation(setPosition);
-                if(position) {
+                if (position) {
                     watchLocation(setPosition);
                 }
                 fetchData();
-            }
+            };
             fetchLocationAndPosts();
         }
     }, [isFocused]);
@@ -80,67 +78,67 @@ const HomeScreen = () => {
     };
 
     if (loading) {
-      return (
-          <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
-              <ActivityIndicator size="large" color={theme.primaryText} />
-          </View>
+        return (
+            <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
+                <ActivityIndicator size="large" color={theme.primaryText} />
+            </View>
         );
     }
-    
+
     if (error) {
-      return <Text style={{ color: theme.primaryText }}>Error: {error}</Text>;
+        return <Text style={{ color: theme.primaryText }}>Error: {error}</Text>;
     }
 
     return (
-      <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-          <FlatList
-              data={posts}
-              renderItem={({ item, index }) => {
-                  if (index === 0) {
-                      return <AddPostCard />                        
-                  }
-                  else {
-                      return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
-                  }
-              }}
-              keyExtractor={(item, index) => index.toString()}
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={styles.flatListContent}
-              refreshControl={
-                  <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={onRefresh}
-                      tintColor={theme.primaryText} // Added to style the RefreshControl spinner
-                  />
-              }
-          />
-          <FormButton buttonTitle='Logout' onPress={() => logout()} />
-      </Container>
+        <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+            <FlatList
+                data={posts}
+                renderItem={({ item, index }) => {
+                    if (index === 0) {
+                        return <AddPostCard />;
+                    } else if (item && item.id) {
+                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
+                    } else {
+                        return null;
+                    }
+                }}
+                keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.flatListContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={theme.primaryText}
+                    />
+                }
+            />
+        </Container>
     );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    paddingTop: 5,
-    paddingBottom: 5,
-  },
-  flatListContent: {
-    flexGrow: 1,
-    paddingBottom: 5,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  PostsTitleText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    marginRight: '82%',
-  },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        paddingTop: 5,
+        paddingBottom: 5,
+    },
+    flatListContent: {
+        flexGrow: 1,
+        paddingBottom: 5,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    PostsTitleText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        marginRight: '82%',
+    },
 });
 
 export default HomeScreen;

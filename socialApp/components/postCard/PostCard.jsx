@@ -20,7 +20,7 @@ import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToP
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { useTranslation } from 'react-i18next';
 
-const getCategoryIcon = (category,categoryColor) => {
+const getCategoryIcon = (category, categoryColor) => {
     switch (category) {
         case 'Bread':
             return <FontAwesome6 name="bread-slice" size={22} color={categoryColor}/>;
@@ -66,7 +66,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
 
     useEffect(() => {
-        if((item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
+        if(!item.coordinates || item.coordinates[0] === 0 && item.coordinates[1] === 0 || !userLocation) return;
         setHaveSharedLocation(true)
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1], setDistance);
     }, [userLocation]);
@@ -75,8 +75,8 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
 
-    const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
-    const postDate = moment(item.createdAt.toDate()).calendar();
+    const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
+    const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';
 
     const handleUpdateStatus = async (selectedItem) => {
         try {
@@ -150,7 +150,6 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         }
     };
 
-
     const handleClickLocationPost = () => {
         if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
             return;
@@ -166,7 +165,6 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             }
         });
     }
-
 
     return (
         <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
@@ -185,7 +183,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     </TouchableOpacity>
                     <UserInfoText>
                         <TouchableOpacity onPress={handleUserPress}>
-                            <UserName style={{ color: theme.primaryText }}>{item.userName}</UserName>
+                            <UserName style={{ color: theme.primaryText }}>{item.userName || ''}</UserName>
                         </TouchableOpacity>
                         <PostTime style={{ color: theme.primaryText }}>{createdAt}</PostTime>
                     </UserInfoText>
@@ -282,14 +280,14 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             {isPostImgAvailable ? (
                 <>
                     <Image source={{ uri: item.postImg }} style={styles.postImage} />
-                    <Text style={{ color: theme.primaryText }}>{item.additionalInfo}</Text>
+                    <Text style={{ color: theme.primaryText }}>{item.additionalInfo || ''}</Text>
                 </>
             ) : (
                 <Divider />
             )}
             <InteractionWrapper >
                 <View style={styles.iconsWrapper}>
-                    {getCategoryIcon(item.category,theme.primaryText)}
+                    {getCategoryIcon(item.category, theme.primaryText)}
                     <Text style={[styles.text, { color: theme.primaryText }]}>{t(item.category)}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
@@ -338,7 +336,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                 )}
 
             </InteractionWrapper>
-            <PostText style={{ color: theme.primaryText }}>{item.postText}</PostText>
+            <PostText style={{ color: theme.primaryText }}>{item.postText || ''}</PostText>
         </Card>
     );
 }
@@ -383,15 +381,14 @@ const styles = StyleSheet.create({
     optionButton: {
         flexDirection: "row",
         marginRight: 10,
-        marginLeft:10,
-        marginTop:10,
-        marginBottom:5,
+        marginLeft: 10,
+        marginTop: 10,
+        marginBottom: 5,
     },
     menu: {
         marginRight: 6,
-        marginLeft:2,
-        marginBottom:5,
-
+        marginLeft: 2,
+        marginBottom: 5,
     },
     dropdownButtonStyle: {
         width: 130,

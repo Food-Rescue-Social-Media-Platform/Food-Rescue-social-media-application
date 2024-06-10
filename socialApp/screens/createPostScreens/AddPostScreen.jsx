@@ -1,59 +1,44 @@
-import React, { useState, useEffect, useContext } from "react";
-import {
-  View,
-  Modal,
-  StyleSheet,
-  Text,
-  ScrollView,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Platform,
-} from "react-native";
-import { CheckBox } from "react-native-elements";
-import Entypo from "react-native-vector-icons/Entypo";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { COLORS, DARKCOLORS } from "../../styles/colors";
-import { useNavigation } from "@react-navigation/native";
-import { Camera } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
-import { uploadImages } from "../../FirebaseFunctions/firestore/UplaodImges";
-import {
-  openGalereAndSelectImages,
-  openCameraAndTakePicture,
-} from "../../hooks/OperationComponents/OpeningComponentsInPhone";
-import { Post, addPost } from "../../FirebaseFunctions/collections/post";
-import { windowHeight } from "../../utils/Dimentions";
-import { categories } from "../../utils/categories";
-import * as Location from "expo-location";
-import { AuthContext } from "../../navigation/AuthProvider";
-import { getDoc, updateDoc, doc } from "firebase/firestore";
-import { database } from "../../firebase";
-import { useDarkMode } from "../../styles/DarkModeContext"; // Adjust the path accordingly
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Modal, StyleSheet, Text, ScrollView, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
+import { CheckBox } from 'react-native-elements';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { COLORS, DARKCOLORS } from '../../styles/colors';
+import { useNavigation } from '@react-navigation/native';
+import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { Post, addPost } from '../../FirebaseFunctions/collections/post';
+import { windowHeight } from '../../utils/Dimentions';
+import { categories } from '../../utils/categories';
+import * as Location from 'expo-location';
+import { AuthContext } from '../../navigation/AuthProvider';
+import { getDoc, updateDoc, doc } from 'firebase/firestore';
+import { database } from '../../firebase';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
 
 const AddPostScreen = () => {
-  const navigation = useNavigation();
-  const { user, logout } = useContext(AuthContext);
-  const [userConnected, setUserConnected] = useState(null);
-  const [postInput, setPostInput] = useState("");
-  const [category, setCategory] = useState("");
-  const [location, setLocation] = useState("");
-  const [timeInput, setTimeInput] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [images, setImages] = useState([]);
-  const [modalPhoneVisible, setModalPhoneVisible] = useState(false);
-  const [modalCloseVisible, setModalCloseVisible] = useState(false);
-  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
-  const [showLocationModel, setShowLocationModel] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [options, setOptions] = useState(
-    categories.map((category) => ({ value: category })),
-  );
-  const { isDarkMode } = useDarkMode();
-  const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+    const navigation = useNavigation();
+    const { user, logout } = useContext(AuthContext);
+    const [userConnected, setUserConnected] = useState(null);
+    const [postInput, setPostInput] = useState('');
+    const [category, setCategory] = useState('');
+    const [location, setLocation] = useState('');
+    const [timeInput, setTimeInput] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [images, setImages] = useState([]);
+    const [modalPhoneVisible, setModalPhoneVisible] = useState(false);
+    const [modalCloseVisible, setModalCloseVisible] = useState(false);
+    const [categoryModalVisible, setCategoryModalVisible] = useState(false);
+    const [showLocationModel, setShowLocationModel] = useState(false);
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
+    const [options, setOptions] = useState(categories.map((category) => ({ value: category })));
+    const { isDarkMode } = useDarkMode();
+    const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -174,74 +159,44 @@ const AddPostScreen = () => {
     setImages(newImages);
   };
 
-  return (
-    <View style={{ backgroundColor: themeColors.lightGray }}>
-      {!isUploading && (
-        <View style={styles.container}>
-          <View style={styles.header}>
-            <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
-              <Fontisto
-                name="arrow-right"
-                size={24}
-                color={themeColors.primaryText}
-                style={{ transform: [{ scaleX: -1 }] }}
-              />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontSize: 18,
-                paddingHorizontal: Platform.OS === "web" ? "44%" : "27%",
-                marginBottom: 5,
-              }}
-            >
-              Create Post
-            </Text>
-            <TouchableOpacity
-              style={[
-                styles.button,
-                { backgroundColor: themeColors.secondaryBackground },
-              ]}
-              onPress={handleAddPost}
-            >
-              <Text style={{ fontSize: 15 }}>Post</Text>
-            </TouchableOpacity>
-          </View>
+    return (
+        <View style={{ backgroundColor: themeColors.lightGray }}>
+            {!isUploading && (
+                <View style={styles.container}>
 
-          <ScrollView>
-            <View style={{ minHeight: "100%" }}>
-              <View>
-                <TextInput
-                  value={postInput}
-                  onChangeText={(text) => setPostInput(text)}
-                  style={[
-                    styles.postInput,
-                    {
-                      backgroundColor: themeColors.white,
-                      color: themeColors.primaryText,
-                    },
-                  ]}
-                  placeholder="What food would you like to save today?"
-                  placeholderTextColor={themeColors.placeholderText}
-                  multiline
-                  editable={timeInput.length < 3000}
-                />
-                <TextInput
-                  value={timeInput}
-                  onChangeText={(text) => setTimeInput(text)}
-                  style={[
-                    styles.timeInput,
-                    {
-                      backgroundColor: themeColors.white,
-                      color: themeColors.primaryText,
-                    },
-                  ]}
-                  placeholder="What are the delivery times?"
-                  placeholderTextColor={themeColors.placeholderText}
-                  multiline
-                  editable={timeInput.length < 30}
-                />
-                <Text>{timeInput.length}/30</Text>
-              </View>
+                    <View style={styles.header}>
+                        <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
+                            <Fontisto name="arrow-right" size={24} color={themeColors.primaryText} style={{ transform: [{ scaleX: -1 }] }} />
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
+                        <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryBackground }]} onPress={handleAddPost}>
+                            <Text style={{ fontSize: 15 }}>Post</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView>
+                        <View style={{ minHeight: '100%' }}>
+                            <View>
+                                <TextInput
+                                    value={postInput}
+                                    onChangeText={(text) => setPostInput(text)}
+                                    style={[styles.postInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
+                                    placeholder="What food would you like to save today?"
+                                    placeholderTextColor={themeColors.placeholderText}
+                                    multiline
+                                    editable={timeInput.length < 3000}
+                                />
+                                <TextInput
+                                    value={timeInput}
+                                    onChangeText={(text) => setTimeInput(text)}
+                                    style={[styles.timeInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
+                                    placeholder="What are the delivery times?"
+                                    placeholderTextColor={themeColors.placeholderText}
+                                    multiline
+                                    editable={timeInput.length < 30}
+                                />
+                                <Text>{timeInput.length}/30</Text>
+                            </View>
 
               <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
                 {images.map((image, index) => (
@@ -322,248 +277,139 @@ const AddPostScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalPhoneVisible}
-            onRequestClose={() => {
-              console.log("close modal");
-            }}
-          >
-            <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-              <View
-                style={[
-                  styles.modal,
-                  { marginTop: "50%", backgroundColor: themeColors.white },
-                ]}
-              >
-                <Text
-                  style={[styles.modalText, { color: themeColors.primaryText }]}
-                >
-                  Would you like to post your number{" "}
-                  {userConnected?.phoneNumber}?
-                </Text>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MyButton
-                    style={{
-                      backgroundColor: themeColors.secondaryBackground,
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: "center",
-                    }}
-                    text="Yes"
-                    styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                    onPress={() => {
-                      setModalPhoneVisible(false);
-                      setPhoneNumber(userConnected.phoneNumber);
-                    }}
-                  />
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalPhoneVisible}
+                        onRequestClose={() => {
+                            console.log('close modal');
+                        }}
+                    >
+                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
 
-                  <MyButton
-                    style={{
-                      backgroundColor: themeColors.secondaryBackground,
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: "center",
-                    }}
-                    text="No"
-                    styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                    onPress={() => {
-                      setModalPhoneVisible(false);
-                    }}
-                  />
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Would you like to post your number {userConnected?.phoneNumber}?</Text>
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+
+                                    <MyButton
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        text='Yes'
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        onPress={() => { setModalPhoneVisible(false); setPhoneNumber(userConnected.phoneNumber) }}
+                                    />
+
+                                    <MyButton
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        text='No'
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        onPress={() => { setModalPhoneVisible(false) }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={categoryModalVisible}
+                    >
+                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                            <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
+
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Select categories</Text>
+                                <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+                                    {options.map((option) => (
+                                        <CheckBox
+                                            style={[styles.checkboxWrapper, { backgroundColor: themeColors.secondaryBackground }]}
+                                            key={option.value}
+                                            title={option.value}
+                                            checked={selectedOptions.includes(option.value)}
+                                            onPress={() => handleCheck(option)}
+                                            textStyle={{ color: themeColors.primaryText }}
+                                            containerStyle={{ backgroundColor: themeColors.secondaryBackground }}
+                                        />
+                                    ))}
+                                </View>
+
+                                <MyButton
+                                    style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
+                                    text='Done'
+                                    styleText={{ fontSize: 15, color: themeColors.primaryText }}
+                                    onPress={handleCloseCategoryModal}
+                                />
+
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={showLocationModel}
+                    >
+                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+
+                            <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Should you add your current location to the post?</Text>
+
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+
+                                    <MyButton
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        text='Yes'
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        onPress={handleAddLocation}
+                                    />
+
+                                    <MyButton
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        text='No'
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
+                                    />
+
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
+
+                    <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalCloseVisible}
+                    >
+                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+
+                            <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
+
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                                    <MyButton
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        text='Yes'
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        onPress={confirmClose}
+                                    />
+
+                                    <MyButton
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        text='No'
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        onPress={() => { setModalCloseVisible(false) }}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-              </View>
-            </View>
-          </Modal>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={categoryModalVisible}
-          >
-            <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-              <View
-                style={[
-                  styles.modal,
-                  { marginTop: "30%", backgroundColor: themeColors.white },
-                ]}
-              >
-                <Text
-                  style={[styles.modalText, { color: themeColors.primaryText }]}
-                >
-                  Select categories
-                </Text>
-                <View
-                  style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}
-                >
-                  {options.map((option) => (
-                    <CheckBox
-                      style={[
-                        styles.checkboxWrapper,
-                        { backgroundColor: themeColors.secondaryBackground },
-                      ]}
-                      key={option.value}
-                      title={option.value}
-                      checked={selectedOptions.includes(option.value)}
-                      onPress={() => handleCheck(option)}
-                      textStyle={{ color: themeColors.primaryText }}
-                      containerStyle={{
-                        backgroundColor: themeColors.secondaryBackground,
-                      }}
-                    />
-                  ))}
-                </View>
-
-                <MyButton
-                  style={[
-                    styles.button,
-                    {
-                      borderRadius: 20,
-                      backgroundColor: themeColors.secondaryBackground,
-                    },
-                  ]}
-                  text="Done"
-                  styleText={{ fontSize: 15, color: themeColors.primaryText }}
-                  onPress={handleCloseCategoryModal}
-                />
-              </View>
-            </View>
-          </Modal>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={showLocationModel}
-          >
-            <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-              <View
-                style={[
-                  styles.modal,
-                  { marginTop: "50%", backgroundColor: themeColors.white },
-                ]}
-              >
-                <Text
-                  style={[styles.modalText, { color: themeColors.primaryText }]}
-                >
-                  Should you add your current location to the post?
-                </Text>
-
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MyButton
-                    style={{
-                      backgroundColor: themeColors.secondaryBackground,
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: "center",
-                    }}
-                    text="Yes"
-                    styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                    onPress={handleAddLocation}
-                  />
-
-                  <MyButton
-                    style={{
-                      backgroundColor: themeColors.secondaryBackground,
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: "center",
-                    }}
-                    text="No"
-                    styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                    onPress={() => {
-                      console.log("no want to add his location.");
-                      setShowLocationModel(false);
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-          </Modal>
-
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalCloseVisible}
-          >
-            <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
-              <View
-                style={[
-                  styles.modal,
-                  { marginTop: "50%", backgroundColor: themeColors.white },
-                ]}
-              >
-                <Text
-                  style={[styles.modalText, { color: themeColors.primaryText }]}
-                >
-                  Are you sure you want to leave?
-                </Text>
-
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
-                >
-                  <MyButton
-                    style={{
-                      backgroundColor: themeColors.secondaryBackground,
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: "center",
-                    }}
-                    text="Yes"
-                    styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                    onPress={confirmClose}
-                  />
-
-                  <MyButton
-                    style={{
-                      backgroundColor: themeColors.secondaryBackground,
-                      padding: 10,
-                      borderRadius: 5,
-                      alignItems: "center",
-                    }}
-                    text="No"
-                    styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                    onPress={() => {
-                      setModalCloseVisible(false);
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-          </Modal>
+            )}
+            {isUploading && (<Text style={{ fontSize: 20, textAlign: 'center', marginTop: '60%', color: themeColors.primaryText }}>Publish Post...</Text>)}
         </View>
-      )}
-      {isUploading && (
-        <Text
-          style={{
-            fontSize: 20,
-            textAlign: "center",
-            marginTop: "60%",
-            color: themeColors.primaryText,
-          }}
-        >
-          Publish Post...
-        </Text>
-      )}
-    </View>
-  );
-};
+    );
+}
 
 const styles = StyleSheet.create({
   container: {

@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text, Button } from 'react-native';
-import FormButton from '../../components/formButtonsAndInput/FormButton';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useDarkMode } from '../../styles/DarkModeContext';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { postsCloseMe } from '../../hooks/helpersFeed/algoShowPostsInFeed';
 
+
 const HomeScreen = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);    
     const [posts, setPosts] = useState([]);
     const navigation = useNavigation();
     const isFocused = useIsFocused();
@@ -46,14 +47,12 @@ const HomeScreen = () => {
         if (isFocused) {
             const fetchLocationAndPosts = async () => {
                 await getLocation(setPosition);
-                if(position) {
+                if (position) 
                     watchLocation(setPosition);
-                }
                 fetchData();
-
             }
-            fetchLocationAndPosts();
-        }
+             fetchLocationAndPosts();
+        };
     }, [isFocused]);
 
     const onRefresh = async () => {
@@ -80,24 +79,24 @@ const HomeScreen = () => {
                 data={posts}
                 renderItem={({ item, index }) => {
                     if (index === 0) {
-                        return <AddPostCard />                        
-                    }
-                    else {
+                        return <AddPostCard />;
+                    } else if (item && item.id) {
                         return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
+                    } else {
+                        return null;
                     }
                 }}
-                keyExtractor={(item, index) => index.toString()}
+                keyExtractor={(item, index) => item.id ? item.id : index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor={theme.primaryText} // Added to style the RefreshControl spinner
+                        tintColor={theme.primaryText}
                     />
                 }
             />
-            <FormButton buttonTitle='Logout' onPress={() => logout()} />
         </Container>
     );
 }

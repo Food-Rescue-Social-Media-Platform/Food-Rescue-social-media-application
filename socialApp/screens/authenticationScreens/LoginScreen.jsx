@@ -6,11 +6,13 @@ import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
 import {COLORS} from '../../styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const {login} = useContext(AuthContext);
+  const { t } = useTranslation();
 
   return (
     <View style={styles.outerContainer}>
@@ -20,10 +22,10 @@ const LoginScreen = ({ navigation }) => {
             source={require('../../assets/Images/PhoneAuthLogo.png')}
             style={styles.logo}
           />
-          <Text style={styles.text}>Sign in</Text>
-          <Text style={{ paddingBottom: 10 }}>Rescue The Food From Wasting</Text>
+          <Text style={styles.text}>{t('Sign in')}</Text>
+          <Text style={{ paddingBottom: 10 }}>{t('Rescue The Food From Wasting')}</Text>
           <FormInput
-            placeHolderText="Email"
+            placeHolderText={t("Email")}
             iconType="email"
             keyboardType="email-address"
             labelValue={email}
@@ -32,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
             autoCorrect={false}
           />
           <FormInput
-            placeHolderText="Password"
+            placeHolderText={t("Password")}
             iconType="lock"
             labelValue={password}
             onChangeText={(userPassword) => setPassword(userPassword)}
@@ -40,28 +42,28 @@ const LoginScreen = ({ navigation }) => {
           />
           <View style={styles.forgotButton}>
             <TouchableOpacity>
-              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('ForgotMyPasswordScreen')}>Forgot your Password ?</Text>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('ForgotMyPasswordScreen')}>{t('Forgot your Password ?')}</Text>
             </TouchableOpacity>
           </View>
           <FormButton
-            buttonTitle="Sign in"
+            buttonTitle={t("Sign in")}
             onPress={() => login(email,password)}
           />
           <View style={styles.orRowContainer}>
             <View style={styles.line}></View>
-            <Text style={styles.orText}>or</Text>
+            <Text style={styles.orText}>{t('or')}</Text>
             <View style={styles.line}></View>
           </View>
           <View style={styles.SocialButtonContainer}>
               <SocialButton
-                  buttonTitle="Sign In with Facebook"
+                  buttonTitle={t("Sign In with Facebook")}
                   btnType="facebook"
                   color="#4867aa"
                   backgroundColor="#e6eaf4"
                   onPress={() => {}}
               />
               <SocialButton
-                  buttonTitle="Sign In with Google"
+                  buttonTitle={t("Sign In with Google")}
                   btnType="google"
                   color="#de4d41"
                   backgroundColor="#f5e7ea"
@@ -69,9 +71,9 @@ const LoginScreen = ({ navigation }) => {
               />
           </View>
           <View style={styles.createAccountContainer}>
-            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account?')}</Text>
             <TouchableOpacity>
-              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>Sign up</Text>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>{t('Sign up')}</Text>
             </TouchableOpacity>
           </View>
         </View>

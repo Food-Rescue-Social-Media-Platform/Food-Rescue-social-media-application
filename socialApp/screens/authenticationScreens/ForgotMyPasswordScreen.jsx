@@ -5,12 +5,14 @@ import FormButton from '../../components/formButtonsAndInput/FormButton';
 import { AuthContext } from '../../navigation/AuthProvider';
 import {COLORS} from '../../styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 
 
 const ForgotMyPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const {forgotPassword} = useContext(AuthContext);
-  
+  const { t } = useTranslation();
+
   return (
     <View style={styles.outerContainer}>
       <ScrollView>
@@ -19,8 +21,8 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
             source={require('../../assets/Images/PhoneAuthLogo.png')}
             style={styles.logo}
           />
-          <Text style={styles.text}>Forgot My Password</Text>
-          <Text style={{ paddingBottom: 10 }}>Enter your Email to continue</Text>
+          <Text style={styles.text}>{t('Forgot My Password')}</Text>
+          <Text style={{ paddingBottom: 10 }}>{t('Enter your Email to continue')}</Text>
           <FormInput
             placeHolderText="Email"
             iconType="email"
@@ -32,17 +34,17 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
           />
           <View style={styles.rememberPasswordButton}>
             <TouchableOpacity>
-              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>I remember my password</Text>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>{t('I remember my password')}</Text>
             </TouchableOpacity>
           </View>
           <FormButton
-            buttonTitle="Send recovery mail"
+            buttonTitle={t("Send recovery mail")}
             onPress={() => forgotPassword(email)}
           />
           <View style={styles.createAccountContainer}>
-            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Don't have an account? </Text>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account?')} </Text>
             <TouchableOpacity>
-              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>Sign up</Text>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>{t('Sign up')}</Text>
             </TouchableOpacity>
           </View>
         </View>

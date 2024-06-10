@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ActivityIndicator, FlatList } from 'react-native';
 import { doc, getDoc } from "firebase/firestore";
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
+import { useTranslation } from 'react-i18next';
 
 const PAGE_SIZE = 15; // Number of users to load per page
 
@@ -10,6 +11,7 @@ const UsersList = ({ usersIds }) => {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [endReached, setEndReached] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchUsersData = async () => {
@@ -67,7 +69,7 @@ const UsersList = ({ usersIds }) => {
             ) : (
                 <>
                     {usersData.length === 0 ? (
-                        <Text style={styles.noFollowingText}>The list is empty</Text>
+                        <Text style={styles.noFollowingText}>{t('The list is empty')}</Text>
                     ) : (
                         <View style={styles.container}>
                             <FlatList

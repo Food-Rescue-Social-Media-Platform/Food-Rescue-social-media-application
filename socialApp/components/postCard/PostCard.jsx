@@ -18,8 +18,9 @@ import moment from 'moment';
 import { deletePost } from '../../FirebaseFunctions/collections/post';
 import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useTranslation } from 'react-i18next';
 
-const getCategoryIcon = (category,categoryColor) => {
+const getCategoryIcon = (category, categoryColor) => {
     switch (category) {
         case 'Bread':
             return <FontAwesome6 name="bread-slice" size={22} color={categoryColor}/>;
@@ -59,12 +60,13 @@ const emojisWithIcons = [
 const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const navigation = useNavigation(); // Use useNavigation hook to get the navigation prop
     const { user } = useContext(AuthContext);
+    const { theme } = useDarkMode(); // Access the current theme
+    const { t } = useTranslation();
     const [ distance, setDistance ] = useState(0);
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
-    const { theme } = useDarkMode(); // Use the useDarkMode hook to get the current theme
 
     useEffect(() => {
-        if((item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
+        if(!item.coordinates || item.coordinates[0] === 0 && item.coordinates[1] === 0 || !userLocation) return;
         setHaveSharedLocation(true)
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1], setDistance);
     }, [userLocation]);
@@ -73,8 +75,8 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
 
-    const createdAt = moment(item.createdAt.toDate()).startOf('hour').fromNow();
-    const postDate = moment(item.createdAt.toDate()).calendar();
+    const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
+    const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';
 
     const handleUpdateStatus = async (selectedItem) => {
         try {
@@ -148,7 +150,6 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         }
     };
 
-
     const handleClickLocationPost = () => {
         if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) {
             return;
@@ -164,7 +165,6 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             }
         });
     }
-
 
     return (
         <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
@@ -183,7 +183,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     </TouchableOpacity>
                     <UserInfoText>
                         <TouchableOpacity onPress={handleUserPress}>
-                            <UserName style={{ color: theme.primaryText }}>{item.userName}</UserName>
+                            <UserName style={{ color: theme.primaryText }}>{item.userName || ''}</UserName>
                         </TouchableOpacity>
                         <PostTime style={{ color: theme.primaryText }}>{createdAt}</PostTime>
                     </UserInfoText>
@@ -207,33 +207,33 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
                                         <MaterialIcons name="edit" size={20} color='black' />
-                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Edit</Text>
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Edit')}</Text>
                                     </TouchableOpacity>
                                 )}
 
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={handleDelete}>
                                         <FontAwesome6 name="delete-left" size={20} color='black' />
-                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Delete</Text>
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Delete')}</Text>
                                     </TouchableOpacity>
                                 )}
                                 
                                 {user && user.uid != postUserId && (                    
                                     <TouchableOpacity style={styles.optionButton} onPress={handleReport}>
                                         <MaterialIcons name="report" size={20} color='black' />
-                                        <Text style={{ paddingLeft: 4, color: 'black' }}>Report</Text>
+                                        <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Report')}</Text>
                                     </TouchableOpacity>            
                                 )}
 
                                 <TouchableOpacity style={styles.optionButton}>
                                     <MaterialCommunityIcons name="share-variant" size={20} color='black' />
-                                    <Text style={{ paddingLeft: 4, color: 'black' }}>Share</Text>
+                                    <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Share')}</Text>
                                 </TouchableOpacity>
                             </View>
                         </Popover>
 
                         {user && user.uid != postUserId && (
-                            <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{item.status}</Text>
+                            <Text style={{ color: statusColor, fontSize: 15, paddingRight: 10, fontWeight: '500' }}>{t(item.status)}</Text>
                         )}
 
                         {user && user.uid === postUserId && (
@@ -248,7 +248,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                                                 <Icon name={selectedItem.icon} style={[styles.dropdownButtonIconStyle, { color: theme.primaryText }]} />
                                             )}
                                             <Text style={[styles.dropdownButtonTxtStyle, { color: theme.primaryText }]}>
-                                                {(selectedItem && selectedItem.title) || item.status}
+                                                {(selectedItem && t(selectedItem.title)) || t(item.status)}
                                             </Text>
                                             <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={[styles.dropdownButtonArrowStyle, { color: theme.primaryText }]} />
                                         </View>
@@ -262,7 +262,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                                             backgroundColor: isSelected ? '#D2D9DF' : theme.appBackGroundColor 
                                         }}>
                                             <Icon name={item.icon} style={[styles.dropdownItemIconStyle, { color: theme.primaryText }]} />
-                                            <Text style={[styles.dropdownItemTxtStyle, { color: theme.primaryText }]}>{item.title}</Text>
+                                            <Text style={[styles.dropdownItemTxtStyle, { color: theme.primaryText }]}>{t(item.title)}</Text>
                                         </View>
                                     );
                                 }}
@@ -280,17 +280,15 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             {isPostImgAvailable ? (
                 <>
                     <Image source={{ uri: item.postImg }} style={styles.postImage} />
-                    {/* Additional UI components under the post image */}
-                    <Text style={{ color: theme.primaryText }}>{item.additionalInfo}</Text>
-                    {/* Add more UI components as needed */}
+                    <Text style={{ color: theme.primaryText }}>{item.additionalInfo || ''}</Text>
                 </>
             ) : (
                 <Divider />
             )}
             <InteractionWrapper >
                 <View style={styles.iconsWrapper}>
-                    {getCategoryIcon(item.category,theme.primaryText)}
-                    <Text style={[styles.text, { color: theme.primaryText }]}>{item.category}</Text>
+                    {getCategoryIcon(item.category, theme.primaryText)}
+                    <Text style={[styles.text, { color: theme.primaryText }]}>{t(item.category)}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
                     <MaterialCommunityIcons
@@ -338,7 +336,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                 )}
 
             </InteractionWrapper>
-            <PostText style={{ color: theme.primaryText }}>{item.postText}</PostText>
+            <PostText style={{ color: theme.primaryText }}>{item.postText || ''}</PostText>
         </Card>
     );
 }
@@ -383,15 +381,14 @@ const styles = StyleSheet.create({
     optionButton: {
         flexDirection: "row",
         marginRight: 10,
-        marginLeft:10,
-        marginTop:10,
-        marginBottom:5,
+        marginLeft: 10,
+        marginTop: 10,
+        marginBottom: 5,
     },
     menu: {
         marginRight: 6,
-        marginLeft:2,
-        marginBottom:5,
-
+        marginLeft: 2,
+        marginBottom: 5,
     },
     dropdownButtonStyle: {
         width: 130,

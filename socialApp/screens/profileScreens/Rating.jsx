@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { useDarkMode } from '../../styles/DarkModeContext';
+import { useTranslation } from 'react-i18next';
 
 // Function to capitalize the first letter of each word
 const capitalizeFirstLetterOfEachWord = (string) => {
@@ -19,6 +20,7 @@ const Rating = ({ route }) => {
   const [selectedRating, setSelectedRating] = useState(0);
   const navigation = useNavigation(); // Get navigation object
   const { isDarkMode } = useDarkMode();
+  const { t } = useTranslation();
 
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
@@ -65,16 +67,16 @@ const Rating = ({ route }) => {
   return (
     <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]}>
       <Text style={[styles.title, { color: themeColors.primaryText }]}>
-        Rate {capitalizeFirstLetterOfEachWord(userData.userName)}
+      {t('Rate')} {capitalizeFirstLetterOfEachWord(userData.userName)}
       </Text>
       <View style={styles.starContainer}>
         {renderStars()}
       </View>
       <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={submitRating}>
-        <Text style={[styles.buttonText, { color: themeColors.primaryText }]}>Submit Rating</Text>
+        <Text style={[styles.buttonText, { color: themeColors.primaryText }]}>{t('Submit Rating')}</Text>
       </TouchableOpacity>
       <Text style={[styles.currentRating, { color: themeColors.primaryText }]}>
-        Current Rating: {rating.toFixed(1)} ({ratingNumber} ratings)
+      {t('Current Rating')}: {rating.toFixed(1)} ({ratingNumber} ratings)
       </Text>
     </View>
   );

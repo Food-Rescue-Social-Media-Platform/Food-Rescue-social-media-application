@@ -23,17 +23,24 @@ import {
 import { AuthContext } from "../../navigation/AuthProvider";
 import { windowHeight, windowWidth } from "../../utils/Dimentions";
 import { useDarkMode } from "../../styles/DarkModeContext"; // Import the dark mode context
+import { Message, addMessage, startListeningForMessages } from '../../FirebaseFunctions/collections/message';
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { AuthContext } from '../../navigation/AuthProvider';
+import { windowHeight, windowWidth } from '../../utils/Dimentions';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useTranslation } from 'react-i18next';
 
 const SingleChat = ({ navigation }) => {
-  const route = useRoute();
-  const { user } = useContext(AuthContext);
-  const receiverData = route.params.receiverData;
-  const userData = route.params.userConnected;
-  const [allMessages, setAllMessages] = useState([]);
-  const [msg, setMsg] = useState("");
-  const [images, setImages] = useState([]);
-  const chatContainerRef = useRef(null);
-  const { theme } = useDarkMode(); // Access the current theme
+    const route = useRoute();
+    const { user } = useContext(AuthContext);
+    const receiverData = route.params.receiverData;
+    const userData = route.params.userConnected; 
+    const [allMessages, setAllMessages] = useState([]);
+    const [msg, setMsg] = useState('');
+    const [images, setImages] = useState([]);
+    const chatContainerRef = useRef(null);
+    const { theme } = useDarkMode(); // Access the current theme
+    const { t } = useTranslation();
 
   useEffect(() => {
     chatContainerRef.current?.scrollToEnd({ animated: true });
@@ -60,10 +67,11 @@ const SingleChat = ({ navigation }) => {
       userData,
       receiverData.id,
       setMsg,
-      setImages,
+      setImages 
     );
-    setMsg("");
-    setImages([]);
+
+      setMsg("");
+      setImages([]);
   };
 
   const onPressAttach = () => {
@@ -75,67 +83,42 @@ const SingleChat = ({ navigation }) => {
   };
 
   return (
-    <View
-      style={{ ...styles.container, backgroundColor: theme.appBackGroundColor }}
-    >
-      <FlatList
-        ref={chatContainerRef}
-        onContentSizeChange={() =>
-          chatContainerRef.current?.scrollToEnd({ animated: true })
-        }
-        keyExtractor={(item, index) => index.toString()}
-        data={allMessages}
-        renderItem={({ item }) => <MsgComponent item={item} />}
-      />
-
-      <View
-        style={{
-          ...styles.containerFooter,
-          backgroundColor: theme.footerBackground,
-        }}
-      >
-        <TouchableOpacity style={styles.icon} onPress={onPressAttach}>
-          <MaterialIcons name="attach-file" size={24} color={theme.iconColor} />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.icon} onPress={handleOpenCamera}>
-          <MaterialCommunityIcons
-            name="camera"
-            size={24}
-            color={theme.iconColor}
-          />
-        </TouchableOpacity>
-
-        <View
-          style={{
-            ...styles.windowSend,
-            backgroundColor: theme.inputBackground,
-            borderTopColor: theme.borderColor,
-          }}
-        >
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            <TextInput
-              autoFocus={true}
-              placeholder="Send message..."
-              onChangeText={(val) => setMsg(val)}
-              multiline={true}
-              numberOfLines={5}
-              value={msg}
-              style={{ color: theme.primaryText }}
-              placeholderTextColor={theme.secondaryText}
-            />
-          </ScrollView>
-        </View>
-
-        <MaterialCommunityIcons
-          name="send"
-          onPress={sendMsg}
-          size={25}
-          style={styles.send}
-          color={theme.iconColor}
+    <View style={{ ...styles.container, backgroundColor: theme.appBackGroundColor }}>
+        <FlatList
+            ref={chatContainerRef}
+            onContentSizeChange={() => chatContainerRef.current?.scrollToEnd({ animated: true })}
+            keyExtractor={(item, index) => index.toString()}
+            data={allMessages}
+            renderItem={({ item }) => <MsgComponent item={item} />}
         />
-      </View>
+
+        <View style={{ ...styles.containerFooter, backgroundColor: theme.footerBackground }}>
+            <TouchableOpacity style={styles.icon} onPress={onPressAttach}>
+                <MaterialIcons name="attach-file" size={24} color={theme.iconColor} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.icon} onPress={handleOpenCamera}>
+                <MaterialCommunityIcons name="camera" size={24} color={theme.iconColor} />
+            </TouchableOpacity>
+
+            <View style={{ ...styles.windowSend, backgroundColor: theme.inputBackground, borderTopColor: theme.borderColor }}>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                    <TextInput
+                        autoFocus={true}
+                        placeholder={t('Send message...')}
+                        onChangeText={val => setMsg(val)}
+                        multiline={true}
+                        numberOfLines={5}
+                        value={msg}
+                        style={{ color: theme.primaryText }}
+                        placeholderTextColor={theme.secondaryText}
+                    />
+                </ScrollView>
+            </View>
+
+            <MaterialCommunityIcons name="send" onPress={sendMsg} size={25} style={styles.send} color={theme.iconColor} />
+        </View>
     </View>
-  );
+);
 };
 
 const styles = StyleSheet.create({

@@ -7,7 +7,6 @@ import { collection, getDocs, addDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { useDarkMode } from '../../styles/DarkModeContext';
-import { useTranslation } from 'react-i18next';
 
 const HomeScreen = () => {
   const [posts, setPosts] = useState([]);
@@ -17,7 +16,6 @@ const HomeScreen = () => {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const { theme } = useDarkMode();
-  const { t } = useTranslation();
 
   const addPostToCollection = async () => {
     try {

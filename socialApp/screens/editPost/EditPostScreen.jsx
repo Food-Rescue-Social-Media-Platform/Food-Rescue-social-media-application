@@ -8,10 +8,12 @@ import { database } from '../../firebase'; // Import the Firestore instance from
 import { doc, updateDoc } from "firebase/firestore";
 import { CheckBox } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { useTranslation } from 'react-i18next';
 
 const EditPostScreen = ({ navigation, route }) => {
     const { item } = route.params; // Get the item object from route params
     const { theme } = useDarkMode(); // Access the current theme
+    const { t } = useTranslation();
 
     // Initialize state variables with existing values
     const [category, setCategory] = useState(item.category);
@@ -104,7 +106,7 @@ const EditPostScreen = ({ navigation, route }) => {
                     style={[styles.input, { color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Category"
                     placeholderTextColor={theme.secondaryText}
-                    value={category}
+                    value={t(category)}
                     editable={false} // Disable editing
                     onChangeText={(text) => setCategory(text)}
                 />
@@ -116,7 +118,7 @@ const EditPostScreen = ({ navigation, route }) => {
                 numColumns={2} // Display two columns
                 renderItem={({ item }) => (
                     <CheckBox
-                        title={item.label}
+                        title={t(item.label)}
                         checked={selectedCategory === item.value}
                         onPress={() => handleCheck(item)}
                         containerStyle={[styles.checkboxContainer, { backgroundColor: theme.appBackGroundColor, borderColor: theme.borderColor }]}
@@ -128,7 +130,7 @@ const EditPostScreen = ({ navigation, route }) => {
 
             {/* Button to update the post */}
             <TouchableOpacity style={[styles.button, { backgroundColor: theme.secondaryBackground }]} onPress={handleUpdatePost}>
-                <Text style={[styles.buttonText, { color: theme.primaryText }]}>Update Post</Text>
+                <Text style={[styles.buttonText, { color: theme.primaryText }]}>{t('Update Post')}</Text>
             </TouchableOpacity>
         </View>
     );

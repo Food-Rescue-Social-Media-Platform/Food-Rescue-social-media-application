@@ -6,6 +6,7 @@ import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
 import {COLORS} from '../../styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
+import { useTranslation } from 'react-i18next';
 
 const SignUpScreen = ({ navigation }) => {
   const[firstName, setFirstName] = useState('');
@@ -14,6 +15,7 @@ const SignUpScreen = ({ navigation }) => {
   const[phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const { t } = useTranslation();
 
   const {register} = useContext(AuthContext);
   const [topPadding, setTopPadding] = useState(5); // Initial top padding
@@ -62,10 +64,10 @@ const SignUpScreen = ({ navigation }) => {
       <ScrollView>
         <View style={styles.container}>
 
-          <Text style={styles.text}>Sign up</Text>
+          <Text style={styles.text}>{t('Sign up')}</Text>
           
           <FormInput
-            placeHolderText="Fisrt Name"
+            placeHolderText={t("First Name")}
             iconType="id-card"
             labelValue={firstName}
             onChangeText={(firstName) => setFirstName(firstName)}
@@ -74,7 +76,7 @@ const SignUpScreen = ({ navigation }) => {
           />
 
           <FormInput
-            placeHolderText="Last Name"
+            placeHolderText={t("Last Name")}
             iconType="id-card"
             labelValue={lastName}
             onChangeText={(lastName) => setLastName(lastName)}
@@ -83,7 +85,7 @@ const SignUpScreen = ({ navigation }) => {
           />
 
           <FormInput
-            placeHolderText="Email"
+            placeHolderText={t("Email")}
             iconType="email"
             keyboardType="email-address"
             labelValue={email}
@@ -93,7 +95,7 @@ const SignUpScreen = ({ navigation }) => {
           />
 
           <FormInput
-            placeHolderText="Phone Number"
+            placeHolderText={t("Phone Number")}
             iconType="phone"
             keyboardType="phone-pad"
             labelValue={phoneNumber}
@@ -103,7 +105,7 @@ const SignUpScreen = ({ navigation }) => {
           />
 
           <FormInput
-            placeHolderText="Password"
+            placeHolderText={t("Password")}
             iconType="lock"
             labelValue={password}
             onChangeText={(userPassword) => setPassword(userPassword)}
@@ -111,7 +113,7 @@ const SignUpScreen = ({ navigation }) => {
           />
 
           <FormInput
-            placeHolderText="Confirm Password"
+            placeHolderText={t("Confirm Password")}
             iconType="lock-check"
             labelValue={confirmPassword}
             onChangeText={(confirmPassword) => setConfirmPassword(confirmPassword)}
@@ -119,35 +121,35 @@ const SignUpScreen = ({ navigation }) => {
           />
 
           <View style={styles.textPrivate}>
-              <Text style={styles.color_textPrivate}>By registering, you confirm that you accept our{' '}</Text>
+              <Text style={styles.color_textPrivate}>{t('By registering, you confirm that you accept our')}{' '}</Text>
               <TouchableOpacity onPress={() => alert('Terms Clicked!')}>
-                  <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Terms of service</Text>
+                  <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>{t('Terms of service')}</Text>
               </TouchableOpacity>
-              <Text style={styles.color_textPrivate}> and </Text>
-              <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>Privacy Policy</Text>
+              <Text style={styles.color_textPrivate}> {t('and')} </Text>
+              <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>{t('Privacy Policy')}</Text>
           </View>
 
           <FormButton
-            buttonTitle="Sign up"
+            buttonTitle={t("Sign up")}
             onPress={handleSignUp}
           />
 
           <View style={styles.orRowContainer}>
             <View style={styles.line}></View>
-            <Text style={styles.orText}>or</Text>
+            <Text style={styles.orText}>{t('or')}</Text>
             <View style={styles.line}></View>
           </View>
 
           <View style={styles.SocialButtonContainer}>
               <SocialButton
-                  buttonTitle="Sign In with Facebook"
+                  buttonTitle={t("Sign In with Facebook")}
                   btnType="facebook"
                   color="#4867aa"
                   backgroundColor="#e6eaf4"
                   onPress={() => {}}
               />
               <SocialButton
-                  buttonTitle="Sign In with Google"
+                  buttonTitle={t("Sign In with Google")}
                   btnType="google"
                   color="#de4d41"
                   backgroundColor="#f5e7ea"
@@ -156,9 +158,9 @@ const SignUpScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.createAccountContainer}>
-            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>Already have an account? </Text>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Already have an account?')}</Text>
             <TouchableOpacity>
-              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>Sign in</Text>
+              <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>{t('Sign in')}</Text>
             </TouchableOpacity>
           </View>
 

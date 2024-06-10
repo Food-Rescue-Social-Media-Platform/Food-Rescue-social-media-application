@@ -41,6 +41,7 @@
   "I remember my password": "I remember my password",
   "Send recovery mail": "Send recovery mail",
   "Dont have an account?": "Don't have an account?",
+  "Already have an account?": "Already have an account?",
   "Sign up": "Sign up",
   "Sign In with Google": "Sign In with Google",
   "Sign In with Facebook": "Sign In with Facebook",
@@ -92,5 +93,11 @@
   "Go Back": "Go Back",
   "Profile": "Profile",
   "Map": "Map",
-  "Home": "Home"
+  "Home": "Home",
+  "HomeProfile": "HomeProfile",
+  "Home Page": "Home Page",
+  "Following List": "Following List",
+  "Followers List": "Followers List",
+  "Edit Post": "Edit Post",
+  "Admin": "Admin"
 }

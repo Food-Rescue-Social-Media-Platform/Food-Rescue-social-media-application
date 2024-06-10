@@ -60,7 +60,7 @@
     "Phone": "מספר טלפון",
     "First Name": "שם פרטי",
     "Last Name": "שם משפחה",
-    "הרשימה ריקה": "הרשימה ריקה",
+    "The list is empty": "הרשימה ריקה",
     "Current Rating": "דירוג נוכחי",
     "Submit Rating": "שלח דירוג",
     "Rate": "דרג",
@@ -93,5 +93,11 @@
     "Go Back": "חזור",
     "Profile": "פרופיל",
     "Map": "מפה",
-    "Home": "דף הבית"
+    "Home": "דף הבית",
+    "HomeProfile": "פרופיל הבית",
+    "Home Page": "דף הבית",
+    "Following List": "רשימת נעקבים",
+    "Followers List": "רשימת עוקבים",
+    "Edit Post": "ערוך פוסט",
+    "Admin": "מנהל מערכת"
   }

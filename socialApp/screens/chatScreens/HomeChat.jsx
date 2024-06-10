@@ -8,6 +8,7 @@ import { getListChats } from '../../FirebaseFunctions/collections/chat';
 import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useTranslation } from 'react-i18next';
 
 const HomeChat = ({ navigation }) => {
   const { user } = useContext(AuthContext);
@@ -15,6 +16,7 @@ const HomeChat = ({ navigation }) => {
   const [listChats, setListChats] = useState([]);
   const [search, setSearch] = useState('');
   const [userConnected, setUserConnected] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +62,7 @@ const HomeChat = ({ navigation }) => {
           style={{ ...styles.searchInput, color: theme.primaryText }}
           value={search}
           onChangeText={(text) => setSearch(text)}
-          placeholder="Search"
+          placeholder={t("Search")}
           placeholderTextColor={theme.secondaryText}
           keyboardType="default"
         />

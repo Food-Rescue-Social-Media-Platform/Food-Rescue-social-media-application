@@ -12,6 +12,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { OpenGalereAndSelectImages } from '../../FirebaseFunctions/OpeningComponentsInPhone';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useTranslation } from 'react-i18next';
 
 const EditProfile = ({ navigation, route }) => {
     const { userData } = route.params;
@@ -27,6 +28,7 @@ const EditProfile = ({ navigation, route }) => {
     const [userName, setUserName] = useState(userData?.userName || '');
     const [bio, setUserBio] = useState(userData?.bio || '');
     const [forceUpdate, setForceUpdate] = useState(false);
+    const { t } = useTranslation();
 
     const handleAddUserProfileCover = async () => {
         await OpenGalereAndSelectImages(setUserProfileCover);
@@ -170,7 +172,7 @@ const EditProfile = ({ navigation, route }) => {
                 <View style={styles.action}>
                     <FontAwesome name="id-card" color={theme.primaryText} size={25} paddingLeft={10} />
                     <TextInput
-                        placeholder="First Name"
+                        placeholder={t("First Name")}
                         placeholderTextColor="#666666"
                         autoCorrect={false}
                         style={[
@@ -187,7 +189,7 @@ const EditProfile = ({ navigation, route }) => {
                 <View style={styles.action}>
                     <FontAwesome name="id-card" color={theme.primaryText} size={25} paddingLeft={10} />
                     <TextInput
-                        placeholder="Last Name"
+                        placeholder={t("Last Name")}
                         placeholderTextColor="#666666"
                         autoCorrect={false}
                         style={[
@@ -203,7 +205,7 @@ const EditProfile = ({ navigation, route }) => {
                 <View style={styles.action}>
                     <FontAwesome name="phone" color={theme.primaryText} size={25} paddingLeft={10} />
                     <TextInput
-                        placeholder="Phone"
+                        placeholder={t("Phone")}
                         placeholderTextColor="#666666"
                         keyboardType="number-pad"
                         autoCorrect={false}
@@ -221,7 +223,7 @@ const EditProfile = ({ navigation, route }) => {
                 <View style={styles.action}>
                     <AntDesign name="email" color={theme.primaryText} size={25} paddingLeft={8} />
                     <TextInput
-                        placeholder="Email"
+                        placeholder={t("Email")}
                         placeholderTextColor="#666666"
                         keyboardType="email-address"
                         autoCorrect={false}
@@ -239,7 +241,7 @@ const EditProfile = ({ navigation, route }) => {
                 <View style={styles.action}>
                     <MaterialCommunityIcons name="map-marker" color={theme.primaryText} size={27} paddingLeft={5} />
                     <TextInput
-                        placeholder="Location"
+                        placeholder={t("Location")}
                         placeholderTextColor="#666666"
                         autoCorrect={false}
                         style={[
@@ -256,7 +258,7 @@ const EditProfile = ({ navigation, route }) => {
                 <View style={styles.action}>
                     <MaterialCommunityIcons name="bio" color={theme.primaryText} size={27} paddingLeft={5} />
                     <TextInput
-                        placeholder="Bio..."
+                        placeholder={t("Bio...")}
                         placeholderTextColor="#666666"
                         autoCorrect={false}
                         style={[
@@ -272,7 +274,7 @@ const EditProfile = ({ navigation, route }) => {
                     />
                 </View>
                 <TouchableOpacity style={[styles.commandButton, { backgroundColor: theme.secondaryBackground }]} onPress={updateUserProfile}>
-                    <Text style={[styles.panelButtonTitle, { color: theme.primaryText }]}>Submit</Text>
+                    <Text style={[styles.panelButtonTitle, { color: theme.primaryText }]}>{t('Submit')}</Text>
                 </TouchableOpacity>
             </ScrollView>
         </View>

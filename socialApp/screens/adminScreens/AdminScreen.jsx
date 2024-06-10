@@ -5,10 +5,12 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { deletePost } from '../../FirebaseFunctions/collections/post'; // Adjust the path to your hook file
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import { database } from '../../firebase';
+import { useTranslation } from 'react-i18next';
 
 const AdminScreen = () => {
   const { logout } = useContext(AuthContext);
   const [reports, setReports] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -45,16 +47,16 @@ const AdminScreen = () => {
   return (
     Platform.OS === 'web' ? (
       <View style={styles.container}>
-        <Text style={styles.adminMessage}>Reports Table</Text>
+        <Text style={styles.adminMessage}>{t('Reports Table')}</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>Reporter ID</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>User Id</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>User Name</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>User Phone</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>Post Id</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>Post Img</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>Actions</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Reporter ID')}</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('User Id')}</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('User Name')}</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('User Phone')}</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Post Id')}</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Post Img')}</Text>
+            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Actions')}</Text>
           </View>
 
           {reports.map(report => (
@@ -91,7 +93,7 @@ const AdminScreen = () => {
                   editable={false}
                 />
                 <Button
-                  title="Delete"
+                  title={t("Delete")}
                   onPress={() => handleDelete(report.id, report.postId, report.postUserId)}
                   color="red"
                 />
@@ -99,12 +101,12 @@ const AdminScreen = () => {
             </View>
           ))}
         </View>
-        <FormButton buttonTitle='Logout' onPress={() => logout()} />
+        <FormButton buttonTitle={t('Logout')} onPress={() => logout()} />
       </View>
     ) : (
       <View style={styles.container}>
-        <Text style={styles.adminAlert}>Dear Admin, You should login in from web to view the report posts page</Text>
-        <FormButton buttonTitle='Logout' onPress={() => logout()} />
+        <Text style={styles.adminAlert}>{t('Dear Admin, You should login in from web to view the report posts page')}</Text>
+        <FormButton buttonTitle={t('Logout')} onPress={() => logout()} />
       </View>
     )
   );

@@ -12,6 +12,7 @@ import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
 import uuid from 'react-native-uuid';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
+import { useTranslation } from 'react-i18next';
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
@@ -27,6 +28,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const postUserId = route.params ? route.params.postUserId : user.uid;
   const [isFollowing, setIsFollowing] = useState(false);
   const [rating, setRating] = useState();
+  const { t } = useTranslation();
 
   const fetchUserData = async () => {
     let user_data;
@@ -249,14 +251,14 @@ const ProfileScreen = ({ navigation, route }) => {
                     <View style={styles.iconContainer}>
                       {renderStars()}
                     </View>
-                    <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>Rating</Text>
+                    <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>{t('Rating')}</Text>
                   </View>
                 ) : (
                   <TouchableOpacity onPress={() => navigation.navigate('Rating', { userData })}>
                     <View style={styles.iconContainer}>
                       {renderStars()}
                     </View>
-                    <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>Rating</Text>
+                    <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>{t('Rating')}</Text>
                   </TouchableOpacity>
                 )}
               </View>
@@ -268,7 +270,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   <MaterialCommunityIcons name={'heart'} size={22} color={themeColors.black} />
                   <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followingNum || 0}</Text>
                 </View>
-                <Text style={[styles.wordStat, { color: themeColors.black }]}>Following</Text>
+                <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Following')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -278,7 +280,7 @@ const ProfileScreen = ({ navigation, route }) => {
                   <MaterialCommunityIcons name={'account-group'} size={22} color={themeColors.black} />
                   <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followersNum || 0}</Text>
                 </View>
-                <Text style={[styles.wordStat, { color: themeColors.black }]}>Followers</Text>
+                <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Followers')}</Text>
               </TouchableOpacity>
             </View>
 
@@ -287,7 +289,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 <MaterialCommunityIcons name={'send'} size={22} color={themeColors.black} />
                 <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.postsNum || 0}</Text>
               </View>
-              <Text style={[styles.wordStat, { color: themeColors.black }]}>Posts</Text>
+              <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Posts')}</Text>
             </View>
 
           </View>
@@ -298,16 +300,16 @@ const ProfileScreen = ({ navigation, route }) => {
               {postUserId === user.uid ?
                 <View style={styles.buttons}>
                   <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>Edit Profile</Text>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>Logout</Text>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
                   </TouchableOpacity>
                 </View>
                 :
                 <View style={styles.buttons}>
                   <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>Chat</Text>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
                     <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
@@ -316,16 +318,16 @@ const ProfileScreen = ({ navigation, route }) => {
               }
 
               <View>
-                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
               </View>
               <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-                <Text style={[styles.bioText, { color: themeColors.black }]}>Bio</Text>
+                <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
                 <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
               </View>
             </Container>
             <Container style={styles.CardContainer}>
               {postUserId === user.uid && <AddPostCard />}
-              <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>Posts</Text>
+              <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
               {userPosts.map(post => (
                 <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
               ))}
@@ -337,16 +339,16 @@ const ProfileScreen = ({ navigation, route }) => {
             {postUserId === user.uid ? (
               <View style={styles.buttons}>
                 <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>Edit Profile</Text>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>Logout</Text>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
               <View style={styles.buttons}>
                 <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>Chat</Text>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
                   <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
@@ -354,16 +356,16 @@ const ProfileScreen = ({ navigation, route }) => {
               </View>
             )}
             <View>
-              <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>Advertising earnings points: {userData?.earningPoints || 0}</Text>
+              <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
             </View>
             <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-              <Text style={[styles.bioText, { color: themeColors.black }]}>Bio</Text>
+              <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
               <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
             </View>
             <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
               {postUserId === user.uid && <AddPostCard />}
             </View>
-            <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>Posts</Text>
+            <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
             <View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
               {userPosts.map(post => (
                 <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />

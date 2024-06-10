@@ -9,6 +9,7 @@ import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../Fireb
 import { AuthContext } from '../../navigation/AuthProvider';
 import { windowHeight, windowWidth } from '../../utils/Dimentions';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useTranslation } from 'react-i18next';
 
 const SingleChat = ({ navigation }) => {
     const route = useRoute();
@@ -20,6 +21,7 @@ const SingleChat = ({ navigation }) => {
     const [images, setImages] = useState([]);
     const chatContainerRef = useRef(null);
     const { theme } = useDarkMode(); // Access the current theme
+    const { t } = useTranslation();
 
     useEffect(() => {
         chatContainerRef.current?.scrollToEnd({ animated: true });
@@ -72,7 +74,7 @@ const SingleChat = ({ navigation }) => {
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <TextInput
                             autoFocus={true}
-                            placeholder='Send message...'
+                            placeholder={t('Send message...')}
                             onChangeText={val => setMsg(val)}
                             multiline={true}
                             numberOfLines={5}

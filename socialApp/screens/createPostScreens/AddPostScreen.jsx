@@ -289,7 +289,7 @@ const AddPostScreen = () => {
                                         <CheckBox
                                             style={[styles.checkboxWrapper, { backgroundColor: themeColors.secondaryBackground }]}
                                             key={option.value}
-                                            title={option.value}
+                                            title={t(option.value)}
                                             checked={selectedOptions.includes(option.value)}
                                             onPress={() => handleCheck(option)}
                                             textStyle={{ color: themeColors.primaryText }}
@@ -300,7 +300,7 @@ const AddPostScreen = () => {
 
                                 <MyButton
                                     style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
-                                    text='Done'
+                                    text={t('Submit' )}
                                     styleText={{ fontSize: 15, color: themeColors.primaryText }}
                                     onPress={handleCloseCategoryModal}
                                 />

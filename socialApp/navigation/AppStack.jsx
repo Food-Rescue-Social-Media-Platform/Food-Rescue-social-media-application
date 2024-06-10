@@ -41,7 +41,7 @@ const FeedStack = ({ navigation }) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={t("Home Page")}
+        name="Home Page"
         component={HomeScreen}
         options={{
           headerTitleAlign: 'center',
@@ -53,6 +53,7 @@ const FeedStack = ({ navigation }) => {
             shadowColor: themeColors.white,
             elevation: 0,
           },
+          headerTitle: t("Home Page"),
           headerLeft: () => (
             <Ionicons
               name="menu"
@@ -98,7 +99,7 @@ const ProfileStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={t("Profile")}
+        name="Profile"
         component={ProfileScreen}
         options={{
           headerTitleAlign: 'center',
@@ -110,6 +111,8 @@ const ProfileStack = () => {
             shadowColor: themeColors.white,
             elevation: 0,
           },
+          headerTitle: t("Profile"),
+
         }}
       />
     </Stack.Navigator>
@@ -124,7 +127,7 @@ const ChatStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={t("Chat")}
+        name="Chat"
         component={HomeChat}
         options={{
           headerTitleAlign: 'center',
@@ -136,6 +139,8 @@ const ChatStack = () => {
             shadowColor: themeColors.white,
             elevation: 0,
           },
+          headerTitle: t("Chat"),
+
         }}
       />
     </Stack.Navigator>
@@ -150,7 +155,7 @@ const MapStack = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name={t("Map")}
+        name="Map"
         component={MapScreen}
         options={{
           headerTitleAlign: 'center',
@@ -162,6 +167,8 @@ const MapStack = () => {
             shadowColor: themeColors.white,
             elevation: 0,
           },
+          headerTitle: t("Map"),
+
         }}
       />
     </Stack.Navigator>

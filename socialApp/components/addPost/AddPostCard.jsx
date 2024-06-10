@@ -9,6 +9,7 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
+import { useTranslation } from 'react-i18next';
 
 const AddPostCard = () => {
     const navigation = useNavigation();
@@ -16,6 +17,7 @@ const AddPostCard = () => {
     const [userConnected, setUserConnected] = useState(null);
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -43,7 +45,7 @@ const AddPostCard = () => {
             />
             <View>
                 <TouchableOpacity style={[styles.sharePostWrapper, { backgroundColor: themeColors.secondaryBackground, borderColor: themeColors.black }]} onPress={openShareFoodScreen}>
-                    <Text style={[styles.mainText, { color: themeColors.primaryText }]}>Share food...</Text>
+                    <Text style={[styles.mainText, { color: themeColors.primaryText }]}>{t('Share food...')}</Text>
                 </TouchableOpacity>
                 <Icons
                     size={20}

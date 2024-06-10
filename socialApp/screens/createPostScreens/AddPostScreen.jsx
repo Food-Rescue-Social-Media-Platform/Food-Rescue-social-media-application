@@ -19,6 +19,7 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
+import { useTranslation } from 'react-i18next';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -39,6 +40,7 @@ const AddPostScreen = () => {
     const [options, setOptions] = useState(categories.map((category) => ({ value: category })));
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+    const { t } = useTranslation();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -165,9 +167,9 @@ const AddPostScreen = () => {
                         <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
                             <Fontisto name="arrow-right" size={24} color={themeColors.primaryText} style={{ transform: [{ scaleX: -1 }] }} />
                         </TouchableOpacity>
-                        <Text style={{ fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
+                        <Text style={{ fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>{t('Create Post')}</Text>
                         <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryBackground }]} onPress={handleAddPost}>
-                            <Text style={{ fontSize: 15 }}>Post</Text>
+                            <Text style={{ fontSize: 15 }}>{t('Post')}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -178,7 +180,7 @@ const AddPostScreen = () => {
                                     value={postInput}
                                     onChangeText={(text) => setPostInput(text)}
                                     style={[styles.postInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
-                                    placeholder="What food would you like to save today?"
+                                    placeholder={t("What food would you like to save today?")}
                                     placeholderTextColor={themeColors.placeholderText}
                                     multiline
                                     editable={timeInput.length < 3000}
@@ -187,7 +189,7 @@ const AddPostScreen = () => {
                                     value={timeInput}
                                     onChangeText={(text) => setTimeInput(text)}
                                     style={[styles.timeInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
-                                    placeholder="What are the delivery times?"
+                                    placeholder={t("What are the delivery times?")}
                                     placeholderTextColor={themeColors.placeholderText}
                                     multiline
                                     editable={timeInput.length < 30}
@@ -252,19 +254,19 @@ const AddPostScreen = () => {
                         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                             <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Would you like to post your number {userConnected?.phoneNumber}?</Text>
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>{t('Would you like to post your number')}{userConnected?.phoneNumber}?</Text>
                                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
 
                                     <MyButton
                                         style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                        text='Yes'
+                                        text={t('Yes')}
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={() => { setModalPhoneVisible(false); setPhoneNumber(userConnected.phoneNumber) }}
                                     />
 
                                     <MyButton
                                         style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                        text='No'
+                                        text={t('No')}
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={() => { setModalPhoneVisible(false) }}
                                     />
@@ -281,7 +283,7 @@ const AddPostScreen = () => {
                         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                             <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Select categories</Text>
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>{t('Select categories')}</Text>
                                 <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
                                     {options.map((option) => (
                                         <CheckBox
@@ -316,20 +318,20 @@ const AddPostScreen = () => {
 
                             <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Should you add your current location to the post?</Text>
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>{t('Should you add your current location to the post?')}</Text>
 
                                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
 
                                     <MyButton
                                         style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                        text='Yes'
+                                        text={t('Yes')}
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={handleAddLocation}
                                     />
 
                                     <MyButton
                                         style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                        text='No'
+                                        text={t('No')}
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
                                     />
@@ -348,19 +350,19 @@ const AddPostScreen = () => {
 
                             <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>{t('Are you sure you want to leave?')}</Text>
 
                                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
                                     <MyButton
                                         style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                        text='Yes'
+                                        text={t('Yes')}
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={confirmClose}
                                     />
 
                                     <MyButton
                                         style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
-                                        text='No'
+                                        text={t('No')}
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={() => { setModalCloseVisible(false) }}
                                     />
@@ -370,7 +372,7 @@ const AddPostScreen = () => {
                     </Modal>
                 </View>
             )}
-            {isUploading && (<Text style={{ fontSize: 20, textAlign: 'center', marginTop: '60%', color: themeColors.primaryText }}>Publish Post...</Text>)}
+            {isUploading && (<Text style={{ fontSize: 20, textAlign: 'center', marginTop: '60%', color: themeColors.primaryText }}>{t('Publish Post...')}</Text>)}
         </View>
     );
 }

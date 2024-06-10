@@ -16,7 +16,7 @@ import { windowHeight } from '../../utils/Dimentions';
 import { categories } from '../../utils/categories';
 import * as Location from 'expo-location';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { getDoc, doc } from 'firebase/firestore';
+import { getDoc, updateDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
 import { useTranslation } from 'react-i18next';
@@ -88,7 +88,8 @@ const AddPostScreen = () => {
         let location = await Location.getCurrentPositionAsync({});
         setLocation(location);
         console.log('Location', location);
-        setShowLocationModel(showLocationModel ? false : true);
+        setShowLocationModel(showLocationModel? false: true);
+        updateUserLocation(userConnected.id, location);
     }
 
     const handelAddPhone = () => {
@@ -123,7 +124,7 @@ const AddPostScreen = () => {
             userConnected.firstName,
             userConnected.lastName,
             userConnected.profileImg,
-            userConnected.phoneNumber,
+            phoneNumber,   
             postInput,
             timeInput,
             category,
@@ -509,8 +510,20 @@ const fetchUser = async (id) => {
     }
 }
 
-const MyButton = ({ style, text, styleText, onPress }) => {
-    return (
+    const updateUserLocation = async (userID, location) => {
+        try{
+            const userDocRef = doc(database, "users", userID);
+            // await setDoc(docRef, {location: location});
+            await updateDoc(userDocRef, {
+                "location": location
+            });
+        } catch (error) {
+            console.error("updateUserLocation, Error getting document:", error);
+        }
+    }
+
+  const MyButton = ({style, text, styleText, onPress}) => {
+    return(
         <TouchableOpacity style={style} onPress={onPress}>
             <Text style={styleText}>{text}</Text>
         </TouchableOpacity>

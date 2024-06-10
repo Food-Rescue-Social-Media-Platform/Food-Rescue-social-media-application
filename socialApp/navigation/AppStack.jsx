@@ -27,6 +27,7 @@ import { database } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
+import { useTranslation } from 'react-i18next';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -166,6 +167,7 @@ const MapStack = () => {
 const DrawerNavigator = () => {
   const { isDarkMode, theme } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+  const { t } = useTranslation();
 
   return (
     <Drawer.Navigator
@@ -177,7 +179,7 @@ const DrawerNavigator = () => {
         },
       }}
     >
-      <Drawer.Screen name="Go Back" component={FeedStack} />
+      <Drawer.Screen name={t("Go Back")} component={FeedStack} />
     </Drawer.Navigator>
   );
 };
@@ -185,6 +187,7 @@ const DrawerNavigator = () => {
 const AppStack = () => {
   const { isDarkMode, theme } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -215,7 +218,7 @@ const AppStack = () => {
         name="HomeTab"
         component={DrawerNavigator}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: t('Home'),
           tabBarLabelStyle: {
             fontWeight: 'bold',
             fontSize: 12,
@@ -232,7 +235,8 @@ const AppStack = () => {
         name="MapTab"
         component={MapStack}
         options={{
-          tabBarLabel: 'Map',
+          tabBarLabel: '',
+          tabBarLabel: t('Map'),
           tabBarLabelStyle: {
             fontWeight: 'bold',
             fontSize: 12,
@@ -249,7 +253,7 @@ const AppStack = () => {
         name="chatTab"
         component={ChatStack}
         options={{
-          tabBarLabel: 'Chat',
+          tabBarLabel: t('Chat'),
           tabBarLabelStyle: {
             fontWeight: 'bold',
             fontSize: 12,
@@ -266,7 +270,7 @@ const AppStack = () => {
         name="ProfileTab"
         component={ProfileStack}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: t('Profile'),
           tabBarLabelStyle: {
             fontWeight: 'bold',
             fontSize: 12,

@@ -5,7 +5,6 @@ import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { useDarkMode } from '../../styles/DarkModeContext';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context

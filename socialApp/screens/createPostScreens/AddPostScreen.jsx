@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
-import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { Post, addPost } from '../../FirebaseFunctions/collections/post';
 import { windowHeight } from '../../utils/Dimentions';
 import { categories } from '../../utils/categories';

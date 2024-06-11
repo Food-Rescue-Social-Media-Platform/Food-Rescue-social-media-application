@@ -11,22 +11,10 @@ import { useRoute } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MsgComponent from "../../components/chat/MsgComponent";
-import {
-  Message,
-  addMessage,
-  startListeningForMessages,
-} from "../../FirebaseFunctions/collections/message";
-import {
-  openGalereAndSelectImages,
-  openCameraAndTakePicture,
-} from "../../hooks/OperationComponents/OpeningComponentsInPhone";
-import { AuthContext } from "../../navigation/AuthProvider";
 import { windowHeight, windowWidth } from "../../utils/Dimentions";
-import { useDarkMode } from "../../styles/DarkModeContext"; // Import the dark mode context
 import { Message, addMessage, startListeningForMessages } from '../../FirebaseFunctions/collections/message';
-import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { windowHeight, windowWidth } from '../../utils/Dimentions';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { useTranslation } from 'react-i18next';
 

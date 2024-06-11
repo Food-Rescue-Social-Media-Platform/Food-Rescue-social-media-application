@@ -12,7 +12,12 @@
       "expo-font"
     ],
     "android": {
-      "package": "com.mohammad_belbesi.socialApp"
+      "package": "com.mohammad_belbesi.socialApp",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY"
+        }
+      }
     },
     "web": {
       "bundler": "metro"

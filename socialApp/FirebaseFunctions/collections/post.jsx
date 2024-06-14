@@ -1,6 +1,8 @@
-import { addDoc, doc, serverTimestamp, collection,query, orderBy, startAt, endAt, getDocs, deleteDoc, updateDoc, getDoc, arrayRemove } from 'firebase/firestore'; 
+import { addDoc, doc, serverTimestamp, collection,query, orderBy,where, startAt, endAt, getDocs, deleteDoc, updateDoc, getDoc, arrayRemove } from 'firebase/firestore'; 
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
+
+let maxDistance = 50000; // 50km
 
 export class Post {
     constructor(
@@ -58,7 +60,7 @@ export class Post {
       console.log("Adding post to database...:", postData);
 
       try{
-        const docRef = await addDoc(collection(database, "postsTest") ,postData);
+        const docRef = await addDoc(collection(database, "posts") ,postData);
         console.log("Post added with ID:", docRef.id);
 
         // Update user's postsId array
@@ -83,7 +85,7 @@ export class Post {
 export const deletePost = async (postId, postUserId) => {
     try {
         console.log("Deleting post with id: ", postId);
-        const postRef = doc(database, 'postsTest', postId);
+        const postRef = doc(database, 'posts', postId);
         const userRef = doc(database, 'users', postUserId);
 
         const userDocSnap = await getDoc(userRef);
@@ -105,74 +107,121 @@ export const deletePost = async (postId, postUserId) => {
 }; 
 
 
-export async function getPostsNearby(center, radiusInM, userIdToExclude) {
+export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen) {
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
 
     bounds.forEach(b => {
-        const q = query(
-            collection(database, 'postsTest'),
+        let queries = [
+            collection(database, 'posts'),
             orderBy('geohash'),
             startAt(b[0]),
-            endAt(b[1]),
-            userIdToExclude && where('userId', '!=', userIdToExclude) // Exclude posts by the specified user
-        );
+            endAt(b[1])
+        ];
 
+        if (categories && categories.length > 0) {
+            console.log("categories:", categories);
+            queries.push(where('category', 'in', categories));
+        }
+
+        const q = query(...queries);
         promises.push(getDocs(q));
     });
 
-    const snapshots = await Promise.all(promises);
-    console.log("snapshots:", snapshots);
-    const matchingDocs = [];
+    try {
+        const snapshots = await Promise.all(promises);
+        console.log("snapshots:", snapshots);
+        const matchingDocs = [];
 
-    snapshots.forEach((snap) => {
-        snap.forEach((doc) => {
-            console.log("doc:", doc.data());
-            const lat = parseFloat(doc.get('coordinates')[0]);
-            const lng = parseFloat(doc.get('coordinates')[1]);
+        snapshots.forEach((snap) => {
+            snap.forEach((doc) => {
+                console.log("doc:", doc.data());
+                const lat = parseFloat(doc.get('coordinates')[0]);
+                const lng = parseFloat(doc.get('coordinates')[1]);
 
-            if (isNaN(lat) || isNaN(lng)) {
-                console.error("Invalid coordinates:", lat, lng);
-                return;
-            }
+                if (isNaN(lat) || isNaN(lng)) {
+                    console.error("Invalid coordinates:", lat, lng);
+                    return;
+                }
 
-            const distanceInKm = geofire.distanceBetween([lat, lng], center);
-            const distanceInM = distanceInKm * 1000;
+                const distanceInKm = geofire.distanceBetween([lat, lng], center);
+                const distanceInM = distanceInKm * 1000;
 
-            if (distanceInM <= radiusInM) {
-                matchingDocs.push({
-                    id: doc.id,
-                    title: doc.get('postText'),
-                    coordinates: { latitude: lat, longitude: lng },
-                    image: doc.get('postImg')[0],
-                });
-            }
+                if (distanceInM <= radiusInM) {
+                    if (isMapScreen) {
+                        matchingDocs.push({
+                            id: doc.id,
+                            title: doc.get('postText'),
+                            coordinates: { latitude: lat, longitude: lng },
+                            image: doc.get('postImg')[0],
+                        });
+                    } else {
+                        matchingDocs.push({ id: doc.id, ...doc.data() });
+                    }
+                }
+            });
         });
-    });
 
-    console.log("matchingDocs:", matchingDocs);
-    return matchingDocs;
+        console.log("matchingDocs:", matchingDocs);
+        return matchingDocs;
+    } catch (error) {
+        console.error("Error fetching documents: ", error);
+        throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+    }
 }
 
 
-export async function getPostsByCategory(category) {
-    const posts = [];
-    const promises = [];
-    category.map((cat) => {
-        const q = query(collection(database, 'postsTest'), where('category', '==', cat));
-        promises.push(getDocs(q));
-    });
-    const querySnapshot = await Promise.all(promises);
-    querySnapshot.forEach((doc) => {
-        posts.push({ id: doc.id, ...doc.data() });
-    });
-    return posts;
-}
 
+// export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
+//     const bounds = geofire.geohashQueryBounds(center, radiusInM);
+//     const promises = [];
 
-export async function getPostByUserId(userId) {
-    const q = query(collection(database, 'postsTest'), where('userId', '==', userId));
-    const querySnapshot = await getDocs(q);
-    const posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    return posts;
-}
+//     bounds.forEach(b => {
+//         const q = query(
+//             collection(database, 'posts'),
+//             orderBy('geohash'),
+//             startAt(b[0]),
+//             endAt(b[1]),
+//             // userId ? where('userId', '==', userId) : null
+//         );
+
+//         promises.push(getDocs(q));
+//     });
+
+//     const snapshots = await Promise.all(promises);
+//     console.log("snapshots:", snapshots);
+//     const matchingDocs = [];
+
+//     snapshots.forEach((snap) => {
+//         snap.forEach((doc) => {
+//             console.log("doc:", doc.data());
+//             const lat = parseFloat(doc.get('coordinates')[0]);
+//             const lng = parseFloat(doc.get('coordinates')[1]);
+
+//             if (isNaN(lat) || isNaN(lng)) {
+//                 console.error("Invalid coordinates:", lat, lng);
+//                 return;
+//             }
+
+//             const distanceInKm = geofire.distanceBetween([lat, lng], center);
+//             const distanceInM = distanceInKm * 1000;
+
+//             if (distanceInM <= radiusInM) {
+//                 if(isMapScreen) {
+//                 matchingDocs.push({
+//                     id: doc.id,
+//                     title: doc.get('postText'),
+//                     coordinates: { latitude: lat, longitude: lng },
+//                     image: doc.get('postImg')[0],
+//                 });
+//             } else {
+//                 matchingDocs.push({ id: doc.id, ...doc.data() });
+//             }
+//             }
+//         });
+//     });
+
+//     console.log("matchingDocs:", matchingDocs);
+//     return matchingDocs;
+// }
+

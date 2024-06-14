@@ -13,7 +13,7 @@ import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { Post, addPost } from '../../FirebaseFunctions/collections/post';
 import { windowHeight } from '../../utils/Dimentions';
-import { categories } from '../../utils/categories';
+import { categoriesList } from '../../utils/categories';
 import * as Location from 'expo-location';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { getDoc, updateDoc, doc } from 'firebase/firestore';
@@ -36,7 +36,7 @@ const AddPostScreen = () => {
     const [showLocationModel, setShowLocationModel] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
-    const [options, setOptions] = useState(categories.map((category) => ({ value: category })));
+    const [options, setOptions] = useState(categoriesList.map((category) => ({ value: category })));
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 

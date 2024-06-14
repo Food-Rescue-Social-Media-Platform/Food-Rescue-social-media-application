@@ -21,7 +21,8 @@ const HomeScreen = () => {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [position, setPosition] = useState(null);
-    const [ categories, setCategories ] = useState(['Rice', 'Fast Food']);
+    const [ radius, setRadius ] = useState(10);
+    const [ selectedCategories, setSelectedCategories ] = useState(['Rice', 'Fast Food']);
     const { theme } = useDarkMode(); // Access the current theme
 
     const fetchData = async () => {
@@ -29,7 +30,7 @@ const HomeScreen = () => {
         if(!position) 
             return;
         try{
-            getPostsWithFilters([position.latitude, position.longitude], 300, user.uid, categories, false ).then((posts) => {
+            getPostsWithFilters([position.latitude, position.longitude], 300, user.uid, selectedCategories, false ).then((posts) => {
             console.log('postsCloseMe:', posts);
             setPosts([{}, ...posts]);
             setLoading(false);

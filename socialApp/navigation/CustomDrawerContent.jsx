@@ -5,6 +5,7 @@ import { useDarkMode } from '../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import RNRestart from 'react-native-restart';
+// import * as Updates from 'expo-updates';
 import FormButton from '../components/formButtonsAndInput/FormButton';
 import { AuthContext } from './AuthProvider';
 
@@ -33,6 +34,14 @@ const CustomDrawerContent = (props) => {
     fetchLanguage();
   }, []);
 
+  // const restartApp = async () => {
+  //   try {
+  //     await Updates.reloadAsync();
+  //   } catch (e) {
+  //     console.error('Error restarting app:', e);
+  //   }
+  // };
+
   const changeLanguage = async (lng) => {
     try {
       await i18n.changeLanguage(lng);
@@ -44,6 +53,7 @@ const CustomDrawerContent = (props) => {
       //   I18nManager.forceRTL(false);
       // }
       // RNRestart.Restart();
+      // restartApp();
     } catch (error) {
       console.error("Error changing language:", error);
     }

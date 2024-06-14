@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
-import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
+import { getPostsWithFilters } from '../../FirebaseFunctions/collections/post';
 import { getDistance } from '../../hooks/helpersMap/getDistance';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
@@ -48,7 +48,7 @@ const MapScreen = () => {
   const fetchPosts = async (pos) => {
     if (!pos || hasLocationPermission) return;
     setLoading(true);
-    const posts = await getPostsNearby([pos.latitude, pos.longitude], radiusInMeters);
+    const posts = await getPostsWithFilters([pos.latitude, pos.longitude], radiusInMeters, true);
     const offsetPosts = offsetMarkers(posts.map(post => ({
       id: post.id,
       latitude: post.coordinates.latitude,

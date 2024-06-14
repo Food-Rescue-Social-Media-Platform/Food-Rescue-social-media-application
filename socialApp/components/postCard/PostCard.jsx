@@ -80,7 +80,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
 
     const handleUpdateStatus = async (selectedItem) => {
         try {
-            const postRef = doc(database, 'postsTest', item.id);
+            const postRef = doc(database, 'posts', item.id);
             await updateDoc(postRef, { status: selectedItem.status });
             Alert.alert('Success', 'Status updated successfully.');
         } catch (error) {

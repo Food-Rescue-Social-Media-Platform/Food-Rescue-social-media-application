@@ -8,8 +8,9 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
-import { postsCloseMe } from '../../hooks/helpersFeed/algoShowPostsInFeed';
-
+import { database } from '../../firebase';
+import { collection, getDocs } from 'firebase/firestore';
+import { getPostsWithFilters } from '../../FirebaseFunctions/collections/post';
 
 const HomeScreen = () => {
     const { user, logout } = useContext(AuthContext);    
@@ -20,18 +21,25 @@ const HomeScreen = () => {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [position, setPosition] = useState(null);
+    const [ categories, setCategories ] = useState(['Rice', 'Fast Food']);
     const { theme } = useDarkMode(); // Access the current theme
 
     const fetchData = async () => {
         console.log("position:", position);
         if(!position) 
             return;
-        postsCloseMe([position.latitude, position.longitude], 30, user.uid).then((posts) => {
+        try{
+            getPostsWithFilters([position.latitude, position.longitude], 300, user.uid, categories, false ).then((posts) => {
             console.log('postsCloseMe:', posts);
-            setPosts(posts);
+            setPosts([{}, ...posts]);
+            setLoading(false);
         })
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setLoading(false);
+        }
         // try {
-        //     const querySnapshot = await getDocs(collection(database, "postsTest"));
+        //     const querySnapshot = await getDocs(collection(database, "posts"));
         //     const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         //     data.sort((a, b) => b.createdAt - a.createdAt);
         //     setPosts([{}, ...data]);
@@ -46,10 +54,11 @@ const HomeScreen = () => {
         if (isFocused) {
             const fetchLocationAndPosts = async () => {
                 await getLocation(setPosition);
-                if (position) 
+                if (position){
                     watchLocation(setPosition);
+                }
                 fetchData();
-            }
+            };
              fetchLocationAndPosts();
         };
     }, [isFocused]);

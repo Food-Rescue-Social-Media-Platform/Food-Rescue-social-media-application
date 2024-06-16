@@ -11,6 +11,8 @@ import { AuthContext } from './AuthProvider';
 import { categoriesList } from '../utils/categories';
 import { CheckBox } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
+import { useNavigation } from '@react-navigation/native';
+import { set } from 'firebase/database';
 
 
 const CustomDrawerContent = (props) => {
@@ -20,13 +22,14 @@ const CustomDrawerContent = (props) => {
   const [ currentFeedChoice, setCurrentFeedChoice ] = useState('For You');
   // const [ categories, setCategories ] = useState([]);
   const [ selectedCategories, setSelectedCategories ] = useState([]);
-  const [categories, setCategories] = useState(categoriesList.map((category) => ({ value: category })));
+  const [categories, setCategories] = useState([]);
   const [ isForYou, setIsForYou ] = useState(true);
   const [ categoriesFilterOpen, setCategoriesFilterOpen ] = useState(false);
   const [ RadiusFilterOpen, setRadiusFilterOpen ] = useState(false);
   const [ radius, setRadius ] = useState(10);
   const { logout } = useContext(AuthContext);
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+  const navigation = useNavigation();
 
   const languages = [
     { label: 'English', value: 'en' },
@@ -86,6 +89,14 @@ const CustomDrawerContent = (props) => {
     } else {
       setSelectedCategories([...selectedCategories, category.value]);
     }
+  }
+
+  const handelClickFilter = () => {
+    navigation.navigate('Home Page', {selectedCategories:selectedCategories, radius:radius});
+    setCategoriesFilterOpen(false);
+    setRadiusFilterOpen(false);
+    setSelectedCategories([]);
+    setRadius(10);
   }
 
 
@@ -156,15 +167,22 @@ const CustomDrawerContent = (props) => {
                     onValueChange={(value) => setRadius(value)}
                     minimumTrackTintColor="#1EB1FC"
                     maximumTrackTintColor="#d3d3d3"
-                    thumbTintColor="#1EB1FC"
+                    thumbTintColor="#007BFF"
                   />
                 </View>
             )}
+
+
+            <TouchableOpacity
+              style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
+              onPress={() => handelClickFilter()}
+            >
+            <Text style={{color: COLORS.white}}>filter</Text>
+            </TouchableOpacity>
           </View> 
       </>
       ) : (null)}
     
-
       <View style={{marginTop:'30%'}}>
         <View style={styles.switchContainer}>
           <Text style={{ color: isDarkMode ? theme.lightGray : theme.primaryText }}>{t('Dark Mode')}</Text>
@@ -218,7 +236,6 @@ const styles = StyleSheet.create({
     borderColor: '#444',
     flex: 1,
     alignItems: 'center',
-
   },
   selectedDrawerItem: {
     backgroundColor: '#007BFF', // Blue color for the selected button

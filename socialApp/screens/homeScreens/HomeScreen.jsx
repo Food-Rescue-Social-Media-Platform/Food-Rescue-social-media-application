@@ -11,8 +11,10 @@ import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark m
 import { database } from '../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { getPostsWithFilters } from '../../FirebaseFunctions/collections/post';
+import { useRoute } from "@react-navigation/native";
 
 const HomeScreen = () => {
+    const route = useRoute();
     const { user, logout } = useContext(AuthContext);    
     const [posts, setPosts] = useState([]);
     const navigation = useNavigation();
@@ -21,8 +23,8 @@ const HomeScreen = () => {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [position, setPosition] = useState(null);
-    const [ radius, setRadius ] = useState(10);
-    const [ selectedCategories, setSelectedCategories ] = useState(['Rice', 'Fast Food']);
+    const [ radius, setRadius ] = useState(route.params?.radius || 10);
+    const [ selectedCategories, setSelectedCategories ] = useState(route.params?.selectedCategories || []);
     const { theme } = useDarkMode(); // Access the current theme
 
     const fetchData = async () => {
@@ -30,7 +32,7 @@ const HomeScreen = () => {
         if(!position) 
             return;
         try{
-            getPostsWithFilters([position.latitude, position.longitude], 300, user.uid, selectedCategories, false ).then((posts) => {
+            getPostsWithFilters([position.latitude, position.longitude], radius, user.uid, selectedCategories, false ).then((posts) => {
             console.log('postsCloseMe:', posts);
             setPosts([{}, ...posts]);
             setLoading(false);

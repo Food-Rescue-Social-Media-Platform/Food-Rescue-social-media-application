@@ -140,9 +140,9 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
                 // console.log("doc:", doc.data());
-                // if (doc.data().userId === userId) {
-                //     return; // Skip the post if it is from the current user
-                // }
+                if (doc.data().userId === userId) {
+                    return; // Skip the post if it is from the current user
+                }
                 const lat = parseFloat(doc.get('coordinates')[0]);
                 const lng = parseFloat(doc.get('coordinates')[1]);
 

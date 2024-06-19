@@ -66,11 +66,11 @@ const ProfileScreen = ({ navigation, route }) => {
     try {
       const userDocRef = doc(database, "users", postUserId);
       const userDocSnap = await getDoc(userDocRef);
-      const postsIdArray = userDocSnap.data().postsId;
+      const postsIdArray = userDocSnap.data()?.postsId;
 
       const userPostsData = [];
 
-      if (postsIdArray.length === 0) {
+      if (postsIdArray?.length === 0 || !postsIdArray || !userDocSnap.exists()) {
         setUserPosts([]);
         setLoading(false);
         return;

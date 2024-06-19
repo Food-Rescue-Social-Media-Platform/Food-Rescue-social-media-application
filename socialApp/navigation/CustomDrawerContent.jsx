@@ -12,7 +12,6 @@ import { categoriesList } from '../utils/categories';
 import { CheckBox } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
-import { set } from 'firebase/database';
 
 
 const CustomDrawerContent = (props) => {
@@ -22,7 +21,7 @@ const CustomDrawerContent = (props) => {
   const [ currentFeedChoice, setCurrentFeedChoice ] = useState('For You');
   // const [ categories, setCategories ] = useState([]);
   const [ selectedCategories, setSelectedCategories ] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(categoriesList.map((category) => ({ label: category, value: category })));
   const [ isForYou, setIsForYou ] = useState(true);
   const [ categoriesFilterOpen, setCategoriesFilterOpen ] = useState(false);
   const [ RadiusFilterOpen, setRadiusFilterOpen ] = useState(false);
@@ -75,11 +74,14 @@ const CustomDrawerContent = (props) => {
       setCurrentFeedChoice(feed);
       if(feed === 'For You'){
         setIsForYou(true);
-        } else {
+        } 
+      else {
           setIsForYou(false);
-          navigation.navigate('Home Page', {feedChoice: currentFeedChoice, selectedCategories:selectedCategories, radius:radius});
-          return;
-        }
+          console.info("feed choice from drawer:", feed);
+          navigation.navigate('Home Page', {
+            feedChoice: currentFeedChoice
+        });
+      }
     } catch (error) {
       console.error("Error changing feed choice:", error);
     }
@@ -94,11 +96,21 @@ const CustomDrawerContent = (props) => {
   }
 
   const handelClickFilter = () => {
-    navigation.navigate('Home Page', {feedChoice: currentFeedChoice, selectedCategories:selectedCategories, radius:radius});
+    navigation.navigate('Home Page', {
+        feedChoice: currentFeedChoice,
+        selectedCategories:selectedCategories,
+        radius:radius
+    });
     setCategoriesFilterOpen(false);
     setRadiusFilterOpen(false);
-    // setSelectedCategories([]);
-    // setRadius(10);
+  }
+
+  const handelClickClear = () => {
+    setCategoriesFilterOpen(false);
+    setRadiusFilterOpen(false);
+    setSelectedCategories([]);
+    setRadius(10);
+    
   }
 
 
@@ -179,7 +191,15 @@ const CustomDrawerContent = (props) => {
               style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
               onPress={() => handelClickFilter()}
             >
-            <Text style={{color: COLORS.white}}>filter</Text>
+            <Text style={{color: COLORS.white}}>Done</Text>
+            </TouchableOpacity>
+
+            
+            <TouchableOpacity
+              style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
+              onPress={() => handelClickClear()}
+            >
+            <Text style={{color: COLORS.white}}>Clear</Text>
             </TouchableOpacity>
           </View> 
       </>

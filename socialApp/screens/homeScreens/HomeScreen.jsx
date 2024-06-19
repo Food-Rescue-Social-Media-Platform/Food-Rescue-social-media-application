@@ -21,12 +21,13 @@ const HomeScreen = () => {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [position, setPosition] = useState(null);
-    const [ radius, setRadius ] = useState(route.params?.radius || 10);
-    const [ selectedCategories, setSelectedCategories ] = useState(route.params?.selectedCategories || []);
-    const feedChoice = route.params?.feedChoice || 'For You';
     const { theme } = useDarkMode(); // Access the current theme
     const [ message, setMessage ] = useState('');
     const [ isShowMessage, setIsShowMessage ] = useState(false);
+    
+    const radius =  route.params?.radius || 10;
+    const selectedCategories = route.params?.selectedCategories || [];
+    const feedChoice = route.params?.feedChoice || 'For You';
 
     const fetchData = async () => {
         console.log("position:", position);
@@ -35,8 +36,6 @@ const HomeScreen = () => {
             return;
         }
         try{
-            console.info("feed choice:", feedChoice);
-
             if(feedChoice === 'For You'){
                 await getPostsWithFilters([position.latitude, position.longitude], radius, user.uid, selectedCategories, false ).then((posts) => {
                     console.log('postsForYou:', posts);
@@ -66,13 +65,16 @@ const HomeScreen = () => {
             await getLocation(setPosition)
         };            
         fetchLocationAndPosts(); 
+        console.log("feed choice from home screen:", feedChoice);
     }, []);
 
     useEffect(() => {
-        if(position){
-          fetchData();
+        if (isFocused && position) {
+            fetchData();
         }
-    }, [position]);
+    }, [isFocused, position, feedChoice, selectedCategories, radius]);
+
+    
 
     const onRefresh = async () => {
         setRefreshing(true);

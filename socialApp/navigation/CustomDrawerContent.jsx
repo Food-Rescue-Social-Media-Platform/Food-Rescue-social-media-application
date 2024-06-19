@@ -75,9 +75,11 @@ const CustomDrawerContent = (props) => {
       setCurrentFeedChoice(feed);
       if(feed === 'For You'){
         setIsForYou(true);
-      } else {
-        setIsForYou(false);
-      }
+        } else {
+          setIsForYou(false);
+          navigation.navigate('Home Page', {feedChoice: currentFeedChoice, selectedCategories:selectedCategories, radius:radius});
+          return;
+        }
     } catch (error) {
       console.error("Error changing feed choice:", error);
     }
@@ -92,11 +94,11 @@ const CustomDrawerContent = (props) => {
   }
 
   const handelClickFilter = () => {
-    navigation.navigate('Home Page', {selectedCategories:selectedCategories, radius:radius});
+    navigation.navigate('Home Page', {feedChoice: currentFeedChoice, selectedCategories:selectedCategories, radius:radius});
     setCategoriesFilterOpen(false);
     setRadiusFilterOpen(false);
-    setSelectedCategories([]);
-    setRadius(10);
+    // setSelectedCategories([]);
+    // setRadius(10);
   }
 
 

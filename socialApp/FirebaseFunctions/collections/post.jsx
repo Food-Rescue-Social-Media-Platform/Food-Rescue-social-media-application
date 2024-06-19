@@ -108,6 +108,10 @@ export const deletePost = async (postId, postUserId) => {
 
 
 export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen) {
+    if(!center || !radiusInM) {
+        console.error("Center and radius are required for fetching posts");
+        return [];
+    }
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
 
@@ -171,6 +175,56 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 }
 
 
+export async function getPostsFromFollowing(userId, isMapScreen) {
+    const userRef = doc(database, 'users', userId);
+    const userDocSnap = await getDoc(userRef);
+    if (!userDocSnap.exists()) {
+        console.error("User not found while fetching posts");
+        return [];
+    }
+
+    const following = userDocSnap.data()?.followingUsersId;
+    const promises = [];
+
+    following.forEach((followedUserId) => {
+        const q = query(
+            collection(database, 'posts'),
+            where('userId', '==', followedUserId),
+            orderBy('createdAt', 'desc')
+        );
+
+        promises.push(getDocs(q));
+    });
+
+    try {
+        const snapshots = await Promise.all(promises);
+        console.log("snapshots:", snapshots);
+        const posts = [];
+
+        snapshots.forEach((snap) => {
+            snap.forEach((doc) => {
+                console.log("doc:", doc.data());
+                if (isMapScreen) {
+                    posts.push({
+                        id: doc.id,
+                        title: doc.get('postText'),
+                        coordinates: { latitude: doc.get('coordinates')[0], longitude: doc.get('coordinates')[1] },
+                        image: doc.get('postImg')[0],
+                    });
+                } else {
+                    posts.push({ id: doc.id, ...doc.data() });
+                }
+            });
+        });
+
+        console.log("posts:", posts);
+        return posts;
+    } catch (error) {
+        console.error("Error fetching documents: ", error);
+        throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+    }
+  
+}
 
 // export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
 //     const bounds = geofire.geohashQueryBounds(center, radiusInM);

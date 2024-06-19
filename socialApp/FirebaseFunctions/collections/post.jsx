@@ -121,7 +121,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
             orderBy('geohash'),
             startAt(b[0]),
             endAt(b[1])
-        ];
+       ];
 
         if (categories && categories.length > 0) {
             console.log("categories:", categories);
@@ -139,7 +139,10 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                console.log("doc:", doc.data());
+                // console.log("doc:", doc.data());
+                // if (doc.data().userId === userId) {
+                //     return; // Skip the post if it is from the current user
+                // }
                 const lat = parseFloat(doc.get('coordinates')[0]);
                 const lng = parseFloat(doc.get('coordinates')[1]);
 
@@ -166,7 +169,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
             });
         });
 
-        console.log("matchingDocs:", matchingDocs);
+        // console.log("matchingDocs:", matchingDocs);
         return matchingDocs;
     } catch (error) {
         console.error("Error fetching documents: ", error);
@@ -175,7 +178,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 }
 
 
-export async function getPostsFromFollowing(userId, isMapScreen) {
+export async function getPostsFromFollowers(userId, isMapScreen) {
     const userRef = doc(database, 'users', userId);
     const userDocSnap = await getDoc(userRef);
     if (!userDocSnap.exists()) {
@@ -183,10 +186,10 @@ export async function getPostsFromFollowing(userId, isMapScreen) {
         return [];
     }
 
-    const following = userDocSnap.data()?.followingUsersId;
+    const followers = userDocSnap.data()?.followersUsersId;
     const promises = [];
 
-    following.forEach((followedUserId) => {
+    followers.forEach((followedUserId) => {
         const q = query(
             collection(database, 'posts'),
             where('userId', '==', followedUserId),

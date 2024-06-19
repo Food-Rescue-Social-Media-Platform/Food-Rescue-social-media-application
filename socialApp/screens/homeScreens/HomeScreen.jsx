@@ -8,7 +8,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
-import { getPostsWithFilters, getPostsFromFollowing } from '../../FirebaseFunctions/collections/post';
+import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
 
 const HomeScreen = () => {
@@ -25,9 +25,9 @@ const HomeScreen = () => {
     const [ message, setMessage ] = useState('');
     const [ isShowMessage, setIsShowMessage ] = useState(false);
     
-    const radius =  route.params?.radius || 10;
-    const selectedCategories = route.params?.selectedCategories || [];
-    const feedChoice = route.params?.feedChoice || 'For You';
+    const [radius, setRadius] = useState(route.params?.radius || 10);
+    const [selectedCategories, setSelectedCategories] = useState(route.params?.selectedCategories || []);
+    const [feedChoice, setFeedChoice] = useState(route.params?.feedChoice || 'For You');
 
     const fetchData = async () => {
         console.log("position:", position);
@@ -36,6 +36,7 @@ const HomeScreen = () => {
             return;
         }
         try{
+            setLoading(true);
             if(feedChoice === 'For You'){
                 await getPostsWithFilters([position.latitude, position.longitude], radius, user.uid, selectedCategories, false ).then((posts) => {
                     console.log('postsForYou:', posts);
@@ -43,8 +44,8 @@ const HomeScreen = () => {
                     setLoading(false);
                 })
             } else {
-                await getPostsFromFollowing(user.uid, false).then((posts) => {
-                    console.log('postsFromFollowing:', posts);
+                await getPostsFromFollowers(user.uid, false).then((posts) => {
+                    console.log('postsFromFollowers:', posts);
                     setPosts([{}, ...posts]);
                     setLoading(false);
                 })
@@ -69,10 +70,18 @@ const HomeScreen = () => {
     }, []);
 
     useEffect(() => {
-        if (isFocused && position) {
+        if (isFocused) {
+            setFeedChoice(route.params?.feedChoice || 'For You');
+            setRadius(route.params?.radius || 10);
+            setSelectedCategories(route.params?.selectedCategories || []);
+        }
+    }, [isFocused, route.params]);
+
+    useEffect(() => {
+        if (position) {
             fetchData();
         }
-    }, [isFocused, position, feedChoice, selectedCategories, radius]);
+    }, [position, feedChoice, selectedCategories, radius]);
 
     
 

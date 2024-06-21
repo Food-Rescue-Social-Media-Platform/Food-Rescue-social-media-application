@@ -1,8 +1,9 @@
-import { addDoc, doc, serverTimestamp, collection,query, orderBy,where, startAt, endAt, getDocs, deleteDoc, updateDoc, getDoc, arrayRemove } from 'firebase/firestore'; 
+import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, startAfter, startAt, endAt, getDocs, deleteDoc, updateDoc, getDoc, arrayRemove } from 'firebase/firestore'; 
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 
 let maxDistance = 50000; // 50km
+let limitPosts = 10;
 
 export class Post {
     constructor(
@@ -107,21 +108,28 @@ export const deletePost = async (postId, postUserId) => {
 }; 
 
 
-export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen) {
-    if(!center || !radiusInM) {
+export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible = null) {
+    if (!center || !radiusInM) {
         console.error("Center and radius are required for fetching posts");
-        return [];
+        return { posts: [], lastVisible: null };
     }
+
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
+    const limitPosts = 10; // Define the limit here
 
     bounds.forEach(b => {
         let queries = [
             collection(database, 'posts'),
             orderBy('geohash'),
             startAt(b[0]),
-            endAt(b[1])
-       ];
+            endAt(b[1]),
+            limit(limitPosts) 
+        ];
+
+        if (lastVisible) {
+            queries.push(startAfter(lastVisible));
+        }
 
         if (categories && categories.length > 0) {
             console.log("categories:", categories);
@@ -135,19 +143,28 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
     try {
         const snapshots = await Promise.all(promises);
         console.log("snapshots:", snapshots);
-        const matchingDocs = [];
+        const posts = [];
+        let lastVisibleDoc = null;
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                // console.log("doc:", doc.data());
                 if (doc.data().userId === userId) {
                     return; // Skip the post if it is from the current user
                 }
-                const lat = parseFloat(doc.get('coordinates')[0]);
-                const lng = parseFloat(doc.get('coordinates')[1]);
+                const coordinates = doc.get('coordinates');
+                console.log('Coordinates:', coordinates);
+
+                if (!Array.isArray(coordinates) || coordinates.length !== 2) {
+                    console.error("Invalid coordinates array:", coordinates);
+                    return;
+                }
+
+                const lat = parseFloat(coordinates[0]);
+                const lng = parseFloat(coordinates[1]);
+                console.log('Parsed coordinates:', { lat, lng });
 
                 if (isNaN(lat) || isNaN(lng)) {
-                    console.error("Invalid coordinates:", lat, lng);
+                    console.error("Invalid coordinates:", { lat, lng });
                     return;
                 }
 
@@ -156,21 +173,27 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 
                 if (distanceInM <= radiusInM) {
                     if (isMapScreen) {
-                        matchingDocs.push({
+                        posts.push({
                             id: doc.id,
                             title: doc.get('postText'),
                             coordinates: { latitude: lat, longitude: lng },
                             image: doc.get('postImg')[0],
                         });
                     } else {
-                        matchingDocs.push({ id: doc.id, ...doc.data() });
+                        posts.push({ id: doc.id, ...doc.data(), coordinates: { latitude: lat, longitude: lng } });
                     }
+                    lastVisibleDoc = doc; // Keep track of the last visible document
                 }
             });
         });
 
-        // console.log("matchingDocs:", matchingDocs);
-        return matchingDocs;
+        console.log("posts:", posts);
+
+        if (posts.length < limitPosts) {
+            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+        }
+
+        return { posts, lastVisible: lastVisibleDoc };
     } catch (error) {
         console.error("Error fetching documents: ", error);
         throw new Error("Firestore query failed. Ensure that the required indexes are created.");
@@ -178,24 +201,31 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 }
 
 
-export async function getPostsFromFollowers(userId, isMapScreen) {
+
+export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = null) {
     const userRef = doc(database, 'users', userId);
     const userDocSnap = await getDoc(userRef);
     if (!userDocSnap.exists()) {
         console.error("User not found while fetching posts");
-        return [];
+        return { posts: [], lastVisible: null };
     }
 
     const followers = userDocSnap.data()?.followersUsersId;
     const promises = [];
 
     followers.forEach((followedUserId) => {
-        const q = query(
+        let queries = [
             collection(database, 'posts'),
             where('userId', '==', followedUserId),
-            orderBy('createdAt', 'desc')
-        );
+            orderBy('createdAt', 'desc'),
+            limit(limitPosts) 
+        ];
 
+        if (lastVisible) {
+            queries.push(startAfter(lastVisible));
+        }
+
+        const q = query(...queries);
         promises.push(getDocs(q));
     });
 
@@ -203,6 +233,7 @@ export async function getPostsFromFollowers(userId, isMapScreen) {
         const snapshots = await Promise.all(promises);
         console.log("snapshots:", snapshots);
         const posts = [];
+        let lastVisibleDoc = null;
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
@@ -217,16 +248,20 @@ export async function getPostsFromFollowers(userId, isMapScreen) {
                 } else {
                     posts.push({ id: doc.id, ...doc.data() });
                 }
+                lastVisibleDoc = doc; // Keep track of the last visible document
             });
         });
 
-        console.log("posts:", posts);
-        return posts;
+        console.log("posts from followers:", posts);
+        if(posts.length < limitPosts) {
+            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+        }
+
+        return { posts, lastVisible: lastVisibleDoc };
     } catch (error) {
         console.error("Error fetching documents: ", error);
         throw new Error("Firestore query failed. Ensure that the required indexes are created.");
     }
-  
 }
 
 // export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {

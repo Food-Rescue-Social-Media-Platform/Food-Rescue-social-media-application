@@ -11,62 +11,86 @@ import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark m
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
 
+
 const HomeScreen = () => {
     const route = useRoute();
-    const { user, logout } = useContext(AuthContext);    
+    const { user, logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
-    const navigation = useNavigation();
-    const isFocused = useIsFocused();
+    const [ firstFetchForYou, setFirstFetchForYou ] = useState(true);
+    const [ firstFetchFollowing, setFirstFetchFollowing ] = useState(true);
+    const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [position, setPosition] = useState(null);
-    const { theme } = useDarkMode(); // Access the current theme
-    const [ message, setMessage ] = useState('');
-    const [ isShowMessage, setIsShowMessage ] = useState(false);
-    
     const [radius, setRadius] = useState(route.params?.radius || 10);
     const [selectedCategories, setSelectedCategories] = useState(route.params?.selectedCategories || []);
     const [feedChoice, setFeedChoice] = useState(route.params?.feedChoice || 'For You');
+    const { theme } = useDarkMode();
+    const isFocused = useIsFocused();
+    const navigation = useNavigation();
 
-    const fetchData = async () => {
-        console.log("position:", position);
-        if(!position){
+    const fetchData = async (loadMore = false) => {
+        console.info("Fetching data");
+        if (!position && feedChoice === 'For You' ) {
             console.info("No position found");
             return;
         }
-        try{
-            setLoading(true);
-            if(feedChoice === 'For You'){
-                await getPostsWithFilters([position.latitude, position.longitude], radius, user.uid, selectedCategories, false ).then((posts) => {
-                    console.log('postsForYou:', posts);
-                    setPosts([{}, ...posts]);
-                    setLoading(false);
-                })
+        if(lastVisible == null && (!firstFetchForYou || !firstFetchFollowing)){
+            console.log("No lastVisible found");
+            return;
+        }
+        try {
+            if (loadMore) {
+                setLoadingMore(true);
             } else {
-                await getPostsFromFollowers(user.uid, false).then((posts) => {
-                    console.log('postsFromFollowers:', posts);
-                    setPosts([{}, ...posts]);
-                    setLoading(false);
-                })
+                setLoading(true);
             }
-            // if(posts.length === 0){
-            //     setMessage("No posts found");
-            //     setIsShowMessage(true);
-            //     setLoading(false);
-            // }
+            
+            let newPosts = [];
+            let lastVisibleDoc = lastVisible; // Start with the current lastVisible
+    
+            if (feedChoice === 'For You') {
+                const { posts, lastVisible } = await getPostsWithFilters(
+                    [position.latitude, position.longitude], radius, user.uid, selectedCategories, false, lastVisible
+                );
+                newPosts = posts;
+                lastVisibleDoc = lastVisible;
+            } else {
+                const { posts, lastVisible } = await getPostsFromFollowers(user.uid, false, lastVisible);
+                newPosts = posts;
+                lastVisibleDoc = lastVisible;
+            }
+    
+            if (loadMore) {
+                setPosts(prevPosts => [...prevPosts, ...newPosts]);
+            } else {
+                setPosts(newPosts);
+            }
+    
+            if(firstFetchForYou){
+                setFirstFetchForYou(false);
+            }
+            if(firstFetchFollowing){
+                setFirstFetchFollowing(false);
+            }
+            
+            setLastVisible(lastVisibleDoc);
+            setLoading(false);
+            setLoadingMore(false);
         } catch (error) {
             console.error("Error fetching data:", error);
             setLoading(false);
+            setLoadingMore(false);
         }
     };
 
     useEffect(() => {
         const fetchLocationAndPosts = async () => {
-            await getLocation(setPosition)
-        };            
-        fetchLocationAndPosts(); 
-        console.log("feed choice from home screen:", feedChoice);
+            await getLocation(setPosition);
+        };
+        fetchLocationAndPosts();
     }, []);
 
     useEffect(() => {
@@ -74,24 +98,30 @@ const HomeScreen = () => {
             setFeedChoice(route.params?.feedChoice || 'For You');
             setRadius(route.params?.radius || 10);
             setSelectedCategories(route.params?.selectedCategories || []);
+            setLastVisible(null);
+            fetchData();
         }
     }, [isFocused, route.params]);
 
     useEffect(() => {
-        if (position) {
+        if (position && feedChoice === 'For You') {
             fetchData();
         }
     }, [position, feedChoice, selectedCategories, radius]);
 
-    
-
     const onRefresh = async () => {
         setRefreshing(true);
+        setLastVisible(null);
         await fetchData();
         setRefreshing(false);
     };
+    const loadMore = async () => {
+        if (!loadingMore && lastVisible) {
+            await fetchData(true);
+        }
+    };
 
-    if (loading) {
+    if (loading && !loadingMore) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
                 <ActivityIndicator size="large" color={theme.primaryText} />
@@ -105,36 +135,40 @@ const HomeScreen = () => {
 
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-             <FlatList
-                    data={posts}
-                    renderItem={({ item, index }) => {
-                        if (index === 0) {
-                            return <AddPostCard />;
-                        } else if (item && item.id) {
-                            return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
-                        } else {
-                            return null;
-                        }
-                    }}
-                    keyExtractor={(item, index) => item.id ? item.id : index.toString()}
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={styles.flatListContent}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            tintColor={theme.primaryText}
-                        />
+            <FlatList
+                data={posts}
+                renderItem={({ item, index }) => {
+                    if (index === 0) {
+                        return <AddPostCard/>;
+                    } else if (item && item.id) {
+                        return <PostCard key={item.id} item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
+                    } else {
+                        return null;
                     }
-                    ListEmptyComponent={() => (
-                        <View style={styles.emptyContainer}>
-                          <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
-                        </View>
-                      )}
-                />
+                }}
+                keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.flatListContent}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={theme.primaryText}
+                    />
+                }
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                ListEmptyComponent={() => (
+                    <View style={styles.emptyContainer}>
+                        <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
+                    </View>
+                )}
+            />
         </Container>
     );
-}
+};
+
 
 const styles = StyleSheet.create({
     container: {

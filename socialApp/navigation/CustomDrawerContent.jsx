@@ -154,75 +154,75 @@ const CustomDrawerContent = (props) => {
       { isForYou ? (
         <>
           <View style={{flex:1, flexDirection:'cul'}}>
-              <TouchableOpacity
-                style={[styles.drawerItem]}
-                onPress={() => setCategoriesFilterOpen(!categoriesFilterOpen)}
-              >
-                   <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Category Filter</Text>
-              </TouchableOpacity> 
-              
-              { categoriesFilterOpen &&
-                <>
-                <Text style={{color: themeColors.primaryText, margin: 17}}>Select Categories:</Text>
-                <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', padding:4 , marginBottom:10}}>
-                        {categories.map((category) => (
-                            <CheckBox
-                                style={styles.checkboxWrapper}
-                                key={category.value}
-                                title={category.value}
-                                checked={selectedCategories.includes(category.value)}
-                                onPress={() => handleClickCategory(category)}
-                                containerStyle={[styles.checkboxWrapper, {backgroundColor: themeColors.white}]}
-                            />
-                    ))}
-                </View>
-                </>
-              }
+                <TouchableOpacity
+                  style={[styles.drawerItem]}
+                  onPress={() => setCategoriesFilterOpen(!categoriesFilterOpen)}
+                >
+                    <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Category Filter</Text>
+                </TouchableOpacity> 
+                
+                { categoriesFilterOpen &&
+                  <>
+                  <Text style={{color: themeColors.primaryText, margin: 17}}>Select Categories:</Text>
+                  <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap', padding:4 , marginBottom:10}}>
+                          {categories.map((category) => (
+                              <CheckBox
+                                  style={styles.checkboxWrapper}
+                                  key={category.value}
+                                  title={category.value}
+                                  checked={selectedCategories.includes(category.value)}
+                                  onPress={() => handleClickCategory(category)}
+                                  containerStyle={[styles.checkboxWrapper, {backgroundColor: themeColors.white}]}
+                              />
+                      ))}
+                  </View>
+                  </>
+                }
 
-              <TouchableOpacity
-                style={[styles.drawerItem]}
-                onPress={() => setRadiusFilterOpen(!RadiusFilterOpen)}
-              >
-                <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Radius Filter</Text>
-              </TouchableOpacity> 
+                <TouchableOpacity
+                  style={[styles.drawerItem]}
+                  onPress={() => setRadiusFilterOpen(!RadiusFilterOpen)}
+                >
+                  <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Radius Filter</Text>
+                </TouchableOpacity> 
 
-             { RadiusFilterOpen && (
-                <View style={styles.sliderContainer}>
-                  <Text style={styles.sliderLabel}>Radius: {radius} km</Text>
-                  <Slider
-                    style={{ width: '100%', height: 40 }}
-                    minimumValue={10}
-                    maximumValue={50}
-                    step={1}
-                    value={radius}
-                    onValueChange={(value) => setRadius(value)}
-                    minimumTrackTintColor="#1EB1FC"
-                    maximumTrackTintColor="#d3d3d3"
-                    thumbTintColor="#007BFF"
-                  />
-                </View>
-            )}
+              { RadiusFilterOpen && (
+                  <View style={styles.sliderContainer}>
+                      <Text style={styles.sliderLabel}>Radius: {radius} km</Text>
+                      <Slider
+                        style={{ width: '100%', height: 40 }}
+                        minimumValue={10}
+                        maximumValue={50}
+                        step={1}
+                        value={radius}
+                        onValueChange={(value) => setRadius(value)}
+                        minimumTrackTintColor="#1EB1FC"
+                        maximumTrackTintColor="#d3d3d3"
+                        thumbTintColor="#007BFF"
+                      />
+                  </View>
+              )}
 
-
-            <TouchableOpacity
-              style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
-              onPress={() => handelClickFilter()}
-            >
-            <Text style={{color: COLORS.white}}>Done</Text>
-            </TouchableOpacity>
-
-            
-            <TouchableOpacity
-              style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
-              onPress={() => handelClickClear()}
-            >
-            <Text style={{color: COLORS.white}}>Clear</Text>
-            </TouchableOpacity>
+              <View style={{flex:1, flexDirection:'row', marginTop:'5%'}}>
+                  <TouchableOpacity
+                    style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
+                    onPress={() => handelClickFilter()}
+                  >
+                  <Text style={{color: COLORS.white}}>Done</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
+                    onPress={() => handelClickClear()}
+                  >
+                  <Text style={{color: COLORS.white}}>Clear</Text>
+                  </TouchableOpacity>
+            </View>
           </View> 
       </>
       ) : (null)}
     
-      <View style={{marginTop:'30%'}}>
+      <View style={{marginTop:'7%'}}>
         <View style={styles.switchContainer}>
           <Text style={{ color: isDarkMode ? theme.lightGray : theme.primaryText }}>{t('Dark Mode')}</Text>
           <Switch
@@ -292,12 +292,12 @@ const styles = StyleSheet.create({
   switchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: '3%',
   },
   languageButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
+    marginTop: '5%',
   },
   languageButton: {
     padding: 10,
@@ -316,7 +316,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   logoutButton:{
-    marginTop: 20,
+    marginTop: '5%',
+    marginButton: '5%',
     width: '80%',
     alignSelf: 'center',
   },

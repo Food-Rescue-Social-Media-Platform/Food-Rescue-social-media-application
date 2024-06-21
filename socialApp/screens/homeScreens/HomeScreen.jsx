@@ -1,83 +1,127 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native';
+import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
-import { database } from '../../firebase';
-import { collection, getDocs, addDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { useDarkMode } from '../../styles/DarkModeContext';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
+import { useRoute } from "@react-navigation/native";
+
 
 const HomeScreen = () => {
+    const route = useRoute();
+    const { user, logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
-    const navigation = useNavigation();
-    const isFocused = useIsFocused();
+    const [ firstFetchForYou, setFirstFetchForYou ] = useState(true);
+    const [ firstFetchFollowing, setFirstFetchFollowing ] = useState(true);
+    const [lastVisible, setLastVisible] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [position, setPosition] = useState(null);
-    const { theme } = useDarkMode(); // Access the current theme
+    const [radius, setRadius] = useState(route.params?.radius || 10);
+    const [selectedCategories, setSelectedCategories] = useState(route.params?.selectedCategories || []);
+    const [feedChoice, setFeedChoice] = useState(route.params?.feedChoice || 'For You');
+    const { theme } = useDarkMode();
+    const isFocused = useIsFocused();
+    const navigation = useNavigation();
 
-    const addPostToCollection = async () => {
-        try {
-            const postData = {
-                category: "Seafood",
-                createdAt: new Date("2024-04-10T09:26:46Z"), // UTC time equivalent to 12:26:46 UTC+3
-                deliveryRange: "every day from 10:00 to 14:00",
-                firstName: "Abo",
-                lastName: "Yousef",
-                location: "jerusalem",
-                phoneNumber: "0558729400",
-                postDistance: "3km",
-                postImg: "https://firebasestorage.googleapis.com/v0/b/food-rescue-social-platform.appspot.com/o/postsImges%2Fpost-img-6.jpg?alt=media&token=7ba23e50-791c-4e53-ab92-367907ef17a9",
-                postText: "after a big party. we have a big box of fresh sushi.",
-                status: "rescued",
-                userId: "zsERzWzcK7cp50c1bzIoSqxpBsA2",
-                userImg: "https://firebasestorage.googleapis.com/v0/b/food-rescue-social-platform.appspot.com/o/usersImages%2F1713776555256?alt=media&token=93c13d46-38f2-4b3c-ad85-6f67c3d0e8d7",
-                userName: "Abo Yousef"
-            };
-            const docRef = await addDoc(collection(database, "postsTest"), postData);
-            console.log("Post added with ID:", docRef.id);
-        } catch (error) {
-            console.error("Error adding post:", error.message);
+    const fetchData = async (loadMore = false) => {
+        console.info("Fetching data");
+        if (!position && feedChoice === 'For You' ) {
+            console.info("No position found");
+            return;
         }
-    };
-
-    const fetchData = async () => {
-      try {
-          const querySnapshot = await getDocs(collection(database, "postsTest"));
-          const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-          data.sort((a, b) => b.createdAt - a.createdAt);
-          setPosts([{}, ...data]);
-          setLoading(false);
-      } catch (error) {
-          console.error("Error fetching data:", error);
-          setLoading(false);
-      }
+        if(lastVisible == null && (!firstFetchForYou || !firstFetchFollowing)){
+            console.log("No lastVisible found");
+            return;
+        }
+        try {
+            if (loadMore) {
+                setLoadingMore(true);
+            } else {
+                setLoading(true);
+            }
+            
+            let newPosts = [];
+            let lastVisibleDoc = lastVisible; // Start with the current lastVisible
+    
+            if (feedChoice === 'For You') {
+                const { posts, lastVisible } = await getPostsWithFilters(
+                    [position.latitude, position.longitude], radius, user.uid, selectedCategories, false, lastVisible
+                );
+                newPosts = posts;
+                lastVisibleDoc = lastVisible;
+            } else {
+                const { posts, lastVisible } = await getPostsFromFollowers(user.uid, false, lastVisible);
+                newPosts = posts;
+                lastVisibleDoc = lastVisible;
+            }
+    
+            if (loadMore) {
+                setPosts(prevPosts => [...prevPosts, ...newPosts]);
+            } else {
+                setPosts(newPosts);
+            }
+    
+            if(firstFetchForYou){
+                setFirstFetchForYou(false);
+            }
+            if(firstFetchFollowing){
+                setFirstFetchFollowing(false);
+            }
+            
+            setLastVisible(lastVisibleDoc);
+            setLoading(false);
+            setLoadingMore(false);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setLoading(false);
+            setLoadingMore(false);
+        }
     };
 
     useEffect(() => {
+        const fetchLocationAndPosts = async () => {
+            await getLocation(setPosition);
+        };
+        fetchLocationAndPosts();
+    }, []);
+
+    useEffect(() => {
         if (isFocused) {
-            const fetchLocationAndPosts = async () => {
-                await getLocation(setPosition);
-                if (position) {
-                    watchLocation(setPosition);
-                }
-                fetchData();
-            };
-            fetchLocationAndPosts();
+            setFeedChoice(route.params?.feedChoice || 'For You');
+            setRadius(route.params?.radius || 10);
+            setSelectedCategories(route.params?.selectedCategories || []);
+            setLastVisible(null);
+            fetchData();
         }
-    }, [isFocused]);
+    }, [isFocused, route.params]);
+
+    useEffect(() => {
+        if (position && feedChoice === 'For You') {
+            fetchData();
+        }
+    }, [position, feedChoice, selectedCategories, radius]);
 
     const onRefresh = async () => {
         setRefreshing(true);
+        setLastVisible(null);
         await fetchData();
         setRefreshing(false);
     };
+    const loadMore = async () => {
+        if (!loadingMore && lastVisible) {
+            await fetchData(true);
+        }
+    };
 
-    if (loading) {
+    if (loading && !loadingMore) {
         return (
             <View style={[styles.loadingContainer, { backgroundColor: theme.appBackGroundColor }]}>
                 <ActivityIndicator size="large" color={theme.primaryText} />
@@ -95,9 +139,9 @@ const HomeScreen = () => {
                 data={posts}
                 renderItem={({ item, index }) => {
                     if (index === 0) {
-                        return <AddPostCard />;
+                        return <AddPostCard/>;
                     } else if (item && item.id) {
-                        return <PostCard item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
+                        return <PostCard key={item.id} item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
                     } else {
                         return null;
                     }
@@ -112,10 +156,19 @@ const HomeScreen = () => {
                         tintColor={theme.primaryText}
                     />
                 }
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                ListEmptyComponent={() => (
+                    <View style={styles.emptyContainer}>
+                        <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
+                    </View>
+                )}
             />
         </Container>
     );
-}
+};
+
 
 const styles = StyleSheet.create({
     container: {
@@ -139,6 +192,13 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginRight: '82%',
     },
+    emptyContainer:{
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '500',
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
 });
 
 export default HomeScreen;

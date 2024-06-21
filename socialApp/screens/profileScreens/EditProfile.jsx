@@ -10,7 +10,7 @@ import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { database } from '../../firebase';
 import { doc, updateDoc } from "firebase/firestore";
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
-import { OpenGalereAndSelectImages } from '../../FirebaseFunctions/OpeningComponentsInPhone';
+import { OpenGalereAndSelectImages } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { useTranslation } from 'react-i18next';
 

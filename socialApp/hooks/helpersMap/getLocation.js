@@ -16,7 +16,7 @@ export const getLocation = async (setPosition, setRegion = null) => {
         if (setRegion) {
             setRegion(null);
         }
-        return;
+        // return null;
     }
 
     try {
@@ -31,6 +31,7 @@ export const getLocation = async (setPosition, setRegion = null) => {
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01,
             });
+            // return true;
         }
     } catch (error) {
         if (Platform.OS === 'android') {

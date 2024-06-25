@@ -264,6 +264,20 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
     }
 }
 
+
+export async function getPost(postId) {
+    const postRef = doc(database, 'posts', postId);
+    const postDocSnap = await getDoc(postRef);
+
+    if (postDocSnap.exists()) {
+        return { id: postDocSnap.id, ...postDocSnap.data() };
+    } else {
+        console.error("Post not found");
+        return null;
+    }
+
+}
+
 // export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
 //     const bounds = geofire.geohashQueryBounds(center, radiusInM);
 //     const promises = [];

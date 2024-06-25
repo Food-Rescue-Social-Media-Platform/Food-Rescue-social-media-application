@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform, Share  } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -19,6 +19,8 @@ import { deletePost } from '../../FirebaseFunctions/collections/post';
 import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { useTranslation } from 'react-i18next';
+// import Share from 'react-native-share';
+import * as Linking from 'expo-linking'; // Import Linking from expo-linking
 
 const getCategoryIcon = (category, categoryColor) => {
     switch (category) {
@@ -64,6 +66,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { t } = useTranslation();
     const [ distance, setDistance ] = useState(0);
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
+    const [ showOptions, setShowOptions] = useState(false);
 
     useEffect(() => {
         if(!item.coordinates || item.coordinates[0] === 0 && item.coordinates[1] === 0 || !userLocation) return;
@@ -135,6 +138,31 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         }
     };
 
+    const handleShare = async () => {
+        try {
+           
+            const postURL = `http://127.0.0.1:8081/_expo/loading/${item.id}`; // Update this with your actual URL
+           
+            const result = await Share.share({
+                message: `Check out this post: ${postURL}`,
+                url: postURL, // Optional if you want to include the URL separately
+            });
+
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    console.log('Shared with activity type of:', result.activityType);
+                } else {
+                    console.log('Shared');
+                }
+            } else if (result.action === Share.dismissedAction) {
+                console.log('Dismissed');
+            }
+            // setShowOptions(false);
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     const handleUserPress = () => {
         if (isProfilePage === undefined) {
             // If isProfilePage is undefined, return null to disable onPress action
@@ -192,7 +220,9 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     <View style={{ alignItems: 'flex-end' }}>
                         <Popover
                             from={(
-                                <TouchableOpacity style={{ paddingRight: 11 }}>
+                                <TouchableOpacity style={{ paddingRight: 11 }}
+                                  onPress={() => setShowOptions(!showOptions)}
+                                >
                                     <SimpleLineIcons
                                         name="options"
                                         size={23}
@@ -203,7 +233,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                             verticalOffset={-35} // Adjust the vertical offset as needed
                             horizontalOffset={-50} // Adjust the horizontal offset as needed 
                         >
-                            <View style={styles.menu}>
+                            { showOptions ? ( <View style={styles.menu}>
                                 {user && user.uid === postUserId && (
                                     <TouchableOpacity style={styles.optionButton} onPress={() => navigation.navigate('Edit Post', { item: item })}>
                                         <MaterialIcons name="edit" size={20} color='black' />
@@ -225,11 +255,11 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                                     </TouchableOpacity>            
                                 )}
 
-                                <TouchableOpacity style={styles.optionButton}>
+                                <TouchableOpacity style={styles.optionButton} onPress={handleShare}>
                                     <MaterialCommunityIcons name="share-variant" size={20} color='black' />
                                     <Text style={{ paddingLeft: 4, color: 'black' }}>{t('Share')}</Text>
                                 </TouchableOpacity>
-                            </View>
+                            </View>) : null}
                         </Popover>
 
                         {user && user.uid != postUserId && (

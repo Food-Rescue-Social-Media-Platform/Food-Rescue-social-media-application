@@ -1,6 +1,6 @@
 import 'intl-pluralrules';
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, Switch } from 'react-native';
+import { Text, View, Switch, Share } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -12,6 +12,7 @@ import HomeChat from '../screens/chatScreens/HomeChat';
 import ProfileScreen from '../screens/profileScreens/ProfileScreen';
 import MapScreen from '../screens/mapScreens/MapScreen';
 import AddPostScreen from '../screens/createPostScreens/AddPostScreen';
+import PostCard from '../components/postCard/PostCard';
 import EditProfile from '../screens/profileScreens/EditProfile';
 import SingleChat from '../screens/chatScreens/SingleChat';
 import EditPostScreen from '../screens/editPost/EditPostScreen';
@@ -28,6 +29,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
+import SharePostScreen from '../screens/sharePostScreen/SharePostScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -363,6 +365,13 @@ const RootStackScreen = () => {
                 options={({ route }) => ({
                   title: route.params.receiverData.receiver,
                   headerTitleAlign: 'center',
+                })}
+              />
+              <RootStack.Screen
+                name="Share post"
+                component={SharePostScreen}
+                options={({ route }) => ({
+                  title: route.params.postId,
                 })}
               />
               <RootStack.Screen 

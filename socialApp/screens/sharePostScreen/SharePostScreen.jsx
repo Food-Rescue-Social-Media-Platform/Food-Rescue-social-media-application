@@ -5,9 +5,11 @@ import { use } from 'i18next';
 import { getPost } from '../../FirebaseFunctions/collections/post';
 import { useState, useEffect } from 'react';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 
 const SharePostScreen = ({ navigation, route }) => {
   const { postId } = route.params;
+  console.log("Post id: ", postId);
   const [post, setPost] = useState(null);
   const [position, setPosition] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,11 +25,11 @@ const SharePostScreen = ({ navigation, route }) => {
   useEffect(() => {
     if(!position) return;
     getPost(postId).then((post) => {
-      setPost(post);
-      setLoading(false);
+        setPost(post);
+        setLoading(false);
     }).catch((error) => {
-      console.error(error);
-      setLoading(false);
+        console.error(error);
+        setLoading(false);
     });
   }, [position]);
 
@@ -86,4 +88,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default PostScreen;
+export default SharePostScreen;

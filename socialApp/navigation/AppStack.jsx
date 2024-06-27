@@ -371,7 +371,7 @@ const RootStackScreen = () => {
                 name="Share post"
                 component={SharePostScreen}
                 options={({ route }) => ({
-                  title: route.params.postId,
+                  title: '',
                 })}
               />
               <RootStack.Screen 

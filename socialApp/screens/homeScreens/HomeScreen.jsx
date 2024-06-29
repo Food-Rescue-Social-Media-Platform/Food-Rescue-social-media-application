@@ -133,10 +133,6 @@ const HomeScreen = () => {
         return <Text style={{ color: theme.primaryText }}>Error: {error}</Text>;
     }
 
-    const navigateToPost = () => {
-        navigation.navigate('Share post', { postId: posts[0].id});
-      };
-
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
             <FlatList
@@ -169,7 +165,6 @@ const HomeScreen = () => {
                     </View>
                 )}
             />
-            <Button title="View Post" onPress={navigateToPost} />
 
         </Container>
     );

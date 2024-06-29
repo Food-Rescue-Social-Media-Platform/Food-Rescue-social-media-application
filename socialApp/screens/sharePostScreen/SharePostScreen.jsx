@@ -21,7 +21,6 @@ const SharePostScreen = ({ navigation, route }) => {
     fetchLocation();
 }, []);
 
-
   useEffect(() => {
     if(!position) return;
     getPost(postId).then((post) => {
@@ -51,7 +50,7 @@ const SharePostScreen = ({ navigation, route }) => {
 
   return (
     <View>
-        {post && position &&
+        {post && position && !loading &&
             <PostCard item={post} postUserId={post.userId} isProfilePage={false} userLocation={position}/>
         }
         {

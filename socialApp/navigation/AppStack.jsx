@@ -1,6 +1,6 @@
 import 'intl-pluralrules';
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, Switch } from 'react-native';
+import { Text, View, Switch, Share } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -12,6 +12,7 @@ import HomeChat from '../screens/chatScreens/HomeChat';
 import ProfileScreen from '../screens/profileScreens/ProfileScreen';
 import MapScreen from '../screens/mapScreens/MapScreen';
 import AddPostScreen from '../screens/createPostScreens/AddPostScreen';
+import PostCard from '../components/postCard/PostCard';
 import EditProfile from '../screens/profileScreens/EditProfile';
 import SingleChat from '../screens/chatScreens/SingleChat';
 import EditPostScreen from '../screens/editPost/EditPostScreen';
@@ -28,6 +29,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 import { useTranslation } from 'react-i18next';
+import SharePostScreen from '../screens/sharePostScreen/SharePostScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,6 +39,7 @@ const FeedStack = ({ navigation }) => {
   const { isDarkMode, theme } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
+
 
   return (
     <Stack.Navigator>
@@ -195,6 +198,7 @@ const DrawerNavigator = () => {
   );
 };
 
+
 const AppStack = () => {
   const { isDarkMode, theme } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
@@ -334,105 +338,112 @@ const RootStackScreen = () => {
 
   return (
     <I18nextProvider i18n={i18n}>
-      <DarkModeProvider>
-        <RootStack.Navigator>
-          {isAdmin ? (
-            <RootStack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
-          ) : (
-            <>
-              <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }} />
-              <RootStack.Screen name="Edit Profile"
-                component={EditProfile}
-                options={{ 
-                  headerTitle: t("Edit Profile"),
-                  headerTitleAlign: 'center',
-                  headerTitleStyle: {
-                    color: COLORS.blueHeaderText,
-                  },
-                  headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
-                    shadowColor: COLORS.white,
-                    elevation: 0,
-                  },
-                }}
-              />
-              <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false }} />
-              <RootStack.Screen
-                name="SingleChat"
-                component={SingleChat}
-                options={({ route }) => ({
-                  title: route.params.receiverData.receiver,
-                  headerTitleAlign: 'center',
-                })}
-              />
-              <RootStack.Screen 
-                name="Edit Post" 
-                component={EditPostScreen} 
-                options={{ 
-                  headerTitle: t("Edit Post"),
-                  headerTitleAlign: 'center',
-                  headerTitleStyle: {
-                    color: COLORS.blueHeaderText,
-                  },
-                  headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
-                    shadowColor: COLORS.white,
-                    elevation: 0,
-                  },
-                }}
-              />
-              <RootStack.Screen 
-                name="Followers List" 
-                component={FollowersList} 
-                options={{ 
-                  headerTitle: t("Followers List"),
-                  headerTitleAlign: 'center',
-                  headerTitleStyle: {
-                    color: COLORS.blueHeaderText,
-                  },
-                  headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
-                    shadowColor: COLORS.white,
-                    elevation: 0,
-                  },
-                }}
-              />
-              <RootStack.Screen 
-                name="Following List" 
-                component={FollowingList} 
-                options={{ 
-                  headerTitle: t("Following List"),
-                  headerTitleAlign: 'center',
-                  headerTitleStyle: {
-                    color: COLORS.blueHeaderText,
-                  },
-                  headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
-                    shadowColor: COLORS.white,
-                    elevation: 0,
-                  },
+        <DarkModeProvider>
+          <RootStack.Navigator>
+            {isAdmin ? (
+              <RootStack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
+            ) : (
+              <>
+                <RootStack.Screen name="Main" component={AppStack} options={{ headerShown: false }} />
+                <RootStack.Screen name="Edit Profile"
+                  component={EditProfile}
+                  options={{ 
+                    headerTitle: t("Edit Profile"),
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                      color: COLORS.blueHeaderText,
+                    },
+                    headerStyle: {
+                      backgroundColor: COLORS.appBackGroundColor,
+                      shadowColor: COLORS.white,
+                      elevation: 0,
+                    },
                   }}
-              />
-              <RootStack.Screen 
-                name="Rating" 
-                component={Rating} 
-                options={{ 
-                  headerTitle: t("Rating"),
-                  headerTitleAlign: 'center',
-                  headerTitleStyle: {
-                    color: COLORS.blueHeaderText,
-                  },
-                  headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
-                    shadowColor: COLORS.white,
-                    elevation: 0,
-                  },
-                }}
-              />
-            </>
-          )}
-        </RootStack.Navigator>
-      </DarkModeProvider>
+                />
+                <RootStack.Screen name="AddPost" component={AddPostScreen} options={{ headerShown: false }} />
+                <RootStack.Screen
+                  name="SingleChat"
+                  component={SingleChat}
+                  options={({ route }) => ({
+                    title: route.params.receiverData.receiver,
+                    headerTitleAlign: 'center',
+                  })}
+                />
+                <RootStack.Screen
+                  name="SharePost"
+                  component={SharePostScreen}
+                  options={({ route }) => ({
+                    title: '',
+                  })}
+                />
+                <RootStack.Screen 
+                  name="Edit Post" 
+                  component={EditPostScreen} 
+                  options={{ 
+                    headerTitle: t("Edit Post"),
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                      color: COLORS.blueHeaderText,
+                    },
+                    headerStyle: {
+                      backgroundColor: COLORS.appBackGroundColor,
+                      shadowColor: COLORS.white,
+                      elevation: 0,
+                    },
+                  }}
+                />
+                <RootStack.Screen 
+                  name="Followers List" 
+                  component={FollowersList} 
+                  options={{ 
+                    headerTitle: t("Followers List"),
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                      color: COLORS.blueHeaderText,
+                    },
+                    headerStyle: {
+                      backgroundColor: COLORS.appBackGroundColor,
+                      shadowColor: COLORS.white,
+                      elevation: 0,
+                    },
+                  }}
+                />
+                <RootStack.Screen 
+                  name="Following List" 
+                  component={FollowingList} 
+                  options={{ 
+                    headerTitle: t("Following List"),
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                      color: COLORS.blueHeaderText,
+                    },
+                    headerStyle: {
+                      backgroundColor: COLORS.appBackGroundColor,
+                      shadowColor: COLORS.white,
+                      elevation: 0,
+                    },
+                    }}
+                />
+                <RootStack.Screen 
+                  name="Rating" 
+                  component={Rating} 
+                  options={{ 
+                    headerTitle: t("Rating"),
+                    headerTitleAlign: 'center',
+                    headerTitleStyle: {
+                      color: COLORS.blueHeaderText,
+                    },
+                    headerStyle: {
+                      backgroundColor: COLORS.appBackGroundColor,
+                      shadowColor: COLORS.white,
+                      elevation: 0,
+                    },
+                  }}
+                />
+              </>
+            )}
+          </RootStack.Navigator>
+        </DarkModeProvider>
     </I18nextProvider>
 
   );

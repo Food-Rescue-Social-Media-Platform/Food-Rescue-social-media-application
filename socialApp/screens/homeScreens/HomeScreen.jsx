@@ -10,7 +10,7 @@ import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
-
+import { Button } from 'react-native-elements';
 
 const HomeScreen = () => {
     const route = useRoute();
@@ -165,6 +165,7 @@ const HomeScreen = () => {
                     </View>
                 )}
             />
+
         </Container>
     );
 };

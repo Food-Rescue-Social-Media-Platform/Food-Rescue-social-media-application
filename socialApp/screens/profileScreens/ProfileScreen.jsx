@@ -7,6 +7,7 @@ import { database } from '../../firebase';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
+import WebPostCard from '../../components/postCard/webPostCard'
 import { Container } from '../../styles/feedStyles';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
@@ -296,7 +297,10 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
         {Platform.OS === 'web' && (
           <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
-            <Container style={postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther}>
+            <Container style={[
+                postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
+                { backgroundColor: themeColors.appBackGroundColor }
+            ]}>
               {postUserId === user.uid ?
                 <View style={styles.buttons}>
                   <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
@@ -325,11 +329,11 @@ const ProfileScreen = ({ navigation, route }) => {
                 <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
               </View>
             </Container>
-            <Container style={styles.CardContainer}>
+            <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
               {postUserId === user.uid && <AddPostCard />}
               <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
               {userPosts.map(post => (
-                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
+                <WebPostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
               ))}
             </Container>
           </View>
@@ -540,8 +544,8 @@ const styles = StyleSheet.create({
         zIndex: 2,
         alignItems: 'left',
         justifyContent: 'left',
-        width: '30%',
-        marginTop: '-146.5%',
+        width: '38%',
+        marginTop: '-26%',
       },
       sideContainerOther: {
         zIndex: 2,
@@ -554,6 +558,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '70%',
         alignItems: 'center',
+        marginTop: '1%',
+
       },
       header: {
         position: 'relative',
@@ -631,17 +637,18 @@ const styles = StyleSheet.create({
       },
       buttons: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 13,
         marginBottom: '1%',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 2,
         marginLeft: '-5%',
+        padding: 4,
       },
       button: {
         padding: 13,
         borderRadius: 10,
-        width: '42%',
+        width: '43%',
         justifyContent: 'center',
         alignItems: 'center',
       },

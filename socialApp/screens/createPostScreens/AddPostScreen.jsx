@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Modal, StyleSheet, Text, ScrollView, Image, TextInput, TouchableOpacity, Platform } from 'react-native';
+import { View, Modal, StyleSheet, Text, ScrollView, Image, TextInput, TouchableOpacity, Platform, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -19,6 +19,7 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import { getDoc, updateDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
+import { t } from 'i18next';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -37,6 +38,7 @@ const AddPostScreen = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const [options, setOptions] = useState(categoriesList.map((category) => ({ value: category })));
+    const [ messError, setMessError ] = useState('');
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
@@ -44,19 +46,23 @@ const AddPostScreen = () => {
     const fetchData = async () => {
       const userData = await fetchUser(user.uid);
       userData.id = user.uid;
-      console.log("fetchData, User:", userData);
       setUserConnected(userData);
     };
     fetchData();
   }, []);
 
+  const showAlert = (title, message) => {
+    Alert.alert(
+      title,
+      message,
+    );
+  }
   const confirmClose = () => {
     setModalCloseVisible(false);
     navigation.navigate("Home Page");
   };
 
   const handleClose = () => {
-    console.log("Close");
     setModalCloseVisible(true);
   };
 
@@ -70,13 +76,10 @@ const AddPostScreen = () => {
   };
 
   const handleAddImages = () => {
-    console.log("Images");
     openGalereAndSelectImages(setImages);
-    console.log("Images uri", images);
   };
 
   const handleAddLocation = async () => {
-    console.log("Location", location);
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
       console.log("Permission to access location was denied");
@@ -91,30 +94,40 @@ const AddPostScreen = () => {
   };
 
   const handelAddPhone = () => {
-    console.log("Phone");
     setModalPhoneVisible(true);
   };
 
   const handelAddCategory = () => {
-    console.log("Category");
     setCategoryModalVisible(true);
   };
 
   const handleAddPost = async () => {
+    if(postInput.length === 0){
+      setMessError('Please enter the post content');
+      return;  
+    }
+
+    if(location.length === 0){
+      console.log("Location Alert");
+      showAlert("Location Alert", "To publish the post it is necessary to add a location")
+      return;
+    }
+
     setIsUploading(true);
 
+    // push image to firebase storage
     let imagesUrl = [];
     if (images.length > 0) {
       for (let i = 0; i < images.length; i++)
         imagesUrl.push(await uploadImages(images[i], "postsImges/", "image"));
     }
-    console.log("user", userConnected.id, userConnected.userName);
-    console.log("text", postInput);
-    console.log("time", timeInput);
-    console.log("phone", phoneNumber);
-    console.log("category", category);
-    console.log("image", imagesUrl);
-    console.log("location", location);
+    // console.log("user", userConnected.id, userConnected.userName);
+    // console.log("text", postInput);
+    // console.log("time", timeInput);
+    // console.log("phone", phoneNumber);
+    // console.log("category", category);
+    // console.log("image", imagesUrl);
+    // console.log("location", location);
 
     const newPost = new Post(
       userConnected.id,
@@ -186,6 +199,8 @@ const AddPostScreen = () => {
                                     multiline
                                     editable={timeInput.length < 3000}
                                 />
+                                {messError && <Text style={{ color: 'red', fontSize: 15, marginLeft:5 }}>{messError}</Text>}
+                                <Text style={{marginBottom:7}}>{postInput.length}/3000</Text>
                                 <TextInput
                                     value={timeInput}
                                     onChangeText={(text) => setTimeInput(text)}
@@ -456,13 +471,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "gray",
     padding: 10,
-    marginVertical: 14,
+    // marginVertical: 14,
   },
   timeInput: {
     borderWidth: 1,
     padding: 10,
     borderColor: "gray",
-    marginVertical: 14,
+    // marginVertical: 14,
   },
   button: {
     padding: 10,

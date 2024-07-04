@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Modal, StyleSheet, Text, ScrollView, Image, TextInput, TouchableOpacity, Platform, Alert } from 'react-native';
+import { View, Modal, StyleSheet, Text, ScrollView, Image,ActivityIndicator, TextInput, TouchableOpacity, Platform, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
@@ -7,8 +7,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { useNavigation } from '@react-navigation/native';
-import { Camera } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { Post, addPost } from '../../FirebaseFunctions/collections/post';
@@ -39,6 +37,7 @@ const AddPostScreen = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [options, setOptions] = useState(categoriesList.map((category) => ({ value: category })));
     const [ messError, setMessError ] = useState('');
+    const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
@@ -94,6 +93,7 @@ const AddPostScreen = () => {
   };
 
   const handelAddPhone = () => {
+    setShowInputAddPhone(false);
     setModalPhoneVisible(true);
   };
 
@@ -121,13 +121,6 @@ const AddPostScreen = () => {
       for (let i = 0; i < images.length; i++)
         imagesUrl.push(await uploadImages(images[i], "postsImges/", "image"));
     }
-    // console.log("user", userConnected.id, userConnected.userName);
-    // console.log("text", postInput);
-    // console.log("time", timeInput);
-    // console.log("phone", phoneNumber);
-    // console.log("category", category);
-    // console.log("image", imagesUrl);
-    // console.log("location", location);
 
     const newPost = new Post(
       userConnected.id,
@@ -143,17 +136,7 @@ const AddPostScreen = () => {
       location,
     );
 
-    console.log("Post", newPost);
     await addPost(newPost);
-
-    setPhoneNumber("");
-    setPostInput("");
-    setImages([]);
-    setLocation("");
-    setCategory("");
-    setTimeInput("");
-    setIsUploading(false);
-
     navigation.navigate("Home Page");
   };
 
@@ -174,7 +157,6 @@ const AddPostScreen = () => {
 
     return (
         <View style={{ backgroundColor: themeColors.lightGray }}>
-            {!isUploading && (
                 <View style={styles.container}>
 
                     <View style={styles.header}>
@@ -303,18 +285,31 @@ const AddPostScreen = () => {
                         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                             <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Would you like to post your number {userConnected?.phoneNumber}?</Text>
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                                  <Text style={[styles.modalText, { color: themeColors.primaryText}]}>
+                                       Would you like to add a number to the post?
+                                  </Text>
+
+                                <TextInput 
+                                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, margin: 7, borderRadius: 5, width: '90%', alignSelf: 'center'}}
+                                    placeholder='Enter phone number'
+                                    value={phoneNumber}
+                                    numberOfLines={1}
+                                    editable={phoneNumber.length < 15 }
+                                    keyboardType='numeric'
+                                    onChangeText={(text) => setPhoneNumber(text)}
+                                 /> 
+  
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10 }}>
 
                                     <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                         text='Yes'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                                        onPress={() => { setModalPhoneVisible(false); setPhoneNumber(userConnected.phoneNumber) }}
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                        onPress={() => { if(!phoneNumber.length) return; setModalPhoneVisible(false);}}
                                     />
 
                                     <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                         text='No'
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={() => { setModalPhoneVisible(false) }}
@@ -332,7 +327,7 @@ const AddPostScreen = () => {
                         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                             <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Select categories</Text>
+                                <Text style={[styles.modalText, { fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
                                 <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
                                     {options.map((option) => (
                                         <CheckBox
@@ -350,7 +345,7 @@ const AddPostScreen = () => {
                                 <MyButton
                                     style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
                                     text='Done'
-                                    styleText={{ fontSize: 15, color: themeColors.primaryText }}
+                                    styleText={{ fontSize: 15, color: themeColors.primaryText, fontWeight: 'bold'}}
                                     onPress={handleCloseCategoryModal}
                                 />
 
@@ -365,23 +360,23 @@ const AddPostScreen = () => {
                     >
                         <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
 
-                            <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+                            <View style={[styles.modal, { marginTop: '55%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Should you add your current location to the post?</Text>
+                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Do you agree to publish your location at this post?</Text>
 
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
 
                                     <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                         text='Yes'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
                                         onPress={handleAddLocation}
                                     />
 
                                     <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                         text='No'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText}}
                                         onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
                                     />
 
@@ -401,18 +396,18 @@ const AddPostScreen = () => {
 
                                 <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
 
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
                                     <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                         text='Yes'
                                         styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                         onPress={confirmClose}
                                     />
 
                                     <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, alignItems: 'center' }}
+                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                         text='No'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                        styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
                                         onPress={() => { setModalCloseVisible(false) }}
                                     />
                                 </View>
@@ -420,8 +415,11 @@ const AddPostScreen = () => {
                         </View>
                     </Modal>
                 </View>
-            )}
-            {isUploading && (<Text style={{ fontSize: 20, textAlign: 'center', marginTop: '60%', color: themeColors.primaryText }}>Publish Post...</Text>)}
+
+            {isUploading && (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <ActivityIndicator size="large" color={themeColors.primaryText} />
+             </View>)}
         </View>
     );
 }
@@ -519,7 +517,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalText: {
-    fontSize: 20,
+    fontSize: 18,
     textAlign: "center",
     margin: 20,
   },

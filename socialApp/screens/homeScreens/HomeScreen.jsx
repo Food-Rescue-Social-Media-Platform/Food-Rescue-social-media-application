@@ -7,7 +7,7 @@ import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
-import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
 import { Button } from 'react-native-elements';
@@ -16,13 +16,15 @@ const HomeScreen = () => {
     const route = useRoute();
     const { user, logout } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
-    const [ firstFetchForYou, setFirstFetchForYou ] = useState(true);
-    const [ firstFetchFollowing, setFirstFetchFollowing ] = useState(true);
+    const [firstFetchForYou, setFirstFetchForYou] = useState(true);
+    const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
     const [lastVisible, setLastVisible] = useState(null);
+    const [haveMorePosts, setHaveMorePosts] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [position, setPosition] = useState(null);
     const [radius, setRadius] = useState(route.params?.radius || 10);
     const [selectedCategories, setSelectedCategories] = useState(route.params?.selectedCategories || []);
@@ -32,50 +34,62 @@ const HomeScreen = () => {
     const navigation = useNavigation();
 
     const fetchData = async (loadMore = false) => {
-        console.info("Fetching data");
-        if (!position && feedChoice === 'For You' ) {
+        if (!position && feedChoice === 'For You') {
             console.info("No position found");
             return;
         }
-        if(lastVisible == null && (!firstFetchForYou || !firstFetchFollowing)){
-            console.log("No lastVisible found");
+        if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing)) {
+            console.log("No lastVisible found for initial load");
             return;
         }
+        if (!haveMorePosts && loadMore) {
+            console.log("No more posts to load");
+            setLoadingMore(false);
+            return;
+        }
+    
         try {
             if (loadMore) {
                 setLoadingMore(true);
             } else {
                 setLoading(true);
             }
-            
+    
             let newPosts = [];
-            let lastVisibleDoc = lastVisible; // Start with the current lastVisible
+            let lastVisibleDoc = loadMore ? lastVisible : null;
     
             if (feedChoice === 'For You') {
-                const { posts, lastVisible } = await getPostsWithFilters(
-                    [position.latitude, position.longitude], radius, user.uid, selectedCategories, false, lastVisible
+                const { posts, lastVisible, isMore } = await getPostsWithFilters(
+                    [position.latitude, position.longitude],
+                    radius,
+                    "number 1",
+                    selectedCategories,
+                    false,
+                    lastVisibleDoc,
+                    true
                 );
+                setHaveMorePosts(isMore);
                 newPosts = posts;
                 lastVisibleDoc = lastVisible;
             } else {
-                const { posts, lastVisible } = await getPostsFromFollowers(user.uid, false, lastVisible);
+                const { posts, lastVisible, isMore } = await getPostsFromFollowers(user.uid, false, lastVisibleDoc);
+                setHaveMorePosts(isMore);
                 newPosts = posts;
                 lastVisibleDoc = lastVisible;
             }
     
             if (loadMore) {
-                setPosts(prevPosts => [...prevPosts, ...newPosts]);
+                setPosts(prevPosts => {
+                    const newUniquePosts = newPosts.filter(newPost => !prevPosts.some(existingPost => existingPost.id === newPost.id));
+                    return [...prevPosts, ...newUniquePosts];
+                });
             } else {
                 setPosts(newPosts);
             }
     
-            if(firstFetchForYou){
-                setFirstFetchForYou(false);
-            }
-            if(firstFetchFollowing){
-                setFirstFetchFollowing(false);
-            }
-            
+            if (firstFetchForYou) setFirstFetchForYou(false);
+            if (firstFetchFollowing) setFirstFetchFollowing(false);
+    
             setLastVisible(lastVisibleDoc);
             setLoading(false);
             setLoadingMore(false);
@@ -99,6 +113,7 @@ const HomeScreen = () => {
             setRadius(route.params?.radius || 10);
             setSelectedCategories(route.params?.selectedCategories || []);
             setLastVisible(null);
+            setHaveMorePosts(true);
             fetchData();
         }
     }, [isFocused, route.params]);
@@ -112,12 +127,16 @@ const HomeScreen = () => {
     const onRefresh = async () => {
         setRefreshing(true);
         setLastVisible(null);
+        setHaveMorePosts(true);
         await fetchData();
         setRefreshing(false);
     };
+
     const loadMore = async () => {
-        if (!loadingMore && lastVisible) {
+        if (!loadingMore && lastVisible && !isLoadingMore && haveMorePosts) {
+            setIsLoadingMore(true);
             await fetchData(true);
+            setIsLoadingMore(false);
         }
     };
 
@@ -157,7 +176,7 @@ const HomeScreen = () => {
                     />
                 }
                 onEndReached={loadMore}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0.1}
                 ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
                 ListEmptyComponent={() => (
                     <View style={styles.emptyContainer}>
@@ -165,11 +184,9 @@ const HomeScreen = () => {
                     </View>
                 )}
             />
-
         </Container>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {

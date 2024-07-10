@@ -54,13 +54,13 @@ const CustomDrawerContent = (props) => {
     fetchLanguage();
   }, []);
 
-  // const restartApp = async () => {
-  //   try {
-  //     await Updates.reloadAsync();
-  //   } catch (e) {
-  //     console.error('Error restarting app:', e);
-  //   }
-  // };
+  const restartApp = async () => {
+    try {
+      await Updates.reloadAsync();
+    } catch (e) {
+      console.error('Error restarting app:', e);
+    }
+  };
 
   const changeLanguage = async (lng) => {
     try {
@@ -87,10 +87,12 @@ const CustomDrawerContent = (props) => {
       } 
       else {
           setIsForYou(false);
-          console.info("feed choice from drawer:", feed);
+
+          console.info("feed choice from drawer:", currentFeedChoice);
+          console.info("feed 92:", feed);
           setTimeout(() => {
             navigation.navigate('Home Page', {
-                feedChoice: currentFeedChoice,
+                feedChoice: feed,
                 selectedCategories: selectedCategories,
                 radius: radius
             });
@@ -133,7 +135,7 @@ const CustomDrawerContent = (props) => {
 
   return (
     <DrawerContentScrollView {...props}>
-    
+   
     <DrawerItemList {...props} />
     <View style={styles.container}>
       <View style={styles.feedChoiceContainer}>
@@ -252,7 +254,8 @@ const CustomDrawerContent = (props) => {
               <FormButton buttonTitle={t('logout')} onPress={() => logout()} />
         </View>
         </View>
-      </View>
+      </View> 
+      
     </DrawerContentScrollView>
   );
 };

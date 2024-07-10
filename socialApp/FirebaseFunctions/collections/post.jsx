@@ -109,13 +109,15 @@ export const deletePost = async (postId, postUserId) => {
 
 
 export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible, isMore) {
+    console.log("getPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible, isMore);
     if (!center || !radiusInM) {
         console.error("Center and radius are required for fetching posts");
         return { posts: [], lastVisible: null, isMore};
     }
-    if(!isMore) {
-        return { posts: [], lastVisible: null, isMore:false};
-    }
+    
+    // if(!isMore) {
+    //     return { posts: [], lastVisible: null, isMore:false};
+    // }
 
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
@@ -155,6 +157,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
+                console.log("doc:", doc.data());
                 const coordinates = doc.get('coordinates');
 
                 if (!Array.isArray(coordinates) || coordinates.length !== 2) {
@@ -190,7 +193,10 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
             });
         });
 
+
+        console.log("posts with filters:", posts);
         if(posts.length < PAGE_SIZE) {
+            console.log("posts.length < PAGE_SIZE");
             return { posts, lastVisible: null, isMore:false};
         }
         else{
@@ -238,7 +244,6 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                console.log("doc:", doc.data());
                 if (isMapScreen) {
                     posts.push({
                         id: doc.id,

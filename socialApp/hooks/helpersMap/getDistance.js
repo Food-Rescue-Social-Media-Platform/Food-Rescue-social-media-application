@@ -1,5 +1,6 @@
 // Function to calculate distance between two points in meters using Haversine formula
 export const getDistance = (lat1, lon1, lat2, lon2) => {
+    console.log("\ngetDistance lat1", lat1, "lon1", lon1, "lat2", lat2, "lon2", lon2)
     const R = 6371e3; // metres
     const φ1 = lat1 * Math.PI / 180; // φ, λ in radians
     const φ2 = lat2 * Math.PI / 180;

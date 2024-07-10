@@ -35,16 +35,16 @@ const HomeScreen = () => {
     const navigation = useNavigation();
 
     const fetchData = async (loadMore = false) => {
-        console.log("FETCH DATA", position, feedChoice, radius, selectedCategories, loadMore, lastVisible, firstFetchForYou, firstFetchFollowing);
+        // console.log("FETCH DATA", position, feedChoice, radius, selectedCategories, loadMore, lastVisible, firstFetchForYou, firstFetchFollowing);
         if (!position && feedChoice === 'For You') {
             console.info("No position found");
             return;
         }
 
-        if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing)) {
+        if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
                 console.log("No lastVisible found for initial load");
                 return;
-            }
+        }
         try {
             if (loadMore) {
                 setLoadingMore(true);
@@ -77,9 +77,9 @@ const HomeScreen = () => {
                     return [...prevPosts, ...newPosts];
                 });
             } else {
-                console.log("I am here")
+                // console.log("I am here")
                 setPosts(newPosts);
-                console.log("SET POSTS", posts)
+                // console.log("SET POSTS", posts)
             }
     
             if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
@@ -106,7 +106,7 @@ const HomeScreen = () => {
 
     useEffect(() => {
         if (isFocused) {
-            console.log("route.params.feedChoice", route.params?.feedChoice);
+            // console.log("route.params.feedChoice", route.params?.feedChoice);
             setFeedChoice(route.params?.feedChoice || 'For You');
             setRadius(route.params?.radius || 10);
             setSelectedCategories(route.params?.selectedCategories || []);
@@ -153,7 +153,7 @@ const HomeScreen = () => {
 
     const loadMore = async () => {
         if (!loadingMore && lastVisible) {
-         console.log("LOAD MORE")
+        //  console.log("LOAD MORE")
            setIsLoadingMore(true);
            if(position) await fetchData(true);
            setIsLoadingMore(false);

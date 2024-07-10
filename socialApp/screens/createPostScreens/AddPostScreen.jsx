@@ -39,6 +39,7 @@ const AddPostScreen = () => {
     const [ messError, setMessError ] = useState('');
     const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
+    const [isPosting, setIsPosting] = useState(false);
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
   useEffect(() => {
@@ -112,6 +113,9 @@ const AddPostScreen = () => {
       showAlert("Location Alert", "To publish the post it is necessary to add a location")
       return;
     }
+    if (isPosting) return; // Prevent multiple submissions
+  
+    setIsPosting(true);
 
     setIsUploading(true);
 
@@ -137,6 +141,7 @@ const AddPostScreen = () => {
     );
 
     await addPost(newPost);
+    
     navigation.navigate("Home Page");
   };
 

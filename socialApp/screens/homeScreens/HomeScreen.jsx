@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text, Alert } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
@@ -20,7 +20,6 @@ const HomeScreen = () => {
     const [firstFetchForYou, setFirstFetchForYou] = useState(true);
     const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
     const [lastVisible, setLastVisible] = useState(null);
-    const [haveMorePosts, setHaveMorePosts] = useState(true);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
@@ -29,28 +28,23 @@ const HomeScreen = () => {
     const [position, setPosition] = useState(null);
     const [radius, setRadius] = useState(10);
     const [selectedCategories, setSelectedCategories] = useState([]);
-    // console.log("31 ----------",route.params?.feedChoice )
     const [feedChoice, setFeedChoice] = useState('For You');
-    // // console.log("33 ----------",feedChoice )
+    const [ buttonTitle, setButtonTitle ] = useState('Share Location');
     const { theme } = useDarkMode();
     const isFocused = useIsFocused();
     const navigation = useNavigation();
 
     const fetchData = async (loadMore = false) => {
+        console.log("FETCH DATA", position, feedChoice, radius, selectedCategories, loadMore, lastVisible, firstFetchForYou, firstFetchFollowing);
         if (!position && feedChoice === 'For You') {
             console.info("No position found");
             return;
         }
+
         if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing)) {
-            console.log("No lastVisible found for initial load");
-            return;
-        }
-        if (!haveMorePosts && loadMore) {
-            console.log("No more posts to load");
-            setLoadingMore(false);
-            return;
-        }
-        console.log("FEED CHOICE", feedChoice);
+                console.log("No lastVisible found for initial load");
+                return;
+            }
         try {
             if (loadMore) {
                 setLoadingMore(true);
@@ -60,10 +54,8 @@ const HomeScreen = () => {
     
             let newPosts = [];
             let lastVisibleDoc = loadMore ? lastVisible : null;
-            let isMore = false;
     
             if (feedChoice === 'For You') {
-                console.log("HOME SCREEN:For You", position, radius, user.uid, selectedCategories, lastVisibleDoc, haveMorePosts)
                 const result = await getPostsWithFilters(
                     [position.latitude, position.longitude],
                     radius,
@@ -71,24 +63,18 @@ const HomeScreen = () => {
                     selectedCategories,
                     false,
                     lastVisibleDoc,
-                    haveMorePosts
                 );
                 newPosts = result.posts;
                 lastVisibleDoc = result.lastVisible;
-                // isMore = result.isMore;
             } else {
                 const result = await getPostsFromFollowers(user.uid, false, lastVisibleDoc);
-                console.log("HOME SCREEN:posts from followers:", result.posts);
                 newPosts = result.posts;
                 lastVisibleDoc = result.lastVisible;
-                // isMore = result.isMore;
-                console.log("HOME SCREEN:posts from followers:", newPosts);
             }
     
             if (loadMore) {
                 setPosts(prevPosts => {
-                    const newUniquePosts = newPosts.filter(newPost => !prevPosts.some(existingPost => existingPost.id === newPost.id));
-                    return [...prevPosts, ...newUniquePosts];
+                    return [...prevPosts, ...newPosts];
                 });
             } else {
                 console.log("I am here")
@@ -100,7 +86,6 @@ const HomeScreen = () => {
             if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(false);
     
             setLastVisible(lastVisibleDoc);
-            setHaveMorePosts(isMore);
             setLoading(false);
             setLoadingMore(false);
         } catch (error) {
@@ -113,6 +98,7 @@ const HomeScreen = () => {
 
     useEffect(() => {
         const fetchLocationAndPosts = async () => {
+            // showAlert("Location Message", "Please share your location to see posts");
             await getLocation(setPosition);
         };
         fetchLocationAndPosts();
@@ -125,17 +111,24 @@ const HomeScreen = () => {
             setRadius(route.params?.radius || 10);
             setSelectedCategories(route.params?.selectedCategories || []);
             setLastVisible(null);
-            setHaveMorePosts(true);
             setFirstFetchForYou(true);
             setFirstFetchFollowing(true);
-            fetchData();
+            if(position) fetchData();
         }
     }, [isFocused, route.params]);
 
    useEffect(() => {
-        if (position && feedChoice) {
+        // if(!position){
+        //     const showAlertLocation = async () => {
+        //         showAlert("Location not found", "Please share your location to see posts");
+        //         await getLocation(setPosition);
+        //         return;
+        //     };
+        //     showAlertLocation();
+        // }
+        if (position) {
             setLastVisible(null);
-            setHaveMorePosts(true);
+            // setHaveMorePosts(true);
             fetchData();
         }
         if (position) {
@@ -153,18 +146,26 @@ const HomeScreen = () => {
     const onRefresh = async () => {
         setRefreshing(true);
         setLastVisible(null);
-        setHaveMorePosts(true);
-        await fetchData();
+        // setHaveMorePosts(true);
+        if(position) await fetchData();
         setRefreshing(false);
      };
 
     const loadMore = async () => {
-     if (!loadingMore && lastVisible &&  haveMorePosts) {
+        if (!loadingMore && lastVisible) {
+         console.log("LOAD MORE")
            setIsLoadingMore(true);
-           await fetchData(true);
+           if(position) await fetchData(true);
            setIsLoadingMore(false);
      }
     };
+
+    const showAlert = (title, message) => {
+        Alert.alert(
+          title,
+          message,
+        );
+    }
 
     if (loading && !loadingMore && posts.length !== 0) {
         return (
@@ -181,36 +182,50 @@ const HomeScreen = () => {
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
                <AddPostCard/>
-                <FlatList
-                data={posts}
-                style={{ width: '100%' }}
-                renderItem={({ item, index }) => {
-                    if (item && item.id) {
-                        return <PostCard key={item.id} item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
-                    } else {
-                        return null;
-                    }
-                }}
-                keyExtractor={(item, index) => item.id ? item.id : index.toString()}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.flatListContent}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        tintColor={theme.primaryText}
+               { !position &&
+                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                    <Button
+                        title={buttonTitle}
+                        onPress={async () => {
+                            await getLocation(setPosition);
+                            setButtonTitle("Location Shared ...");
+                            if(position) fetchData();
+                        }}
+                        style = {{ width: 200, height: 50,  backgroundColor: '#007BFF', borderRadius: 10}}
                     />
-                }
-                onEndReached={loadMore}
-                onEndReachedThreshold={0.1}
-                ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
-                ListEmptyComponent={() => (
-                    <View style={styles.emptyContainer}>
-                        <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
-                    </View>
-                )}
-            /> 
-            
+                </View>
+               }
+                <FlatList
+                    data={posts}
+                    style={{ width: '100%' }}
+                    renderItem={({ item, index }) => {
+                        if (item && item.id) {
+                            return <PostCard key={item.id} item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
+                        } else {
+                            return null;
+                        }
+                    }}
+                    keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.flatListContent}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={theme.primaryText}
+                        />
+                    }
+                    onEndReached={loadMore}
+                    onEndReachedThreshold={0.1}
+                    ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                    ListEmptyComponent={() => (
+                        <View style={styles.emptyContainer}>
+                           { position &&
+                               <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
+                            }
+                        </View>
+                    )}
+            />  
         </Container>
     );
 };
@@ -221,6 +236,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    emptyContainer:{
+        flex: 1,
+        marginTop: '50%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 });
 
 export default HomeScreen;

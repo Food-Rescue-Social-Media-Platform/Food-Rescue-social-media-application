@@ -22,6 +22,7 @@ export const getLocation = async (setPosition, setRegion = null) => {
     try {
         const location = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.High,
+            
         });
         setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
         if (setRegion) {

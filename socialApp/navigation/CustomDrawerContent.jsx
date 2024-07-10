@@ -14,6 +14,8 @@ import { CheckBox } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
 
+const MIN_RADIUS = 10;
+const MAX_RADIUS = 50;
 
 const CustomDrawerContent = (props) => {
   const { isDarkMode, setIsDarkMode, theme } = useDarkMode();
@@ -26,7 +28,7 @@ const CustomDrawerContent = (props) => {
   const [ isForYou, setIsForYou ] = useState(true);
   const [ categoriesFilterOpen, setCategoriesFilterOpen ] = useState(false);
   const [ RadiusFilterOpen, setRadiusFilterOpen ] = useState(false);
-  const [ radius, setRadius ] = useState(10);
+  const [ radius, setRadius ] = useState(MIN_RADIUS);
   const { logout } = useContext(AuthContext);
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const navigation = useNavigation();
@@ -54,13 +56,13 @@ const CustomDrawerContent = (props) => {
     fetchLanguage();
   }, []);
 
-  // const restartApp = async () => {
-  //   try {
-  //     await Updates.reloadAsync();
-  //   } catch (e) {
-  //     console.error('Error restarting app:', e);
-  //   }
-  // };
+  const restartApp = async () => {
+    try {
+      await Updates.reloadAsync();
+    } catch (e) {
+      console.error('Error restarting app:', e);
+    }
+  };
 
   const changeLanguage = async (lng) => {
     try {
@@ -87,10 +89,12 @@ const CustomDrawerContent = (props) => {
       } 
       else {
           setIsForYou(false);
-          console.info("feed choice from drawer:", feed);
+
+          console.info("feed choice from drawer:", currentFeedChoice);
+          console.info("feed 92:", feed);
           setTimeout(() => {
             navigation.navigate('Home Page', {
-                feedChoice: currentFeedChoice,
+                feedChoice: feed,
                 selectedCategories: selectedCategories,
                 radius: radius
             });
@@ -126,14 +130,20 @@ const CustomDrawerContent = (props) => {
     setCategoriesFilterOpen(false);
     setRadiusFilterOpen(false);
     setSelectedCategories([]);
-    setRadius(10);
-    
+    setRadius(MIN_RADIUS);
+    setTimeout(() => {
+      navigation.navigate('Home Page', {
+          feedChoice: 'For You',
+          selectedCategories: [],
+          radius: MIN_RADIUS
+      });
+    }, 100); 
   }
 
 
   return (
     <DrawerContentScrollView {...props}>
-    
+   
     <DrawerItemList {...props} />
     <View style={styles.container}>
       <View style={styles.feedChoiceContainer}>
@@ -191,8 +201,8 @@ const CustomDrawerContent = (props) => {
                       <Text style={styles.sliderLabel}>Radius: {radius} km</Text>
                       <Slider
                         style={{ width: '100%', height: 40 }}
-                        minimumValue={10}
-                        maximumValue={50}
+                        minimumValue={MIN_RADIUS}
+                        maximumValue={MAX_RADIUS}
                         step={1}
                         value={radius}
                         onValueChange={(value) => setRadius(value)}
@@ -252,7 +262,8 @@ const CustomDrawerContent = (props) => {
               <FormButton buttonTitle={t('logout')} onPress={() => logout()} />
         </View>
         </View>
-      </View>
+      </View> 
+      
     </DrawerContentScrollView>
   );
 };

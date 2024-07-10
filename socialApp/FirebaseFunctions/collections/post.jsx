@@ -3,7 +3,7 @@ import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 
 let maxDistance = 50000; // 50km
-let limitPosts = 10;
+let PAGE_SIZE = 10;
 
 export class Post {
     constructor(
@@ -108,51 +108,57 @@ export const deletePost = async (postId, postUserId) => {
 }; 
 
 
-export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible = null) {
+export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible, isMore) {
+    console.log("getPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible, isMore);
     if (!center || !radiusInM) {
         console.error("Center and radius are required for fetching posts");
-        return { posts: [], lastVisible: null };
+        return { posts: [], lastVisible: null, isMore};
     }
+    
+    // if(!isMore) {
+    //     return { posts: [], lastVisible: null, isMore:false};
+    // }
 
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
-    const limitPosts = 10; // Define the limit here
 
     bounds.forEach(b => {
-        let queries = [
-            collection(database, 'posts'),
-            orderBy('geohash'),
-            startAt(b[0]),
-            endAt(b[1]),
-            limit(limitPosts) 
-        ];
-
-        if (lastVisible) {
-            queries.push(startAfter(lastVisible));
+        let q;
+        if(lastVisible){
+            q = query(
+                collection(database, 'posts'),
+                where('geohash', '>=', b[0]),
+                where('geohash', '<=', b[1]),
+                orderBy('geohash'),
+                startAfter(lastVisible),
+                limit(PAGE_SIZE)
+            );
+        } else {
+            q = query(
+                collection(database, 'posts'),
+                where('geohash', '>=', b[0]),
+                where('geohash', '<=', b[1]),
+                orderBy('geohash'),
+                limit(PAGE_SIZE)
+            );
         }
 
         if (categories && categories.length > 0) {
-            console.log("categories:", categories);
-            queries.push(where('category', 'in', categories));
+            q = query(q, where('category', 'in', categories));
         }
 
-        const q = query(...queries);
         promises.push(getDocs(q));
     });
 
     try {
         const snapshots = await Promise.all(promises);
-        console.log("snapshots:", snapshots);
         const posts = [];
         let lastVisibleDoc = null;
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                // if (doc.data().userId === userId) {
-                //     return; // Skip the post if it is from the current user
-                // }
+                console.log("doc:", doc.data());
                 const coordinates = doc.get('coordinates');
-                console.log('Coordinates:', coordinates);
 
                 if (!Array.isArray(coordinates) || coordinates.length !== 2) {
                     console.error("Invalid coordinates array:", coordinates);
@@ -161,7 +167,6 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 
                 const lat = parseFloat(coordinates[0]);
                 const lng = parseFloat(coordinates[1]);
-                console.log('Parsed coordinates:', { lat, lng });
 
                 if (isNaN(lat) || isNaN(lng)) {
                     console.error("Invalid coordinates:", { lat, lng });
@@ -183,23 +188,25 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
                         posts.push({ id: doc.id, ...doc.data(), coordinates: { latitude: lat, longitude: lng } });
                     }
                     lastVisibleDoc = doc; // Keep track of the last visible document
+                    console.log("id:", doc.id);
                 }
             });
         });
 
-        console.log("posts:", posts);
 
-        if (posts.length < limitPosts) {
-            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+        console.log("posts with filters:", posts);
+        if(posts.length < PAGE_SIZE) {
+            console.log("posts.length < PAGE_SIZE");
+            return { posts, lastVisible: null, isMore:false};
         }
-
-        return { posts, lastVisible: lastVisibleDoc };
+        else{
+            return { posts, lastVisible: lastVisibleDoc, isMore:true};
+        }
     } catch (error) {
         console.error("Error fetching documents: ", error);
         throw new Error("Firestore query failed. Ensure that the required indexes are created.");
     }
 }
-
 
 
 export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = null) {
@@ -218,7 +225,7 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
             collection(database, 'posts'),
             where('userId', '==', followedUserId),
             orderBy('createdAt', 'desc'),
-            limit(limitPosts) 
+            limit(PAGE_SIZE) 
         ];
 
         if (lastVisible) {
@@ -237,7 +244,6 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                console.log("doc:", doc.data());
                 if (isMapScreen) {
                     posts.push({
                         id: doc.id,
@@ -253,7 +259,7 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
         });
 
         console.log("posts from followers:", posts);
-        if(posts.length < limitPosts) {
+        if(posts.length < PAGE_SIZE) {
             lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
         }
 

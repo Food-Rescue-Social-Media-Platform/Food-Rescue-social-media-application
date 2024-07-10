@@ -14,6 +14,8 @@ import { CheckBox } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
 
+const MIN_RADIUS = 10;
+const MAX_RADIUS = 50;
 
 const CustomDrawerContent = (props) => {
   const { isDarkMode, setIsDarkMode, theme } = useDarkMode();
@@ -26,7 +28,7 @@ const CustomDrawerContent = (props) => {
   const [ isForYou, setIsForYou ] = useState(true);
   const [ categoriesFilterOpen, setCategoriesFilterOpen ] = useState(false);
   const [ RadiusFilterOpen, setRadiusFilterOpen ] = useState(false);
-  const [ radius, setRadius ] = useState(10);
+  const [ radius, setRadius ] = useState(MIN_RADIUS);
   const { logout } = useContext(AuthContext);
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const navigation = useNavigation();
@@ -128,8 +130,14 @@ const CustomDrawerContent = (props) => {
     setCategoriesFilterOpen(false);
     setRadiusFilterOpen(false);
     setSelectedCategories([]);
-    setRadius(10);
-    
+    setRadius(MIN_RADIUS);
+    setTimeout(() => {
+      navigation.navigate('Home Page', {
+          feedChoice: 'For You',
+          selectedCategories: [],
+          radius: MIN_RADIUS
+      });
+    }, 100); 
   }
 
 
@@ -193,8 +201,8 @@ const CustomDrawerContent = (props) => {
                       <Text style={styles.sliderLabel}>Radius: {radius} km</Text>
                       <Slider
                         style={{ width: '100%', height: 40 }}
-                        minimumValue={10}
-                        maximumValue={50}
+                        minimumValue={MIN_RADIUS}
+                        maximumValue={MAX_RADIUS}
                         step={1}
                         value={radius}
                         onValueChange={(value) => setRadius(value)}

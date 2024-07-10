@@ -18,6 +18,8 @@ buildscript {
     dependencies {
         classpath('com.android.tools.build:gradle')
         classpath('com.facebook.react:react-native-gradle-plugin')
+        implementation 'com.google.android.gms:play-services-maps:18.2.0'
+
     }
 }
 

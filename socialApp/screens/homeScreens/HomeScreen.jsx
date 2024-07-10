@@ -63,6 +63,7 @@ const HomeScreen = () => {
             let isMore = false;
     
             if (feedChoice === 'For You') {
+                console.log("HOME SCREEN:For You", position, radius, user.uid, selectedCategories, lastVisibleDoc, haveMorePosts)
                 const result = await getPostsWithFilters(
                     [position.latitude, position.longitude],
                     radius,
@@ -158,10 +159,10 @@ const HomeScreen = () => {
      };
 
     const loadMore = async () => {
-     if (!loadingMore && lastVisible && !isLoadingMore && haveMorePosts) {
+     if (!loadingMore && lastVisible &&  haveMorePosts) {
            setIsLoadingMore(true);
-        //     // await fetchData(true);
-          setIsLoadingMore(false);
+           await fetchData(true);
+           setIsLoadingMore(false);
      }
     };
 

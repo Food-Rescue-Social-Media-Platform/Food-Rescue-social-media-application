@@ -2,7 +2,7 @@ import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, st
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 
-let PAGE_SIZE = 2;
+let PAGE_SIZE =10;
 
 export class Post {
     constructor(

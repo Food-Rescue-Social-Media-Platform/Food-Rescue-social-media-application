@@ -20,8 +20,6 @@ import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToP
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import { useTranslation } from 'react-i18next';
 // import Share from 'react-native-share';
-import * as Linking from 'expo-linking'; // Import Linking from expo-linking
-import { set } from 'firebase/database';
 
 const getCategoryIcon = (category, categoryColor) => {
     switch (category) {
@@ -67,7 +65,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { t } = useTranslation();
     const [ distance, setDistance ] = useState(0);
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
-
+    console.log("ITEM: ", item);
     useEffect(() => {
         // console.log("PostC ard useEffect userLocation", userLocation, item.coordinates)
         if(!item.coordinates || item.coordinates[0] === 0 && item.coordinates[1] === 0 || !userLocation) return;
@@ -207,12 +205,10 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             }}>
                 <UserInfo>
                     <TouchableOpacity onPress={handleUserPress}>
-                        {/* Conditional rendering for user image */}
-                        {isUserImgAvailable ? (
-                            <Image source={{ uri: item.userImg }} style={styles.image} />
-                        ) : (
-                            <View style={styles.placeholderImage} />
-                        )}
+                    <Image
+                        source={ item?.userImg ? { uri: item?.userImg } : require('../../assets/Images/emptyProfieImage.png') }
+                        style={styles.image}
+                    />
                     </TouchableOpacity>
                     <UserInfoText>
                         <TouchableOpacity onPress={handleUserPress}>

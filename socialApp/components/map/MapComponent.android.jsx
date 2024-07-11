@@ -1,5 +1,6 @@
 import React from 'react';
 import MapView, { Marker } from 'react-native-maps';
+import { PROVIDER_GOOGLE } from 'react-native-maps';
 
 
 const MapComponent = ({ region, handleRegionChange, handleMapPress, position, locationMarkers, handleMarkerPress, postFromFeed, mapRef, style }) => (
@@ -10,6 +11,7 @@ const MapComponent = ({ region, handleRegionChange, handleMapPress, position, lo
       zoomEnabled={true}
       ref={mapRef}
       onPress={handleMapPress}
+      provider={PROVIDER_GOOGLE}
     >
     {position && (
       <Marker

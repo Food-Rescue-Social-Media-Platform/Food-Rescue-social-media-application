@@ -65,7 +65,6 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { t } = useTranslation();
     const [ distance, setDistance ] = useState(0);
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
-    console.log("ITEM: ", item);
     useEffect(() => {
         // console.log("PostC ard useEffect userLocation", userLocation, item.coordinates)
         if(!item.coordinates || item.coordinates[0] === 0 && item.coordinates[1] === 0 || !userLocation) return;

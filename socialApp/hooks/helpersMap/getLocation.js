@@ -8,21 +8,24 @@ if (Platform.OS === 'android') {
 
 import { hasPermission } from './hasPermission';
 
-export const getLocation = async (setPosition, setRegion = null) => {
+export const getLocation = async (setPosition, setRegion = null, setPermissionDenied = null) => {
     const hasLocationPermission = await hasPermission();
 
     if (!hasLocationPermission) {
+        console.log("no permission")
+        if (setPermissionDenied) setPermissionDenied(true);
         setPosition(null);
         if (setRegion) {
             setRegion(null);
         }
-        // return null;
     }
 
     try {
         const location = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.High,
+            
         });
+        console.log("location", location)
         setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
         if (setRegion) {
             setRegion({
@@ -34,6 +37,7 @@ export const getLocation = async (setPosition, setRegion = null) => {
             // return true;
         }
     } catch (error) {
+        if(setPermissionDenied) setPermissionDenied(true);
         if (Platform.OS === 'android') {
             ToastAndroid.show(
                 "We couldn't fetch your location. Please check your device location service!",

@@ -4,9 +4,9 @@ export function calDistanceUserToPost(latitudeUser, longitudeUser, latitudePost,
     if (!latitudeUser || !longitudeUser || !latitudePost || !longitudePost) {
         return;
     }
-
+    console.log("\nbefore getDistance latitudeUser", latitudeUser, "longitudeUser", longitudeUser, "latitudePost", latitudePost, "longitudePost", longitudePost)
     const distance = getDistance(latitudeUser, longitudeUser, latitudePost , longitudePost);
-    
+    console.log("\nafter getDistance distance", distance)
     // Check if the distance is less than 1 km
     if (distance < 1) {
         const distanceInMeters = distance * 1000; // Convert to meters

@@ -2,8 +2,7 @@ import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, st
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 
-let maxDistance = 50000; // 50km
-let PAGE_SIZE = 10;
+let PAGE_SIZE = 2;
 
 export class Post {
     constructor(
@@ -108,16 +107,13 @@ export const deletePost = async (postId, postUserId) => {
 }; 
 
 
-export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible, isMore) {
-    console.log("getPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible, isMore);
+export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible) {
+    // console.log("\ngetPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible);
     if (!center || !radiusInM) {
         console.error("Center and radius are required for fetching posts");
-        return { posts: [], lastVisible: null, isMore};
+        return { posts: [], lastVisible: null};
     }
-    
-    // if(!isMore) {
-    //     return { posts: [], lastVisible: null, isMore:false};
-    // }
+    radiusInM = radiusInM * 1000; // Convert to meters
 
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
@@ -157,7 +153,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                console.log("doc:", doc.data());
+                // console.log("doc:", doc.data());
                 const coordinates = doc.get('coordinates');
 
                 if (!Array.isArray(coordinates) || coordinates.length !== 2) {
@@ -188,19 +184,19 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
                         posts.push({ id: doc.id, ...doc.data(), coordinates: { latitude: lat, longitude: lng } });
                     }
                     lastVisibleDoc = doc; // Keep track of the last visible document
-                    console.log("id:", doc.id);
+                    // console.log("id:", doc.id);
                 }
             });
         });
 
 
-        console.log("posts with filters:", posts);
+        // console.log("posts with filters:", posts);
         if(posts.length < PAGE_SIZE) {
-            console.log("posts.length < PAGE_SIZE");
-            return { posts, lastVisible: null, isMore:false};
+            // console.log("posts.length < PAGE_SIZE");
+            return { posts, lastVisible: null};
         }
         else{
-            return { posts, lastVisible: lastVisibleDoc, isMore:true};
+            return { posts, lastVisible: lastVisibleDoc};
         }
     } catch (error) {
         console.error("Error fetching documents: ", error);

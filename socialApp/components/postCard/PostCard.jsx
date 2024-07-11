@@ -69,11 +69,12 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
 
     useEffect(() => {
-        console.log("PostCard useEffect userLocation", userLocation, item.coordinates)
+        // console.log("PostC ard useEffect userLocation", userLocation, item.coordinates)
         if(!item.coordinates || item.coordinates[0] === 0 && item.coordinates[1] === 0 || !userLocation) return;
-        console.log("PostCard useEffect userLocation", userLocation)
+        // console.log("PostCard useEffect userLocation", userLocation)
         setHaveSharedLocation(true)
-        calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates[0], item.coordinates[1], setDistance);
+        console.log("before calDistanceUserToPost post:", item , "userLocation", userLocation, "item.coordinates", item.coordinates)
+        calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude, setDistance);
     }, [userLocation]);
 
     // Check if userImg and postImg are available

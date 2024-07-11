@@ -5,13 +5,11 @@ import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import AddPostCard from '../../components/addPost/AddPostCard';
 import { useNavigation, useIsFocused } from '@react-navigation/native';
-import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
 import { Button } from 'react-native-elements';
-import { set } from 'firebase/database';
 
 const HomeScreen = () => {
     const route = useRoute();
@@ -20,7 +18,7 @@ const HomeScreen = () => {
     const [firstFetchForYou, setFirstFetchForYou] = useState(true);
     const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
     const [lastVisible, setLastVisible] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -30,12 +28,12 @@ const HomeScreen = () => {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [feedChoice, setFeedChoice] = useState('For You');
     const [ buttonTitle, setButtonTitle ] = useState('Share Location');
+    const [ permissionDenied, setPermissionDenied ] = useState(false);
     const { theme } = useDarkMode();
     const isFocused = useIsFocused();
     const navigation = useNavigation();
 
     const fetchData = async (loadMore = false) => {
-        // console.log("FETCH DATA", position, feedChoice, radius, selectedCategories, loadMore, lastVisible, firstFetchForYou, firstFetchFollowing);
         if (!position && feedChoice === 'For You') {
             console.info("No position found");
             return;
@@ -77,9 +75,7 @@ const HomeScreen = () => {
                     return [...prevPosts, ...newPosts];
                 });
             } else {
-                // console.log("I am here")
                 setPosts(newPosts);
-                // console.log("SET POSTS", posts)
             }
     
             if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
@@ -98,15 +94,15 @@ const HomeScreen = () => {
 
     useEffect(() => {
         const fetchLocationAndPosts = async () => {
-            // showAlert("Location Message", "Please share your location to see posts");
-            await getLocation(setPosition);
+            console.log("before permissionDenied", permissionDenied)
+            await getLocation(setPosition, null, setPermissionDenied);
+            console.log("after permissionDenied", permissionDenied)
         };
         fetchLocationAndPosts();
      }, []);
 
     useEffect(() => {
         if (isFocused) {
-            // console.log("route.params.feedChoice", route.params?.feedChoice);
             setFeedChoice(route.params?.feedChoice || 'For You');
             setRadius(route.params?.radius || 10);
             setSelectedCategories(route.params?.selectedCategories || []);
@@ -146,26 +142,17 @@ const HomeScreen = () => {
     const onRefresh = async () => {
         setRefreshing(true);
         setLastVisible(null);
-        // setHaveMorePosts(true);
         if(position) await fetchData();
         setRefreshing(false);
      };
 
     const loadMore = async () => {
         if (!loadingMore && lastVisible) {
-        //  console.log("LOAD MORE")
            setIsLoadingMore(true);
            if(position) await fetchData(true);
            setIsLoadingMore(false);
      }
     };
-
-    const showAlert = (title, message) => {
-        Alert.alert(
-          title,
-          message,
-        );
-    }
 
     if (loading && !loadingMore && posts.length !== 0) {
         return (
@@ -182,19 +169,20 @@ const HomeScreen = () => {
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
                <AddPostCard/>
-               { !position &&
-                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                    <Button
-                        title={buttonTitle}
-                        onPress={async () => {
-                            await getLocation(setPosition);
-                            setButtonTitle("Location Shared ...");
-                            if(position) fetchData();
-                        }}
-                        style = {{ width: 200, height: 50,  backgroundColor: '#007BFF', borderRadius: 10}}
-                    />
-                </View>
-               }
+               { permissionDenied &&
+                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                        <Button
+                            title={buttonTitle}
+                            onPress={async () => {
+                                await getLocation(setPosition);
+                                setButtonTitle("Location Shared ...");
+                                if(position) fetchData();
+                            }}
+                            style = {{ width: 200, height: 50,  backgroundColor: '#007BFF', borderRadius: 10}}
+                        />
+                    </View>
+                }
+
                 <FlatList
                     data={posts}
                     style={{ width: '100%' }}
@@ -225,7 +213,7 @@ const HomeScreen = () => {
                             }
                         </View>
                     )}
-            />  
+            /> 
         </Container>
     );
 };

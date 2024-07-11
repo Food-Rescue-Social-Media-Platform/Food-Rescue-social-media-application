@@ -15,9 +15,12 @@
       "package": "com.mohammad_belbesi.socialApp",
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY"
+          "apiKey": "AIzaSyBIblhJdCJcn5OGfGUPDRsxoXePDq9nxtk"
         }
-      }
+      },
+      "permissions": [
+        "ACCESS_BACKGROUND_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro"

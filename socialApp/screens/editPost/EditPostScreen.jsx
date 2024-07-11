@@ -79,24 +79,26 @@ const EditPostScreen = ({ navigation, route }) => {
             <View style={styles.inputContainer}>
                 <MaterialCommunityIcons name="bus-clock" size={22} color={theme.primaryText} />
                 <TextInput
-                    style={[styles.input, { color: theme.primaryText, borderColor: theme.borderColor }]}
+                    style={[styles.input, styles.deliveryTimeInput, { color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Delivery Time"
                     placeholderTextColor={theme.secondaryText}
                     value={deliveryTime}
-                    onChangeText={(text) => setDeliveryTime(text)}
+                    onChangeText={(text) => handleInputChange(text, setDeliveryTime, 30)}
                 />
+                <Text style={styles.characterCount}>{deliveryTime.length}/30</Text>
             </View>
 
             <View style={styles.inputContainer}>
                 <MaterialCommunityIcons name="post" size={22} color={theme.primaryText} />
                 <TextInput
-                    style={[styles.input, { height: 100, color: theme.primaryText, borderColor: theme.borderColor }]}
+                    style={[styles.input, styles.postInput, { color: theme.primaryText, borderColor: theme.borderColor }]}
                     placeholder="Post Text"
                     placeholderTextColor={theme.secondaryText}
                     multiline
                     value={postText}
-                    onChangeText={(text) => setPostText(text)}
+                    onChangeText={(text) => handleInputChange(text, setPostText, 3000)}
                 />
+                <Text style={styles.characterCount}>{postText.length}/3000</Text>
             </View>
 
             <View style={styles.inputContainer}>
@@ -135,6 +137,12 @@ const EditPostScreen = ({ navigation, route }) => {
     );
 };
 
+const handleInputChange = (text, setInput, maxLength) => {
+    if (text.length <= maxLength) {
+        setInput(text);
+    }
+};
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -144,6 +152,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 20,
+        position: 'relative',
     },
     input: {
         height: 40,
@@ -151,6 +160,19 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingHorizontal: 10,
         flex: 1,
+    },
+    postInput: {
+        height: 100,
+    },
+    deliveryTimeInput: {
+        height: 40, // Ensure this matches the input field height for proper alignment
+    },
+    characterCount: {
+        position: 'absolute',
+        bottom: 10,
+        right: 10,
+        fontSize: 12,
+        color: 'gray',
     },
     button: {
         padding: 13,

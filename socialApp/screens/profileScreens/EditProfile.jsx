@@ -24,7 +24,6 @@ const EditProfile = ({ navigation, route }) => {
     const [lastName, setLastName] = useState(userData?.lastName || '');
     const [phone, setPhone] = useState(userData?.phoneNumber || '');
     const [email, setEmail] = useState(userData?.email || '');
-    const [location, setLocation] = useState(userData?.location || '');
     const [userName, setUserName] = useState(userData?.userName || '');
     const [bio, setUserBio] = useState(userData?.bio || '');
     const [forceUpdate, setForceUpdate] = useState(false);
@@ -51,7 +50,6 @@ const EditProfile = ({ navigation, route }) => {
               lastName: lastName,
               phoneNumber: phone,
               email: email,
-              location: location,
               userName: firstName + ' ' + lastName,
               profileCover: coverURL,
               profileImg: profileURL,
@@ -93,7 +91,7 @@ const EditProfile = ({ navigation, route }) => {
                                 source={
                                     userProfileCover && typeof userProfileCover === 'string'
                                     ? { uri: userProfileCover }
-                                    : { uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif' }
+                                    : require('../../assets/Images/cover.png')
                                 }
                                 style={{ height: 150, width: 300 }}
                                 imageStyle={{ borderRadius: 15 }}
@@ -136,7 +134,7 @@ const EditProfile = ({ navigation, route }) => {
                                 source={
                                     userProfileImage && typeof userProfileImage === 'string'
                                     ? { uri: userProfileImage }
-                                    : { uri: 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif' }
+                                    : require('../../assets/Images/emptyProfieImage.png')
                                 }
                                 style={{ height: 100, width: 100 }}
                                 imageStyle={{ borderRadius: 15 }}
@@ -182,7 +180,7 @@ const EditProfile = ({ navigation, route }) => {
                                 paddingLeft: 10,
                             },
                         ]}
-                        value={firstName}
+                        value={String(firstName)}
                         onChangeText={text => setFirstName(text)}
                     />
                 </View>
@@ -198,7 +196,7 @@ const EditProfile = ({ navigation, route }) => {
                                 color: theme.primaryText,
                             },
                         ]}
-                        value={lastName}
+                        value={String(lastName)}
                         onChangeText={text => setLastName(text)}
                     />
                 </View>
@@ -216,7 +214,7 @@ const EditProfile = ({ navigation, route }) => {
                                 paddingLeft: 18,
                             },
                         ]}
-                        value={phone}
+                        value={String(phone)}
                         onChangeText={text => setPhone(text)}
                     />
                 </View>
@@ -234,25 +232,8 @@ const EditProfile = ({ navigation, route }) => {
                                 paddingLeft: 14,
                             },
                         ]}
-                        value={email}
+                        value={String(email)}
                         onChangeText={text => setEmail(text)}
-                    />
-                </View>
-                <View style={styles.action}>
-                    <MaterialCommunityIcons name="map-marker" color={theme.primaryText} size={27} paddingLeft={5} />
-                    <TextInput
-                        placeholder={t("Location")}
-                        placeholderTextColor="#666666"
-                        autoCorrect={false}
-                        style={[
-                            styles.textInput,
-                            {
-                                color: theme.primaryText,
-                                paddingLeft: 16,
-                            },
-                        ]}
-                        value={location}
-                        onChangeText={text => setLocation(text)}
                     />
                 </View>
                 <View style={styles.action}>
@@ -269,7 +250,7 @@ const EditProfile = ({ navigation, route }) => {
                             },
                         ]}
                         multiline
-                        value={bio}
+                        value={String(bio)}
                         onChangeText={(text) => setUserBio(text)}
                     />
                 </View>

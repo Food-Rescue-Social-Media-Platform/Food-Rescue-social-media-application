@@ -48,7 +48,6 @@ const EditPostScreen = ({ navigation, route }) => {
             const postDocRef = doc(database, "posts", item.id);
             // update the post in the database with the new values
             await updateDoc(postDocRef, {
-                ...item,
                 phoneNumber: phoneNumber,
                 deliveryRange: deliveryTime,
                 postText: postText,

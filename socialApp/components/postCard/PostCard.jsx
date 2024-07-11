@@ -341,20 +341,22 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             </InteractionWrapper>
             <Text></Text>
 
-            <InteractionWrapper style={backgroundColor = theme.secondaryBackground}>
-                {item.phoneNumber && (
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons name="phone" size={22} color={theme.primaryText} />
-                        <Text style={[styles.text, { color: theme.primaryText }]}>{item.phoneNumber}</Text>
-                    </View>
-                )}
-                {item.deliveryRange && (
-                    <View style={styles.iconsWrapper}>
-                        <MaterialCommunityIcons name="bus-clock" size={22} color={theme.primaryText} />
-                        <Text style={[styles.text, { color: theme.primaryText }]}>{item.deliveryRange}</Text>
-                    </View>
-                )}
-            </InteractionWrapper>
+            {item.deliveryRange && item.phoneNumber && (
+                <InteractionWrapper style={{ backgroundColor: theme.secondaryBackground }}>
+                    {item.phoneNumber && (
+                        <View style={styles.iconsWrapper}>
+                            <MaterialCommunityIcons name="phone" size={22} color={theme.primaryText} />
+                            <Text style={[styles.text, { color: theme.primaryText }]}>{item.phoneNumber}</Text>
+                        </View>
+                    )}
+                    {item.deliveryRange && (
+                        <View style={styles.iconsWrapper}>
+                            <MaterialCommunityIcons name="bus-clock" size={22} color={theme.primaryText} />
+                            <Text style={[styles.text, { color: theme.primaryText }]}>{item.deliveryRange}</Text>
+                        </View>
+                    )}
+                </InteractionWrapper>
+            )}
             <PostText style={{ color: theme.primaryText }}>{item.postText || ''}</PostText>
         </Card>
     );

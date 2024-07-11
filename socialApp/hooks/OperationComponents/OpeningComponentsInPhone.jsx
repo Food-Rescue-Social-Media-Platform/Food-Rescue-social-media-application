@@ -33,3 +33,33 @@ export const openCameraAndTakePicture = async (setImages) =>{
         setImages( oldImages => [...oldImages, result.assets[0].uri] );
       }
 };
+
+
+//#################################### this functions for edit profile user image and cover ##############################################//
+// Function to select image from the gallery
+export const openGalleryAndSelectImage = async (setImage, allowsMultipleSelection=false, allowsEditing=false, allMediaTypeOptionsOpen=true) => {
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: allMediaTypeOptionsOpen ? ImagePicker.MediaTypeOptions.All : ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: allowsEditing,
+    allowsMultipleSelection: allowsMultipleSelection,
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    const selectedImage = allowsMultipleSelection ? result.assets.map(asset => asset.uri) : result.assets[0].uri;
+    setImage(selectedImage);
+  }
+};
+
+// Function to take a picture with the camera
+export const openCameraAndTakePictureForUserImageAndCover = async (setImage) => {
+  let result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    aspect: [4, 3],
+    quality: 1,
+  });
+
+  if (!result.canceled) {
+    setImage(result.assets[0].uri);
+  }
+};

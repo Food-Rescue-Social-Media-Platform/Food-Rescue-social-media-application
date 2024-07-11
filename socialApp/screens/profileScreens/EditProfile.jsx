@@ -6,36 +6,34 @@ import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { COLORS, DARKCOLORS } from '../../styles/colors';
+import { COLORS } from '../../styles/colors';
 import { database } from '../../firebase';
 import { doc, updateDoc } from "firebase/firestore";
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
-import { OpenGalereAndSelectImages } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
-import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { openGalleryAndSelectImage } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
+import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
 
 const EditProfile = ({ navigation, route }) => {
     const { userData } = route.params;
-    const { user, logout } = useContext(AuthContext);
-    const { isDarkMode, theme } = useDarkMode(); // Access the current theme and dark mode status
-    const [userProfileCover, setUserProfileCover] = useState(userData?.profileCover || require('../../assets/Images/cover.png'));
-    const [userProfileImage, setUserProfileImage] = useState(userData?.profileImg || require('../../assets/Images/emptyProfieImage.png'));
+    const { user } = useContext(AuthContext);
+    const { isDarkMode, theme } = useDarkMode();
+    const [userProfileCover, setUserProfileCover] = useState(userData?.profileCover || '');
+    const [userProfileImage, setUserProfileImage] = useState(userData?.profileImg || '');
     const [firstName, setFirstName] = useState(userData?.firstName || '');
     const [lastName, setLastName] = useState(userData?.lastName || '');
     const [phone, setPhone] = useState(userData?.phoneNumber || '');
     const [email, setEmail] = useState(userData?.email || '');
     const [userName, setUserName] = useState(userData?.userName || '');
     const [bio, setUserBio] = useState(userData?.bio || '');
-    const [forceUpdate, setForceUpdate] = useState(false);
     const { t } = useTranslation();
 
     const handleAddUserProfileCover = async () => {
-        await OpenGalereAndSelectImages(setUserProfileCover);
+        await openGalleryAndSelectImage(setUserProfileCover, false, false, true);
     }
 
     const handleAddUserProfileImage = async () => {
-        await OpenGalereAndSelectImages(setUserProfileImage);
-        setForceUpdate(prevState => !prevState);
+        await openGalleryAndSelectImage(setUserProfileImage, false, false, true);
     }
 
     const updateUserProfile = async () => {
@@ -46,25 +44,25 @@ const EditProfile = ({ navigation, route }) => {
             const userDocRef = doc(database, "users", user.uid);
             await updateDoc(userDocRef, {
               ...userData,
-              firstName: firstName,
-              lastName: lastName,
+              firstName,
+              lastName,
               phoneNumber: phone,
-              email: email,
-              userName: firstName + ' ' + lastName,
+              email,
+              userName: `${firstName} ${lastName}`,
               profileCover: coverURL,
               profileImg: profileURL,
-              bio: bio
+              bio
             });
 
             navigation.navigate('Profile', {
                 postUserId: user.uid,
                 userData: {
                     ...userData,
-                    firstName: firstName,
-                    lastName: lastName,
-                    userName: firstName + ' ' + lastName,
+                    firstName,
+                    lastName,
+                    userName: `${firstName} ${lastName}`,
                     userImg: profileURL,
-                    bio: bio
+                    bio
                 }
             });
 
@@ -130,7 +128,6 @@ const EditProfile = ({ navigation, route }) => {
                                 alignItems: 'center',
                             }}>
                             <ImageBackground
-                                key={forceUpdate}
                                 source={
                                     userProfileImage && typeof userProfileImage === 'string'
                                     ? { uri: userProfileImage }
@@ -251,7 +248,7 @@ const EditProfile = ({ navigation, route }) => {
                         ]}
                         multiline
                         value={String(bio)}
-                        onChangeText={(text) => setUserBio(text)}
+                        onChangeText={text => setUserBio(text)}
                     />
                 </View>
                 <TouchableOpacity style={[styles.commandButton, { backgroundColor: theme.secondaryBackground }]} onPress={updateUserProfile}>

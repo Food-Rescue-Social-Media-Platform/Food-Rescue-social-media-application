@@ -29,6 +29,7 @@
     "@react-navigation/stack": "^6.3.25",
     "@reduxjs/toolkit": "^2.2.1",
     "@teovilla/react-native-web-maps": "^0.9.5",
+    "deprecated-react-native-prop-types": "^5.0.0",
     "expo": "~50.0.17",
     "expo-auth-session": "~5.4.0",
     "expo-blur": "~12.9.2",
@@ -69,6 +70,7 @@
     "react-native-screens": "~3.29.0",
     "react-native-select-dropdown": "^4.0.1",
     "react-native-share": "^10.2.1",
+    "react-native-snap-carousel": "^3.9.1",
     "react-native-svg": "14.1.0",
     "react-native-uuid": "^2.0.1",
     "react-native-vector-icons": "^10.0.3",
@@ -81,6 +83,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@types/react-native-snap-carousel": "^3.8.11",
     "@types/styled-components": "^5.1.34",
     "babel-plugin-react-native-web": "^0.19.10",
     "prettier": "3.2.5"

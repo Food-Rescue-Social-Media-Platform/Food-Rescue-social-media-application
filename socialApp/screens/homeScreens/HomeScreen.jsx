@@ -10,6 +10,7 @@ import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
 import { Button } from 'react-native-elements';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 
 const HomeScreen = () => {
     const route = useRoute();
@@ -168,6 +169,16 @@ const HomeScreen = () => {
 
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+  {/*<MapView
+    provider={PROVIDER_GOOGLE}
+    initialRegion={{
+      latitude: 37.78825,
+      longitude: -122.4324,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    }}
+  />
+</View>*/}
                <AddPostCard/>
                { permissionDenied &&
                     <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>

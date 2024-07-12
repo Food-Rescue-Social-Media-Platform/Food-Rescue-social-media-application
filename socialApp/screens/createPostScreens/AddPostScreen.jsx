@@ -160,273 +160,278 @@ const AddPostScreen = () => {
     setImages(newImages);
   };
 
-    return (
-        <View style={{ backgroundColor: themeColors.lightGray }}>
-                <View style={styles.container}>
-
-                    <View style={styles.header}>
-                        <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
-                            <Fontisto name="arrow-right" size={24} color={themeColors.primaryText} style={{ transform: [{ scaleX: -1 }] }} />
-                        </TouchableOpacity>
-                        <Text style={{ fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryBackground }]} onPress={handleAddPost}>
-                            <Text style={{ fontSize: 15 }}>Post</Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <ScrollView>
-                        <View style={{ minHeight: '100%' }}>
-                            <View>
-                                <TextInput
-                                    value={postInput}
-                                    onChangeText={(text) => setPostInput(text)}
-                                    style={[styles.postInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
-                                    placeholder="What food would you like to save today?"
-                                    placeholderTextColor={themeColors.placeholderText}
-                                    multiline
-                                    editable={timeInput.length < 3000}
-                                />
-                                {messError && <Text style={{ color: 'red', fontSize: 15, marginLeft:5 }}>{messError}</Text>}
-                                <Text style={{marginBottom:7}}>{postInput.length}/3000</Text>
-                                <TextInput
-                                    value={timeInput}
-                                    onChangeText={(text) => setTimeInput(text)}
-                                    style={[styles.timeInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
-                                    placeholder="What are the delivery times?"
-                                    placeholderTextColor={themeColors.placeholderText}
-                                    multiline
-                                    editable={timeInput.length < 30}
-                                />
-                                <Text>{timeInput.length}/30</Text>
-                            </View>
-
-              <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
-                {images.map((image, index) => (
-                  <View key={index}>
-                    <Image
-                      source={{ uri: image }}
-                      style={{ width: 100, height: 100 }}
-                    />
-                    <TouchableOpacity
-                      style={{
-                        position: "absolute",
-                        top: 10,
-                        right: 10,
-                        backgroundColor: themeColors.black,
-                        borderRadius: 50,
-                        padding: 5,
-                      }}
-                      onPress={() => handleImagePress(index)}
-                    >
-                      <MaterialIcons name="close" size={24} color="white" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            </View>
-          </ScrollView>
-
-          <View
-            style={[
-              styles.iconsWrapper,
-              { backgroundColor: themeColors.secondaryBackground },
-            ]}
-          >
-            <TouchableOpacity>
-              <Entypo
-                name="camera"
-                size={26}
-                color={themeColors.primaryText}
-                onPress={handleOpenCamera}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <MaterialIcons
-                name="photo-library"
-                size={26}
-                color={themeColors.primaryText}
-                onPress={handleAddImages}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <MaterialCommunityIcons
-                name="map-marker"
-                size={26}
-                color={themeColors.primaryText}
-                onPress={handleAddLocation}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <MaterialCommunityIcons
-                name="phone"
-                size={26}
-                color={themeColors.primaryText}
-                onPress={handelAddPhone}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <MaterialIcons
-                name="category"
-                size={26}
-                color={themeColors.primaryText}
-                onPress={handelAddCategory}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-          </View>
-
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalPhoneVisible}
-                        onRequestClose={() => {
-                            console.log('close modal');
-                        }}
-                    >
-                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                            <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
-
-                                  <Text style={[styles.modalText, { color: themeColors.primaryText}]}>
-                                       Would you like to add a number to the post?
-                                  </Text>
-
-                                <TextInput 
-                                    style={{ borderWidth: 1, borderColor: 'gray', padding: 10, margin: 7, borderRadius: 5, width: '90%', alignSelf: 'center'}}
-                                    placeholder='Enter phone number'
-                                    value={phoneNumber}
-                                    numberOfLines={1}
-                                    editable={phoneNumber.length < 15 }
-                                    keyboardType='numeric'
-                                    onChangeText={(text) => setPhoneNumber(text)}
-                                 /> 
+  const handleInputChange = (text, setInput, maxLength) => {
+    if (text.length <= maxLength) {
+        setInput(text);
+    }
+  };
   
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10 }}>
+  return (
+      <View style={{ backgroundColor: themeColors.lightGray }}>
+              <View style={styles.container}>
 
-                                    <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                        text='Yes'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
-                                        onPress={() => { if(!phoneNumber.length) return; setModalPhoneVisible(false);}}
-                                    />
+                  <View style={styles.header}>
+                      <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
+                          <Fontisto name="arrow-right" size={24} color={themeColors.primaryText} style={{ transform: [{ scaleX: -1 }] }} />
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
+                      <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryBackground }]} onPress={handleAddPost}>
+                          <Text style={{ fontSize: 15 }}>Post</Text>
+                      </TouchableOpacity>
+                  </View>
 
-                                    <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                        text='No'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                                        onPress={() => { setModalPhoneVisible(false) }}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+                  <ScrollView>
+                      <View style={{ minHeight: '100%' }}>
+                          <View>
+                              <TextInput
+                                  value={postInput}
+                                  onChangeText={(text) => handleInputChange(text, setPostInput, 3000)}
+                                  style={[styles.postInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
+                                  placeholder="What food would you like to save today?"
+                                  placeholderTextColor={themeColors.placeholderText}
+                                  multiline
+                              />
+                              {messError && <Text style={{ color: 'red', fontSize: 15, marginLeft:5 }}>{messError}</Text>}
+                              <Text style={{marginBottom:7}}>{postInput.length}/3000</Text>
+                              <TextInput
+                                  value={timeInput}
+                                  onChangeText={(text) => handleInputChange(text, setTimeInput, 30)}
+                                  style={[styles.timeInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
+                                  placeholder="What are the delivery times?"
+                                  placeholderTextColor={themeColors.placeholderText}
+                                  multiline
+                              />
+                              <Text>{timeInput.length}/30</Text>
+                              <Text></Text>
+                          </View>
 
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={categoryModalVisible}
-                    >
-                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                            <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
-
-                                <Text style={[styles.modalText, { fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
-                                <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
-                                    {options.map((option) => (
-                                        <CheckBox
-                                            style={[styles.checkboxWrapper, { backgroundColor: themeColors.secondaryBackground }]}
-                                            key={option.value}
-                                            title={option.value}
-                                            checked={selectedOptions.includes(option.value)}
-                                            onPress={() => handleCheck(option)}
-                                            textStyle={{ color: themeColors.primaryText }}
-                                            containerStyle={{ backgroundColor: themeColors.secondaryBackground }}
-                                        />
-                                    ))}
-                                </View>
-
-                                <MyButton
-                                    style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
-                                    text='Done'
-                                    styleText={{ fontSize: 15, color: themeColors.primaryText, fontWeight: 'bold'}}
-                                    onPress={handleCloseCategoryModal}
-                                />
-
-                            </View>
-                        </View>
-                    </Modal>
-
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={showLocationModel}
-                    >
-                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-
-                            <View style={[styles.modal, { marginTop: '55%', backgroundColor: themeColors.white }]}>
-
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Do you agree to publish your location at this post?</Text>
-
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
-
-                                    <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                        text='Yes'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
-                                        onPress={handleAddLocation}
-                                    />
-
-                                    <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                        text='No'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText}}
-                                        onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
-                                    />
-
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
-
-                    <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalCloseVisible}
-                    >
-                        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-
-                            <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
-
-                                <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
-
-                                <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
-                                    <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                        text='Yes'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText }}
-                                        onPress={confirmClose}
-                                    />
-
-                                    <MyButton
-                                        style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                        text='No'
-                                        styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
-                                        onPress={() => { setModalCloseVisible(false) }}
-                                    />
-                                </View>
-                            </View>
-                        </View>
-                    </Modal>
+            <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+              {images.map((image, index) => (
+                <View key={index}>
+                  <Image
+                    source={{ uri: image }}
+                    style={{ width: 100, height: 100 }}
+                  />
+                  <TouchableOpacity
+                    style={{
+                      position: "absolute",
+                      top: 10,
+                      right: 10,
+                      backgroundColor: themeColors.black,
+                      borderRadius: 50,
+                      padding: 5,
+                    }}
+                    onPress={() => handleImagePress(index)}
+                  >
+                    <MaterialIcons name="close" size={24} color="white" />
+                  </TouchableOpacity>
                 </View>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
 
-            {isUploading && (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                  <ActivityIndicator size="large" color={themeColors.primaryText} />
-             </View>)}
+        <View
+          style={[
+            styles.iconsWrapper,
+            { backgroundColor: themeColors.secondaryBackground },
+          ]}
+        >
+          <TouchableOpacity>
+            <Entypo
+              name="camera"
+              size={26}
+              color={themeColors.primaryText}
+              onPress={handleOpenCamera}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MaterialIcons
+              name="photo-library"
+              size={26}
+              color={themeColors.primaryText}
+              onPress={handleAddImages}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MaterialCommunityIcons
+              name="map-marker"
+              size={26}
+              color={themeColors.primaryText}
+              onPress={handleAddLocation}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MaterialCommunityIcons
+              name="phone"
+              size={26}
+              color={themeColors.primaryText}
+              onPress={handelAddPhone}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <MaterialIcons
+              name="category"
+              size={26}
+              color={themeColors.primaryText}
+              onPress={handelAddCategory}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
         </View>
-    );
+
+                  <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalPhoneVisible}
+                      onRequestClose={() => {
+                          console.log('close modal');
+                      }}
+                  >
+                      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                          <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+
+                                <Text style={[styles.modalText, { color: themeColors.primaryText}]}>
+                                      Would you like to add a number to the post?
+                                </Text>
+
+                              <TextInput 
+                                  style={{ borderWidth: 1, borderColor: 'gray', padding: 10, margin: 7, borderRadius: 5, width: '90%', alignSelf: 'center'}}
+                                  placeholder='Enter phone number'
+                                  value={phoneNumber}
+                                  numberOfLines={1}
+                                  editable={phoneNumber.length < 15 }
+                                  keyboardType='numeric'
+                                  onChangeText={(text) => setPhoneNumber(text)}
+                                /> 
+
+                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10 }}>
+
+                                  <MyButton
+                                      style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                      text='Yes'
+                                      styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                      onPress={() => { if(!phoneNumber.length) return; setModalPhoneVisible(false);}}
+                                  />
+
+                                  <MyButton
+                                      style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                      text='No'
+                                      styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                      onPress={() => { setModalPhoneVisible(false) }}
+                                  />
+                              </View>
+                          </View>
+                      </View>
+                  </Modal>
+
+                  <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={categoryModalVisible}
+                  >
+                      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                          <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
+
+                              <Text style={[styles.modalText, { fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
+                              <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
+                                  {options.map((option) => (
+                                      <CheckBox
+                                          style={[styles.checkboxWrapper, { backgroundColor: themeColors.secondaryBackground }]}
+                                          key={option.value}
+                                          title={option.value}
+                                          checked={selectedOptions.includes(option.value)}
+                                          onPress={() => handleCheck(option)}
+                                          textStyle={{ color: themeColors.primaryText }}
+                                          containerStyle={{ backgroundColor: themeColors.secondaryBackground }}
+                                      />
+                                  ))}
+                              </View>
+
+                              <MyButton
+                                  style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
+                                  text='Done'
+                                  styleText={{ fontSize: 15, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                  onPress={handleCloseCategoryModal}
+                              />
+
+                          </View>
+                      </View>
+                  </Modal>
+
+                  <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={showLocationModel}
+                  >
+                      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+
+                          <View style={[styles.modal, { marginTop: '55%', backgroundColor: themeColors.white }]}>
+
+                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Do you agree to publish your location at this post?</Text>
+
+                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
+
+                                  <MyButton
+                                      style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                      text='Yes'
+                                      styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
+                                      onPress={handleAddLocation}
+                                  />
+
+                                  <MyButton
+                                      style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                      text='No'
+                                      styleText={{ fontSize: 17, color: themeColors.primaryText}}
+                                      onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
+                                  />
+
+                              </View>
+                          </View>
+                      </View>
+                  </Modal>
+
+                  <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalCloseVisible}
+                  >
+                      <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+
+                          <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+
+                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
+
+                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
+                                  <MyButton
+                                      style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                      text='Yes'
+                                      styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                      onPress={confirmClose}
+                                  />
+
+                                  <MyButton
+                                      style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                      text='No'
+                                      styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                      onPress={() => { setModalCloseVisible(false) }}
+                                  />
+                              </View>
+                          </View>
+                      </View>
+                  </Modal>
+              </View>
+
+          {isUploading && (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <ActivityIndicator size="large" color={themeColors.primaryText} />
+            </View>)}
+      </View>
+  );
 }
 
 const styles = StyleSheet.create({

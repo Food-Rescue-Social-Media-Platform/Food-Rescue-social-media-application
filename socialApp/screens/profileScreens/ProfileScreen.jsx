@@ -76,9 +76,7 @@ const ProfileScreen = ({ navigation, route }) => {
     } else {
         setLoading(true);
     }
-    console.log("Before: Last index:", lastIndex)
     const result = await getPostsOfUser(postUserId, userData, lastIndex);
-    console.log("After: Last index:", result.lastIndex, " hasMore:", result.hasMore);
     if (loadMore) {
       setUserPosts(prevPosts => {
           return [...prevPosts, ...result.posts];
@@ -90,50 +88,6 @@ const ProfileScreen = ({ navigation, route }) => {
     setLastIndex(result.lastIndex);
     setLoading(false);
     setLoadingMore(false);
-
-
-    
-    // try {
-    //   const userDocRef = doc(database, "users", postUserId);
-    //   const userDocSnap = await getDoc(userDocRef);
-    //   const postsIdArray = userDocSnap.data()?.postsId;
-
-    //   const userPostsData = [];
-
-    //   if (postsIdArray?.length === 0 || !postsIdArray || !userDocSnap.exists()) {
-    //     setUserPosts([]);
-    //     setLoading(false);
-    //     return;
-    //   }
-
-    //   for (const postId of postsIdArray) {
-    //     const postDocRef = doc(database, "posts", postId);
-    //     const postDocSnap = await getDoc(postDocRef);
-    //     if (postDocSnap.exists()) {
-    //       const postData = postDocSnap.data();
-    //       if (userData) {
-    //         postData.firstName = userData.firstName;
-    //         postData.lastName = userData.lastName;
-    //         postData.userName = userData.userName;
-    //         postData.userImg = userData.profileImg;
-    //         await updateDoc(postDocRef, {
-    //           firstName: userData.firstName,
-    //           lastName: userData.lastName,
-    //           userName: userData.userName,
-    //           userImg: userData.profileImg
-    //         });
-    //       }
-    //       userPostsData.push({ id: postId, ...postData });
-    //     }
-    //   }
-
-    //   setUserPosts(userPostsData);
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.error("Error fetching user posts:", error);
-    //   setError(error.message);
-    //   setLoading(false);
-    // }
   };
 
   const handleFollowButton = async () => {

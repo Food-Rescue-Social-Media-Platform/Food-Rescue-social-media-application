@@ -522,6 +522,8 @@ const styles = StyleSheet.create({
       width: 0,
       height: 3,
     },
+    borderColor: "#fff",
+    borderWidth: 0.6,
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,

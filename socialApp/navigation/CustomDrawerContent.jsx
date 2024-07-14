@@ -13,6 +13,7 @@ import { categoriesList } from '../utils/categories';
 import { CheckBox } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
+import {windowHeight} from '../utils/Dimentions';
 
 const MIN_RADIUS = 10;
 const MAX_RADIUS = 50;
@@ -215,14 +216,14 @@ const CustomDrawerContent = (props) => {
 
               <View style={{flex:1, flexDirection:'row', marginTop:'5%'}}>
                   <TouchableOpacity
-                    style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
+                    style={[styles.drawerItem, {backgroundColor: '#A7EAAE', width:'45%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40}]}
                     onPress={() => handelClickFilter()}
                   >
                   <Text style={{color: COLORS.white}}>Done</Text>
                   </TouchableOpacity>
                   
                   <TouchableOpacity
-                    style={[styles.drawerItem, {backgroundColor: '#007BFF', width:'45%', marginTop:'10%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40, marginBottom: 10,}]}
+                    style={[styles.drawerItem, {backgroundColor: '#A7EAAE', width:'45%', alignSelf:'center', borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', height: 40}]}
                     onPress={() => handelClickClear()}
                   >
                   <Text style={{color: COLORS.white}}>Clear</Text>
@@ -232,7 +233,7 @@ const CustomDrawerContent = (props) => {
       </>
       ) : (null)}
     
-      <View style={{marginTop:'7%'}}>
+      <View style={{marginTop:'10%'}}>
         <View style={styles.switchContainer}>
           <Text style={{ color: isDarkMode ? theme.lightGray : theme.primaryText }}>{t('Dark Mode')}</Text>
           <Switch
@@ -259,7 +260,12 @@ const CustomDrawerContent = (props) => {
             ))}
         </View>
         <View style={styles.logoutButton}>
-              <FormButton buttonTitle={t('logout')} onPress={() => logout()} />
+          <TouchableOpacity
+              style={styles.buttonContainer}
+              onPress={() => logout()}
+            >
+              <Text style={styles.buttonText}>{t('logout')}</Text>
+          </TouchableOpacity>
         </View>
         </View>
       </View> 
@@ -288,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedDrawerItem: {
-    backgroundColor: '#007BFF', // Blue color for the selected button
+    backgroundColor: '#A7EAAE', // Blue color for the selected button
   },
   checkboxWrapper: {
     padding: 4,
@@ -321,7 +327,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   selectedLanguageButton: {
-    backgroundColor: '#007BFF', // Blue color for the selected button
+    backgroundColor: '#A7EAAE', // Blue color for the selected button
   },
   SelectLanguage:{
     fontSize: 14,
@@ -332,6 +338,23 @@ const styles = StyleSheet.create({
     width: '80%',
     alignSelf: 'center',
   },
+  buttonContainer: {
+      marginTop: 10,
+      width: '95%',
+      height: windowHeight / 15,
+      backgroundColor: "#A7EAAE",
+      padding: 10,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#444',
+    },
+    buttonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: COLORS.white,
+    },
 });
 
 export default CustomDrawerContent;

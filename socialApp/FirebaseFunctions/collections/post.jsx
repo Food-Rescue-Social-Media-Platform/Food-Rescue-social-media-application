@@ -2,7 +2,8 @@ import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, st
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 
-let PAGE_SIZE = 2;
+let PAGE_SIZE =10;
+let PAGE_SIZE_POSTS_PROFILE = 5;
 
 export class Post {
     constructor(
@@ -280,6 +281,47 @@ export async function getPost(postId) {
 
 }
 
+export async function getPostsOfUser(postUserId, userData, lastIndex) {
+    try {
+      const userDocRef = doc(database, "users", postUserId);
+      const userDocSnap = await getDoc(userDocRef);
+      const postsIdArray = userDocSnap.data()?.postsId;
+  
+      const userPostsData = [];
+      let i;
+  
+      if (!Array.isArray(postsIdArray) || postsIdArray.length === 0 || !userDocSnap.exists()) {
+        return { posts: [], lastIndex: 0, hasMore: false};
+      }
+  
+      for (i = lastIndex; i < lastIndex + PAGE_SIZE_POSTS_PROFILE && i < postsIdArray.length; i++) {
+        const postId = postsIdArray[i];
+        const postDocRef = doc(database, "posts", postId);
+        const postDocSnap = await getDoc(postDocRef);
+  
+        if (postDocSnap.exists()) {
+          const postData = postDocSnap?.data();
+          if (userData) {
+            postData.firstName = userData.firstName;
+            postData.lastName = userData.lastName;
+            postData.userName = userData.userName;
+            postData.userImg = userData.profileImg;
+          }
+          userPostsData.push({ id: postId, ...postData });
+        }
+      }
+  
+      console.log("post from user:", userPostsData);
+      if(i === postsIdArray.length)
+         return { posts: userPostsData, lastIndex: i, hasMore: false};
+      else
+         return { posts: userPostsData, lastIndex: i, hasMore: true};
+
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+      return { posts: [], lastIndex: lastIndex, hasMore: false};
+    }
+  }
 // export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
 //     const bounds = geofire.geohashQueryBounds(center, radiusInM);
 //     const promises = [];

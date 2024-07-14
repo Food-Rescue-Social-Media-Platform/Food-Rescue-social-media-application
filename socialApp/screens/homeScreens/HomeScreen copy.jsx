@@ -10,7 +10,6 @@ import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
 import { Button } from 'react-native-elements';
-import PostsList from '../../components/postsLIst/PostsList';
 
 const HomeScreen = () => {
     const route = useRoute();
@@ -169,6 +168,16 @@ const HomeScreen = () => {
 
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+  {/*<MapView
+    provider={PROVIDER_GOOGLE}
+    initialRegion={{
+      latitude: 37.78825,
+      longitude: -122.4324,
+      latitudeDelta: 0.0922,
+      longitudeDelta: 0.0421,
+    }}
+  />
+</View>*/}
                <AddPostCard/>
                { permissionDenied &&
                     <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
@@ -184,16 +193,37 @@ const HomeScreen = () => {
                     </View>
                 }
 
-                <PostsList  
-                   posts={posts} 
-                   loadMore={loadMore} 
-                   loadingMore={loadingMore} 
-                   position={position}
-                   refreshing={refreshing}
-                   onRefresh={onRefresh}
-                   isProfilePage={false}
-                   theme={theme}
-                />
+                <FlatList
+                    data={posts}
+                    style={{ width: '100%' }}
+                    renderItem={({ item, index }) => {
+                        if (item && item.id) {
+                            return <PostCard key={item.id} item={item} navigation={navigation} postUserId={item.userId} isProfilePage={false} userLocation={position} />;
+                        } else {
+                            return null;
+                        }
+                    }}
+                    keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.flatListContent}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={theme.primaryText}
+                        />
+                    }
+                    onEndReached={loadMore}
+                    onEndReachedThreshold={0.1}
+                    ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                    ListEmptyComponent={() => (
+                        <View style={styles.emptyContainer}>
+                           { position &&
+                               <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
+                            }
+                        </View>
+                    )}
+            /> 
         </Container>
     );
 };

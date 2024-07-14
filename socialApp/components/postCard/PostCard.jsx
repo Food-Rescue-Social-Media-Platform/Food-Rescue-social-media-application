@@ -70,9 +70,9 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const [ distance, setDistance ] = useState(0);
     const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
     useEffect(() => {
-        if (!item.coordinates || (item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
+        if (!item.coordinates || (item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation || isProfilePage) 
+            return;
         setHaveSharedLocation(true);
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude, setDistance);
     }, [userLocation]);
@@ -336,7 +336,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     <MaterialCommunityIcons name="clock" size={22} color={theme.primaryText} />
                     <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
                 </View>
-                {haveSharedLocation && (
+                {haveSharedLocation && !isProfilePage && (
                     <View style={styles.iconsWrapper}>
                         <TouchableOpacity onPress={handleClickLocationPost}>
                             <MaterialCommunityIcons name="map-marker" size={22} color={theme.primaryText} />

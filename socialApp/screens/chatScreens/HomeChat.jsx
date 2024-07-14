@@ -46,7 +46,7 @@ const HomeChat = ({ navigation }) => {
           {item.receiver}
         </ListItem.Title>
 
-        <ListItem.Subtitle numberOfLines={1} style={{ ...styles.listItemSubtitle, color: theme.secondaryText }}>
+        <ListItem.Subtitle numberOfLines={1} style={{ ...styles.listItemSubtitle, color: theme.primaryText }}>
           {item.lastMsg}
         </ListItem.Subtitle>
       </ListItem.Content>
@@ -63,7 +63,7 @@ const HomeChat = ({ navigation }) => {
           value={search}
           onChangeText={(text) => setSearch(text)}
           placeholder={t("Search")}
-          placeholderTextColor={theme.secondaryText}
+          placeholderTextColor={theme.primaryText}
           keyboardType="default"
         />
       </View>

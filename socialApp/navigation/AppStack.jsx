@@ -303,6 +303,8 @@ const RootStackScreen = () => {
   const { user } = useContext(AuthContext); // Assuming you have access to the authenticated user
   const [isAdmin, setIsAdmin] = useState(false);
   const { t } = useTranslation();
+  const { isDarkMode, theme } = useDarkMode();
+  const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
   const fetchUser = async (id) => {
     try {
@@ -334,7 +336,6 @@ const RootStackScreen = () => {
 
   return (
     <I18nextProvider i18n={i18n}>
-      <DarkModeProvider>
         <RootStack.Navigator>
           {isAdmin ? (
             <RootStack.Screen name="Admin" component={AdminScreen} options={{ headerShown: false }} />
@@ -351,7 +352,7 @@ const RootStackScreen = () => {
                     color: COLORS.blueHeaderText,
                   },
                   headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
+                    backgroundColor: themeColors.appBackGroundColor,
                     shadowColor: COLORS.white,
                     elevation: 0,
                   },
@@ -383,7 +384,7 @@ const RootStackScreen = () => {
                     color: COLORS.blueHeaderText,
                   },
                   headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
+                    backgroundColor: themeColors.appBackGroundColor,
                     shadowColor: COLORS.white,
                     elevation: 0,
                   },
@@ -399,7 +400,7 @@ const RootStackScreen = () => {
                     color: COLORS.blueHeaderText,
                   },
                   headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
+                    backgroundColor: themeColors.appBackGroundColor,
                     shadowColor: COLORS.white,
                     elevation: 0,
                   },
@@ -415,7 +416,7 @@ const RootStackScreen = () => {
                     color: COLORS.blueHeaderText,
                   },
                   headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
+                    backgroundColor: themeColors.appBackGroundColor,
                     shadowColor: COLORS.white,
                     elevation: 0,
                   },
@@ -431,7 +432,7 @@ const RootStackScreen = () => {
                     color: COLORS.blueHeaderText,
                   },
                   headerStyle: {
-                    backgroundColor: COLORS.appBackGroundColor,
+                    backgroundColor: themeColors.appBackGroundColor,
                     shadowColor: COLORS.white,
                     elevation: 0,
                   },
@@ -440,7 +441,6 @@ const RootStackScreen = () => {
             </>
           )}
         </RootStack.Navigator>
-      </DarkModeProvider>
     </I18nextProvider>
   );
 };

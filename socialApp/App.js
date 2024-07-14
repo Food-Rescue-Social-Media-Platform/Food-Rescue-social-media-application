@@ -1,12 +1,15 @@
 import React from "react";
 import Providers from './navigation'
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { DarkModeProvider, useDarkMode } from './styles/DarkModeContext';
 
 const App = () => {
   
   return (
       <SafeAreaProvider>
-        <Providers/>
+        <DarkModeProvider>
+          <Providers/>
+        </DarkModeProvider>
       </SafeAreaProvider>
   )
 }

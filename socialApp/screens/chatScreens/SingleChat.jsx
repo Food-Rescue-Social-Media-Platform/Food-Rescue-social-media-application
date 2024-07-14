@@ -98,7 +98,7 @@ const SingleChat = ({ navigation }) => {
                         numberOfLines={5}
                         value={msg}
                         style={{ color: theme.primaryText }}
-                        placeholderTextColor={theme.secondaryText}
+                        placeholderTextColor={theme.primaryText}
                     />
                 </ScrollView>
             </View>

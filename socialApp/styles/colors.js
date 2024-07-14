@@ -15,6 +15,7 @@ export const COLORS = {
     blueHeaderText: '#2e64e5',
     appBackGroundColor: '#f9fafd',
     lightGray: '#f5f5f5',
+    iconColor: '#000',
 }
 
 export const DARKCOLORS = {
@@ -34,4 +35,5 @@ export const DARKCOLORS = {
     blueHeaderText: '#1E88E5', // Adjusted blue header text color
     appBackGroundColor: '#121212', // Very dark background
     lightGray: '#424242', // Darker gray for light gray elements
+    iconColor: '#fff',
 };

@@ -16,6 +16,7 @@ export const COLORS = {
     appBackGroundColor: '#f9fafd',
     lightGray: '#f5f5f5',
     iconColor: '#000',
+    placeholderText: '#000',
 }
 
 export const DARKCOLORS = {
@@ -36,4 +37,5 @@ export const DARKCOLORS = {
     appBackGroundColor: '#121212', // Very dark background
     lightGray: '#424242', // Darker gray for light gray elements
     iconColor: '#fff',
+    placeholderText: '#fff',
 };

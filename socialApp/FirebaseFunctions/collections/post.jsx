@@ -283,6 +283,7 @@ export async function getPost(postId) {
 
 export async function getPostsOfUser(postUserId, userData, lastIndex) {
     try {
+        console.log("postUserId:", postUserId, "userData: ", userData, "lastIndex:", lastIndex);
       const userDocRef = doc(database, "users", postUserId);
       const userDocSnap = await getDoc(userDocRef);
       const postsIdArray = userDocSnap.data()?.postsId;
@@ -301,6 +302,7 @@ export async function getPostsOfUser(postUserId, userData, lastIndex) {
   
         if (postDocSnap.exists()) {
           const postData = postDocSnap?.data();
+          console.log("POST DATA:", postData);
           if (userData) {
             postData.firstName = userData.firstName;
             postData.lastName = userData.lastName;

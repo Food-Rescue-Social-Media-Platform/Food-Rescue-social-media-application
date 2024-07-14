@@ -53,6 +53,8 @@ const ProfileScreen = ({ navigation, route }) => {
           setUserData(user_data);
           setRating(user_data.rating);
     }
+    await fetchUserPosts();
+
   };
 
   const fetchUser = async (id) => {
@@ -74,9 +76,10 @@ const ProfileScreen = ({ navigation, route }) => {
     if (loadMore) {
         setLoadingMore(true);
     } else {
-        setLoading(true);
+      setLoading(true);
     }
-    const result = await getPostsOfUser(postUserId, userData, lastIndex);
+    const lastIndexInPost = loadMore? lastIndex : 0;
+    const result = await getPostsOfUser(postUserId, userData, lastIndexInPost);
     if (loadMore) {
       setUserPosts(prevPosts => {
           return [...prevPosts, ...result.posts];
@@ -142,9 +145,14 @@ const ProfileScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if (isFocused) {
-      setLoading(true);
-      fetchUserData();
-      fetchUserPosts();
+      const loadData = async () =>{
+        setLastIndex(0);
+        setHasMore(true);
+        setLoading(true);
+        await fetchUserData();
+      } 
+      loadData();
+
       const checkFollowingStatus = async () => {
         try {
           const loggedInUserDocRef = doc(database, "users", user.uid);
@@ -166,9 +174,10 @@ const ProfileScreen = ({ navigation, route }) => {
   };
 
   const onRefresh = async () => {
+    setLastIndex(0);
+    setHasMore(true);
     setRefreshing(true);
     await fetchUserData();
-    await fetchUserPosts();
     setRefreshing(false);
   };
 

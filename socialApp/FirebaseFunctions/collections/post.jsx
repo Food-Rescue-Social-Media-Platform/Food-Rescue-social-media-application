@@ -3,7 +3,7 @@ import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 
 let PAGE_SIZE =10;
-let PAGE_SIZE_POSTS_PROFILE = 1;
+let PAGE_SIZE_POSTS_PROFILE = 5;
 
 export class Post {
     constructor(

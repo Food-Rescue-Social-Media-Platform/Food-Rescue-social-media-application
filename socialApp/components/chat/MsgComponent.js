@@ -10,7 +10,6 @@ const MsgComponent = (props) => {
     const { user, logout } = useContext(AuthContext);
     const { item } = props;
     const formatDate = moment(item.sentTime).format('LT');
-    console.log("MsgComponent, sender", item.sender, "user", user.uid, "item", item);
     
     return (
         <View style= {[styles.msgBox, item.from === user.uid ? styles.right : styles.left ]}>

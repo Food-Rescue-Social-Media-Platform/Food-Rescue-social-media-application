@@ -21,6 +21,7 @@ import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
 import * as Linking from 'expo-linking';
 import { ViewPropTypes } from 'deprecated-react-native-prop-types';
+// import Share from 'react-native-share';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -66,16 +67,20 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { user } = useContext(AuthContext);
     const { theme } = useDarkMode();
     const { t } = useTranslation();
-    const [distance, setDistance] = useState(0);
-    const [haveSharedLocation, setHaveSharedLocation] = useState(false);
+    const [ distance, setDistance ] = useState(0);
+    const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
     useEffect(() => {
-        if (!item.coordinates || (item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation) return;
+        if (!item.coordinates || (item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation || isProfilePage) 
+            return;
         setHaveSharedLocation(true);
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude, setDistance);
     }, [userLocation]);
 
+     // Check if userImg and postImg are available
+     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
+     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
+ 
     const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
     const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';
 
@@ -194,7 +199,8 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             }}>
                 <UserInfo>
                     <TouchableOpacity onPress={handleUserPress}>
-                        {item.userImg ? (
+                        {/* Conditional rendering for user image */}
+                        {isUserImgAvailable ? (
                             <Image source={{ uri: item.userImg }} style={styles.image} />
                         ) : (
                             <View style={styles.placeholderImage} />
@@ -330,7 +336,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     <MaterialCommunityIcons name="clock" size={22} color={theme.primaryText} />
                     <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
                 </View>
-                {haveSharedLocation && (
+                {haveSharedLocation && !isProfilePage && (
                     <View style={styles.iconsWrapper}>
                         <TouchableOpacity onPress={handleClickLocationPost}>
                             <MaterialCommunityIcons name="map-marker" size={22} color={theme.primaryText} />

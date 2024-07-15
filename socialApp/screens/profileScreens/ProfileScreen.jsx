@@ -207,7 +207,7 @@ const ProfileScreen = ({ navigation, route }) => {
   };
 
   const renderHeader = () => (
-    <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]} >
+    <View style={[styles.container,{ backgroundColor: themeColors.appBackGroundColor }]} >
      {userData && (
         <View style={styles.header}>
           <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/cover.png')} style={styles.coverImage} />              
@@ -219,142 +219,140 @@ const ProfileScreen = ({ navigation, route }) => {
           </View>
         </View>
       )}
-            <View style={{marginHorizontal:'20%' }}>
+        <View style={{marginHorizontal:'20%' }}>
+          <View style={styles.profileInfo}>
+            <View style={styles.stats}>
+              <View style={styles.userInfoContainer}>
+                <View style={styles.iconContainer}>
+                  {postUserId === user.uid ? (
+                    <View>
+                      <View style={styles.iconContainer}>
+                        {renderStars()}
+                      </View>
+                      <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>{t('Rating')}</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity onPress={() => navigation.navigate('Rating', { userData })}>
+                      <View style={styles.iconContainer}>
+                        {renderStars()}
+                      </View>
+                      <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>{t('Rating')}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
 
-      <View style={styles.profileInfo}>
-        <View style={styles.stats}>
-          <View style={styles.userInfoContainer}>
-            <View style={styles.iconContainer}>
-              {postUserId === user.uid ? (
-                <View>
+              <View style={styles.userInfoContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Following List', { userData })}>
                   <View style={styles.iconContainer}>
-                    {renderStars()}
+                    <MaterialCommunityIcons name={'heart'} size={22} color={themeColors.black} />
+                    <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followingNum || 0}</Text>
                   </View>
-                  <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>{t('Rating')}</Text>
+                  <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Following')}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.userInfoContainer}>
+                <TouchableOpacity onPress={() => navigation.navigate('Followers List', { userData })}>
+                  <View style={styles.iconContainer}>
+                    <MaterialCommunityIcons name={'account-group'} size={22} color={themeColors.black} />
+                    <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followersNum || 0}</Text>
+                  </View>
+                  <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Followers')}</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.userInfoContainer}>
+                <View style={styles.iconContainer}>
+                  <MaterialCommunityIcons name={'send'} size={22} color={themeColors.black} />
+                  <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.postsNum || 0}</Text>
+                </View>
+                <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Posts')}</Text>
+              </View>
+
+            </View>
+          </View>
+        
+            {Platform.OS === 'web' && (
+            <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+              <Container style={[
+                  postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
+                  { backgroundColor: themeColors.appBackGroundColor }
+              ]}>
+                {postUserId === user.uid ?
+                  <View style={styles.buttons}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                      <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
+                      <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
+                    </TouchableOpacity>
+                  </View>
+                  :
+                  <View style={styles.buttons}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
+                      <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
+                      <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
+                    </TouchableOpacity>
+                  </View>
+                }
+
+                <View>
+                  <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
+                </View>
+                <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
+                  <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
+                  <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
+                </View>
+              </Container>
+              <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+                {postUserId === user.uid && <AddPostCard />}
+                <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
+              </Container>
+            </View>
+          )} 
+          
+          {Platform.OS !== 'web' && (
+            <View style={backgroundColor=themeColors.appBackGroundColor}>
+              {postUserId === user.uid ? (
+                <View style={styles.buttons}>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
+                  </TouchableOpacity>
                 </View>
               ) : (
-                <TouchableOpacity onPress={() => navigation.navigate('Rating', { userData })}>
-                  <View style={styles.iconContainer}>
-                    {renderStars()}
-                  </View>
-                  <Text style={[styles.wordRatingStat, { color: themeColors.black }]}>{t('Rating')}</Text>
-                </TouchableOpacity>
+                <View style={styles.buttons}>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
+                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
+                  </TouchableOpacity>
+                </View>
               )}
-            </View>
-          </View>
-
-          <View style={styles.userInfoContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate('Following List', { userData })}>
-              <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'heart'} size={22} color={themeColors.black} />
-                <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followingNum || 0}</Text>
+              <View>
+                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
               </View>
-              <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Following')}</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.userInfoContainer}>
-            <TouchableOpacity onPress={() => navigation.navigate('Followers List', { userData })}>
-              <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name={'account-group'} size={22} color={themeColors.black} />
-                <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.followersNum || 0}</Text>
+              <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
+                <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
+                <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
               </View>
-              <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Followers')}</Text>
-            </TouchableOpacity>
-          </View>
 
-          <View style={styles.userInfoContainer}>
-            <View style={styles.iconContainer}>
-              <MaterialCommunityIcons name={'send'} size={22} color={themeColors.black} />
-              <Text style={[styles.statNumValue, { color: themeColors.black }]}>{userData?.postsNum || 0}</Text>
-            </View>
-            <Text style={[styles.wordStat, { color: themeColors.black }]}>{t('Posts')}</Text>
-          </View>
+              {/*Add post card*/}
+                <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
+                  {postUserId === user.uid && <AddPostCard />}
+                </View>
 
-        </View>
-      </View>
-      {Platform.OS === 'web' && (
-        <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
-          <Container style={[
-              postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
-              { backgroundColor: themeColors.appBackGroundColor }
-          ]}>
-            {postUserId === user.uid ?
-              <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
-                </TouchableOpacity>
+                <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
+
               </View>
-              :
-              <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
-                </TouchableOpacity>
-              </View>
-            }
-
-            <View>
-              <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
-            </View>
-            <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-              <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
-              <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
-            </View>
-          </Container>
-          <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
-            {postUserId === user.uid && <AddPostCard />}
-            <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-            {userPosts.map(post => (
-              <WebPostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
-            ))}
-          </Container>
-        </View>
-      )}
-      {Platform.OS !== 'web' && (
-        <View style={backgroundColor=themeColors.appBackGroundColor}>
-          {postUserId === user.uid ? (
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
-              </TouchableOpacity>
-            </View>
           )}
-          <View>
-            <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
-          </View>
-          <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-            <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
-            <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
-          </View>
-
-          {/*Add post card*/}
-            <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-              {postUserId === user.uid && <AddPostCard />}
-            </View>
-
-            <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-
-          </View>
-      )}
-          </View>
+        </View>
     </View>
   );
 
@@ -387,16 +385,13 @@ const ProfileScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
       <FlatList
-          data={userPosts}
-          style={{flex: 1,
-          backgroundColor:themeColors.appBackGroundColor}}
+          data={[userPosts]}
+          style={{ width: '100%', backgroundColor: theme.appBackGroundColor }}
           renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={(item) => item.id}
           ListHeaderComponent={renderHeader}
-          contentContainerStyle={{ }}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item, index) => item.id ? item.id : index.toString()}
           refreshControl={
             <RefreshControl 
               refreshing={refreshing} 
@@ -408,7 +403,6 @@ const ProfileScreen = ({ navigation, route }) => {
           onEndReachedThreshold={0.1}
           ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
       />
-    </View>
 
   );
   };
@@ -545,7 +539,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginLeft: '5%',
-    marginBottom: 5,
+    marginBottom:30,
   },
   loadingContainer: {
     flex: 1,
@@ -565,8 +559,6 @@ const styles = StyleSheet.create({
   postContainer:{
     width: '95%',  
     alignSelf: 'center',
-    marginTop:30,
-    marginBottom: 20,
   },
   containerShowCardAndList:{
     flex: 1,
@@ -577,6 +569,7 @@ const styles = StyleSheet.create({
     web: {
       container: {
         flex: 1,
+        backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
       },
@@ -604,7 +597,7 @@ const styles = StyleSheet.create({
         width: '70%',
         alignItems: 'center',
         marginTop: '1%',
-
+        marginBottom: '60',
       },
       header: {
         position: 'relative',
@@ -722,7 +715,7 @@ const styles = StyleSheet.create({
       PostsTitleText: {
         fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 5,
+        marginBottom: 40,
         marginLeft: '15%',
       },
       bioContent: {
@@ -734,6 +727,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
+      AddPostCardContainer:{
+        marginBottom:15,
+        marginTop:15,
+        marginLeft:20,
+        marginRight:20,
+      },
+      postContainer:{    
+        width: '65%',  
+        alignSelf: 'center',
+      }
     },
   }),
 });

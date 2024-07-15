@@ -296,7 +296,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             </View>
 
             {item.postImg && item.postImg.length > 0 ? (
-                <>
+                <View style={styles.imageContainer}>
                 <ScrollView
                     horizontal
                     pagingEnabled
@@ -322,7 +322,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     ))}
                 </View>
                 <Text style={{ color: theme.primaryText }}>{item.additionalInfo || ''}</Text>
-                </>
+                </View>
             ) : (
                 <Divider />
             )}
@@ -445,11 +445,13 @@ const styles = StyleSheet.create({
     dropdownItemIconStyle: {
         fontSize: 20,
     },
+    imageContainer:{
+      width: '100%',
+      overflow: 'hidden',
+    },
     postImage: {
         width: screenWidth,
-        height: 200,
         resizeMode: 'cover',
-        borderRadius: 8,
         ...Platform.select({
             web: {
                 height: 400, // Adjust height as needed
@@ -458,7 +460,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         width: screenWidth,
-        height: 200,
+        height: 210,
     },
     pagination: {
         flexDirection: 'row',

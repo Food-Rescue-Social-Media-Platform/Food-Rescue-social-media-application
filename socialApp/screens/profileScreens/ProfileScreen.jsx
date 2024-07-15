@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, FlatList, ActivityIndicator,Dimensions, TouchableOpacity, ScrollView, RefreshControl, Platform } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,6 +16,8 @@ import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMod
 import { useTranslation } from 'react-i18next';
 import PostsList from '../../components/postsLIst/PostsList';
 import { getPostsOfUser } from '../../FirebaseFunctions/collections/post';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 const ProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
@@ -206,7 +208,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
   const renderHeader = () => (
     <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]} >
-      {userData && (
+     {userData && (
         <View style={styles.header}>
           <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/cover.png')} style={styles.coverImage} />              
           <View style={styles.overlay}>
@@ -217,6 +219,8 @@ const ProfileScreen = ({ navigation, route }) => {
           </View>
         </View>
       )}
+            <View style={{marginHorizontal:'20%' }}>
+
       <View style={styles.profileInfo}>
         <View style={styles.stats}>
           <View style={styles.userInfoContainer}>
@@ -347,20 +351,20 @@ const ProfileScreen = ({ navigation, route }) => {
             </View>
 
             <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-            {/*<View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-              {userPosts.map(post => (
-                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
-              ))}
-            </View> */}
+
           </View>
       )}
+          </View>
     </View>
   );
 
   const renderItem = ({ item }) => (
-    Platform.OS === 'web' 
-      ? <WebPostCard style={styles.postCardContainer} item={item} postUserId={postUserId} isProfilePage={true} />
-      : <View style={styles.postCardContainer} ><PostCard item={item} postUserId={postUserId} isProfilePage={true} /></View>
+    <View style={styles.postContainer}>
+    {Platform.OS === 'web' 
+      ? <WebPostCard key={item.id} item={item} postUserId={postUserId} isProfilePage={true} />
+      : <PostCard key={item.id} item={item} postUserId={postUserId} isProfilePage={true} />
+    }
+  </View>
   );
 
 
@@ -383,24 +387,29 @@ const ProfileScreen = ({ navigation, route }) => {
   };
 
   return (
-    <FlatList
-      data={userPosts}
-      style={[{backgroundColor:themeColors.appBackGroundColor}]}
-      renderItem={renderItem}
-      showsVerticalScrollIndicator={false}
-      keyExtractor={(item) => item.id}
-      ListHeaderComponent={renderHeader}
-      refreshControl={
-        <RefreshControl 
-          refreshing={refreshing} 
-          onRefresh={onRefresh} 
-          tintColor={themeColors.black} 
-        />
-      }
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.1}
-      ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
-    />
+    <View style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+      <FlatList
+          data={userPosts}
+          style={{flex: 1,
+          backgroundColor:themeColors.appBackGroundColor}}
+          renderItem={renderItem}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          ListHeaderComponent={renderHeader}
+          contentContainerStyle={{ }}
+          refreshControl={
+            <RefreshControl 
+              refreshing={refreshing} 
+              onRefresh={onRefresh} 
+              tintColor={themeColors.black} 
+            />
+          }
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.1}
+          ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+      />
+    </View>
+
   );
   };
 
@@ -408,6 +417,8 @@ const ProfileScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   lowerContainer: {
     flex: 1,
@@ -548,8 +559,14 @@ const styles = StyleSheet.create({
     marginRight:20,
   },
   postCardContainer:{
-    marginLeft:20,
-    marginRight:20,
+    marginLeft:'20px',
+    marginRight:'20%',
+  },
+  postContainer:{
+    width: '95%',  
+    alignSelf: 'center',
+    marginTop:30,
+    marginBottom: 20,
   },
   containerShowCardAndList:{
     flex: 1,
@@ -560,6 +577,8 @@ const styles = StyleSheet.create({
     web: {
       container: {
         flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
       },
       CardContainer: {
         width: '70%',

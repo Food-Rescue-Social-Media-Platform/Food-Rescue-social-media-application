@@ -10,7 +10,6 @@ export const Container = styled.View`
 
 export const Card = styled.View`
     background-color: #CEF0D3;
-    ${Platform.OS === 'web' ? 'width: 70%;' : 'width: 100%;'}
     margin-bottom: 20px;
     border-radius: 10px;
     ${Platform.OS === 'web' ? 'margin-left:15%;' : ''}

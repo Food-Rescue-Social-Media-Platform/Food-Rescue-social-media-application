@@ -17,6 +17,7 @@ export const COLORS = {
     lightGray: '#f5f5f5',
     iconColor: '#000',
     placeholderText: '#000',
+    textLink: '#2e64e5',
 }
 
 export const DARKCOLORS = {
@@ -38,4 +39,5 @@ export const DARKCOLORS = {
     lightGray: '#424242', // Darker gray for light gray elements
     iconColor: '#fff',
     placeholderText: '#fff',
+    textLink: '#1E88E5', // Adjusted text link color
 };

@@ -18,6 +18,8 @@ import { getDoc, updateDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
 import { t } from 'i18next';
+import SearchAddress from '../../components/map/SearchAddress';
+import { color } from 'react-native-elements/dist/helpers';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -372,12 +374,12 @@ const AddPostScreen = () => {
 
                           <View style={[styles.modal, { marginTop: '55%', backgroundColor: themeColors.white }]}>
 
-                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Do you agree to publish your location at this post?</Text>
-
-                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
-
-                                  <MyButton
-                                      style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Add the address of the post delivery location:</Text>
+                              <SearchAddress style={{borderColor:themeColors.black, borderWidth:1}} onLocationSelected={setLocation} />
+                              {/* <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
+                                
+                                <MyButton
+                                style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                       text='Yes'
                                       styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
                                       onPress={handleAddLocation}
@@ -389,8 +391,16 @@ const AddPostScreen = () => {
                                       styleText={{ fontSize: 17, color: themeColors.primaryText}}
                                       onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
                                   />
+                                  </View>
+                                  */}
 
-                              </View>
+                              <MyButton
+                                  style={{ paddingLeft:20, height: 40, borderRadius: 10, alignSelf: 'left', marginTop: 10 }}
+                                  text="Attach my current location"
+                                  styleText={{ fontSize: 14, color: themeColors.textLink, textDecorationLine: 'underline' }}
+                                  onPress={() => { setShowLocationModel(false); }}
+                              />
+                              {location && <Text style={{color: themeColors.primaryText, marginBottom: 20, marginLeft:20}}>l</Text>}
                           </View>
                       </View>
                   </Modal>
@@ -531,7 +541,9 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     textAlign: "center",
-    margin: 20,
+    fontWeight: '400',
+    marginTop: 20,
+    // marginBottom: 5,
   },
   checkboxWrapper: {
     flexDirection: "row",

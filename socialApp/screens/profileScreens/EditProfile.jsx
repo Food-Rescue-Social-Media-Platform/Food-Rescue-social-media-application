@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS } from '../../styles/colors';
 import { database } from '../../firebase';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { openGalleryAndSelectImage } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { useDarkMode } from '../../styles/DarkModeContext';
@@ -43,15 +43,28 @@ const EditProfile = ({ navigation, route }) => {
 
             const userDocRef = doc(database, "users", user.uid);
             await updateDoc(userDocRef, {
-              ...userData,
-              firstName,
-              lastName,
-              phoneNumber: phone,
-              email,
-              userName: `${firstName} ${lastName}`,
-              profileCover: coverURL,
-              profileImg: profileURL,
-              bio
+                ...userData,
+                firstName,
+                lastName,
+                phoneNumber: phone,
+                email,
+                userName: `${firstName} ${lastName}`,
+                profileCover: coverURL,
+                profileImg: profileURL,
+                bio
+            });
+
+            // Retrieve all posts by this user
+            const userPostsQuery = query(collection(database, "posts"), where("userId", "==", user.uid));
+            const userPostsSnapshot = await getDocs(userPostsQuery);
+            
+            userPostsSnapshot.forEach(async (postDoc) => {
+                await updateDoc(postDoc.ref, {
+                    userName: `${firstName} ${lastName}`,
+                    userImg: profileURL,
+                    firstName,
+                    lastName
+                });
             });
 
             navigation.navigate('Profile', {
@@ -66,9 +79,9 @@ const EditProfile = ({ navigation, route }) => {
                 }
             });
 
-            console.log("User profile updated successfully");
+            console.log("User profile and posts updated successfully");
         } catch (error) {
-            console.error("Error updating user profile:", error);
+            console.error("Error updating user profile and posts:", error);
         }
     };
 
@@ -346,5 +359,4 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingLeft: 10,
         color: '#05375a',
-    },
-});
+    },});

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform, Share, Dimensions, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Share, Dimensions, ScrollView, Platform, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
@@ -19,9 +19,7 @@ import { deletePost } from '../../FirebaseFunctions/collections/post';
 import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
-import * as Linking from 'expo-linking';
-import { ViewPropTypes } from 'deprecated-react-native-prop-types';
-// import Share from 'react-native-share';
+import Toast from 'react-native-toast-message';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -67,9 +65,12 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { user } = useContext(AuthContext);
     const { theme } = useDarkMode();
     const { t } = useTranslation();
-    const [ distance, setDistance ] = useState(0);
-    const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
+    const [distance, setDistance] = useState(0);
+    const [haveSharedLocation, setHaveSharedLocation] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+
     useEffect(() => {
         if (!item.coordinates || (item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation || isProfilePage) 
             return;
@@ -77,9 +78,9 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude, setDistance);
     }, [userLocation]);
 
-     // Check if userImg and postImg are available
-     const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
-     const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
+    // Check if userImg and postImg are available
+    const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
+    const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
  
     const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
     const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';
@@ -88,10 +89,18 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         try {
             const postRef = doc(database, 'posts', item.id);
             await updateDoc(postRef, { status: selectedItem.status });
-            Alert.alert('Success', 'Status updated successfully.');
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Status updated successfully.',
+            });
         } catch (error) {
             console.error('Error updating status:', error);
-            Alert.alert('Error', 'Failed to update status.');
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to update status.',
+            });
         }
     };
 
@@ -111,10 +120,18 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                 reportedAt: new Date(),
             };
             await addDoc(collection(database, 'reports'), report);
-            Alert.alert('Success', 'Post reported successfully.');
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Post reported successfully.',
+            });
         } catch (error) {
             console.error('Error reporting post:', error);
-            Alert.alert('Error', 'Failed to report post.');
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to report post.',
+            });
         }
     };
 
@@ -132,12 +149,24 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     }
 
     const handleDelete = async () => {
+        setLoading(true);
+        setShowOptions(false);  // Close the popover
         try {
             await deletePost(item.id, postUserId);
-            Alert.alert('Success', 'Post deleted successfully.');
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Post deleted successfully.',
+            });
         } catch (error) {
             console.error('Error deleting post:', error);
-            Alert.alert('Error', 'Failed to delete post.');
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to delete post.',
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -189,10 +218,13 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         setCurrentImageIndex(index);
     };    
 
-    
-
     return (
         <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
+            {loading && (
+                <View style={styles.loadingOverlay}>
+                    <ActivityIndicator size="large" color={theme.primaryText} />
+                </View>
+            )}
             <View style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -229,6 +261,8 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                             )}
                             verticalOffset={-35}
                             horizontalOffset={-50}
+                            isVisible={showOptions}
+                            onRequestClose={() => setShowOptions(false)}
                         >
                             <View style={styles.menu}>
                                 {user && user.uid === postUserId && (

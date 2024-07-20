@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet, Platform, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { useTheme } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,6 +13,7 @@ import { uploadImages } from '../../FirebaseFunctions/firestore/UplaodImges';
 import { openGalleryAndSelectImage } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 const EditProfile = ({ navigation, route }) => {
     const { userData } = route.params;
@@ -26,6 +27,7 @@ const EditProfile = ({ navigation, route }) => {
     const [email, setEmail] = useState(userData?.email || '');
     const [userName, setUserName] = useState(userData?.userName || '');
     const [bio, setUserBio] = useState(userData?.bio || '');
+    const [loading, setLoading] = useState(false);
     const { t } = useTranslation();
 
     const handleAddUserProfileCover = async () => {
@@ -37,6 +39,7 @@ const EditProfile = ({ navigation, route }) => {
     }
 
     const updateUserProfile = async () => {
+        setLoading(true);
         try {
             const profileURL = await uploadImages(userProfileImage, 'usersImages/', 'image');
             const coverURL = await uploadImages(userProfileCover, 'usersCoverImages/', 'image');
@@ -78,10 +81,19 @@ const EditProfile = ({ navigation, route }) => {
                     bio
                 }
             });
-
-            console.log("User profile and posts updated successfully");
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'User profile and posts updated successfully.',
+            });
         } catch (error) {
-            console.error("Error updating user profile and posts:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: `Error updating user profile and posts: ${error.message}`,
+            });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -89,7 +101,7 @@ const EditProfile = ({ navigation, route }) => {
         <View style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
             <ScrollView>
                 <View style={{ alignItems: 'center' }}>
-                    <TouchableOpacity onPress={handleAddUserProfileCover}>
+                    <TouchableOpacity onPress={handleAddUserProfileCover} disabled={loading}>
                         <View
                             style={{
                                 height: 150,
@@ -131,7 +143,7 @@ const EditProfile = ({ navigation, route }) => {
                         </View>
                     </TouchableOpacity>
                     <Text></Text>
-                    <TouchableOpacity onPress={handleAddUserProfileImage}>
+                    <TouchableOpacity onPress={handleAddUserProfileImage} disabled={loading}>
                         <View
                             style={{
                                 height: 100,
@@ -264,8 +276,20 @@ const EditProfile = ({ navigation, route }) => {
                         onChangeText={text => setUserBio(text)}
                     />
                 </View>
-                <TouchableOpacity style={[styles.commandButton, { backgroundColor: theme.secondaryBackground }]} onPress={updateUserProfile}>
-                    <Text style={[styles.panelButtonTitle, { color: theme.primaryText }]}>{t('Submit')}</Text>
+                <TouchableOpacity 
+                    style={[
+                        styles.commandButton, 
+                        { backgroundColor: theme.secondaryBackground },
+                        loading && { opacity: 0.6 }
+                    ]}
+                    onPress={updateUserProfile}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator size="small" color={theme.primaryText} />
+                    ) : (
+                        <Text style={[styles.panelButtonTitle, { color: theme.primaryText }]}>{t('Submit')}</Text>
+                    )}
                 </TouchableOpacity>
             </ScrollView>
         </View>
@@ -359,4 +383,5 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingLeft: 10,
         color: '#05375a',
-    },});
+    },
+});

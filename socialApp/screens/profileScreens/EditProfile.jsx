@@ -41,9 +41,9 @@ const EditProfile = ({ navigation, route }) => {
     const updateUserProfile = async () => {
         setLoading(true);
         try {
-            const profileURL = await uploadImages(userProfileImage, 'usersImages/', 'image');
-            const coverURL = await uploadImages(userProfileCover, 'usersCoverImages/', 'image');
-
+            const profileURL = userProfileImage ? await uploadImages(userProfileImage, 'usersImages/', 'image') : userData.profileImg;
+            const coverURL = userProfileCover ? await uploadImages(userProfileCover, 'usersCoverImages/', 'image') : userData.profileCover;
+    
             const userDocRef = doc(database, "users", user.uid);
             await updateDoc(userDocRef, {
                 ...userData,
@@ -56,7 +56,7 @@ const EditProfile = ({ navigation, route }) => {
                 profileImg: profileURL,
                 bio
             });
-
+    
             // Retrieve all posts by this user
             const userPostsQuery = query(collection(database, "posts"), where("userId", "==", user.uid));
             const userPostsSnapshot = await getDocs(userPostsQuery);
@@ -69,7 +69,7 @@ const EditProfile = ({ navigation, route }) => {
                     lastName
                 });
             });
-
+    
             navigation.navigate('Profile', {
                 postUserId: user.uid,
                 userData: {
@@ -92,10 +92,11 @@ const EditProfile = ({ navigation, route }) => {
                 text1: 'Error',
                 text2: `Error updating user profile and posts: ${error.message}`,
             });
+            console.log(error);
         } finally {
             setLoading(false);
         }
-    };
+    };    
 
     return (
         <View style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>

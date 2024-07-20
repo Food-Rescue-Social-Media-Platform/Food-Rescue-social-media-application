@@ -73,9 +73,12 @@ export const AuthProvider = ({ children }) => {
 
                             await setDoc(doc(database, 'users', uid), additionalUserInfo);
                         }
-                    } catch (e) {
-                        dispatch(removerUserData());
-                        console.log(e);
+                    } catch (error) {
+                        if (error.code === 'auth/email-already-in-use') {
+                            throw new Error('Email already in use');
+                        } else {
+                            throw error;
+                        }
                     }
                 },
 

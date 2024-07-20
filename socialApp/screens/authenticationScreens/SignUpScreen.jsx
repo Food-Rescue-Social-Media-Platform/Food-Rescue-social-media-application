@@ -1,23 +1,25 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Keyboard, Alert} from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
-import {COLORS} from '../../styles/colors';
+import { COLORS } from '../../styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 const SignUpScreen = ({ navigation }) => {
-  const[firstName, setFirstName] = useState('');
-  const[lastName, setLastName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const[phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
-  const {register} = useContext(AuthContext);
+  const { register } = useContext(AuthContext);
   const [topPadding, setTopPadding] = useState(5); // Initial top padding
 
   useEffect(() => {
@@ -42,20 +44,42 @@ const SignUpScreen = ({ navigation }) => {
     };
   }, []);
 
-  const handleSignUp = () => {
-    // Basic validation
+  const handleSignUp = async () => {
     if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
-        Alert.alert('Error', 'Please fill in all fields');
-    } else if (password !== confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match');
-    } else {
-        // Call register function
-        register(email, password, {
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            phoneNumber: phoneNumber
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Error',
+          text2: 'Please fill in all fields',
         });
+    } else if (password !== confirmPassword) {
+        Toast.show({
+          type: 'error',
+          text1: 'Registration Error',
+          text2: 'Passwords do not match',
+        });
+    } else {
+        setLoading(true);
+        try {
+            await register(email, password, {
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                phoneNumber: phoneNumber
+            });
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Account created successfully.',
+            });
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Registration Error',
+                text2: error.message,
+            });
+        } finally {
+            setLoading(false);
+        }
     }
   };
 
@@ -129,10 +153,14 @@ const SignUpScreen = ({ navigation }) => {
               <Text style={[styles.color_textPrivate, {color: '#e88832'}, {fontWeight:'bold'}]}>{t('Privacy Policy')}</Text>
           </View>
 
-          <FormButton
-            buttonTitle={t("Sign up")}
-            onPress={handleSignUp}
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          ) : (
+            <FormButton
+              buttonTitle={t("Sign up")}
+              onPress={handleSignUp}
+            />
+          )}
 
           <View style={styles.orRowContainer}>
             <View style={styles.line}></View>

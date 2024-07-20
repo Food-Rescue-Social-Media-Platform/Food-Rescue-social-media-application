@@ -1,18 +1,40 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
 import { AuthContext } from '../../navigation/AuthProvider';
-import {COLORS} from '../../styles/colors';
+import { COLORS } from '../../styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {login} = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const { login } = useContext(AuthContext);
   const { t } = useTranslation();
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      await login(email, password);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Logged in successfully.',
+      });
+      setLoading(false);
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Login Error',
+        text2: error.message.includes('auth/invalid-credential') ? 'Invalid email or password.' : 'An error occurred.',
+      });
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.outerContainer}>
@@ -45,10 +67,14 @@ const LoginScreen = ({ navigation }) => {
               <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('ForgotMyPasswordScreen')}>{t('Forgot your Password ?')}</Text>
             </TouchableOpacity>
           </View>
-          <FormButton
-            buttonTitle={t("Sign in")}
-            onPress={() => login(email,password)}
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color={COLORS.primary} />
+          ) : (
+            <FormButton
+              buttonTitle={t("Sign in")}
+              onPress={handleLogin}
+            />
+          )}
           <View style={styles.orRowContainer}>
             <View style={styles.line}></View>
             <Text style={styles.orText}>{t('or')}</Text>

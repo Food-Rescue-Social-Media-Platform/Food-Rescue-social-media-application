@@ -78,10 +78,10 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         calDistanceUserToPost(userLocation.latitude, userLocation.longitude, item.coordinates.latitude, item.coordinates.longitude, setDistance);
     }, [userLocation]);
 
-    // Check if userImg and postImg are available
-    const isUserImgAvailable = item.userImg && typeof item.userImg === 'string';
-    const isPostImgAvailable = item.postImg && typeof item.postImg === 'string';
- 
+    const userImgSource = item.userImg && typeof item.userImg === 'string'
+        ? { uri: item.userImg }
+        : require('../../assets/Images/emptyProfieImage.png');
+
     const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
     const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';
 
@@ -216,7 +216,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / screenWidth);
         setCurrentImageIndex(index);
-    };    
+    };
 
     return (
         <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
@@ -231,12 +231,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             }}>
                 <UserInfo>
                     <TouchableOpacity onPress={handleUserPress}>
-                        {/* Conditional rendering for user image */}
-                        {isUserImgAvailable ? (
-                            <Image source={{ uri: item.userImg }} style={styles.image} />
-                        ) : (
-                            <View style={styles.placeholderImage} />
-                        )}
+                        <Image source={userImgSource} style={styles.image} />
                     </TouchableOpacity>
                     <UserInfoText>
                         <TouchableOpacity onPress={handleUserPress}>

@@ -18,6 +18,8 @@ import { getDoc, updateDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
 import { t } from 'i18next';
+import SearchAddress from '../../components/map/SearchAddress';
+import { color } from 'react-native-elements/dist/helpers';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -167,15 +169,15 @@ const AddPostScreen = () => {
   };
   
   return (
-      <View style={{ backgroundColor: themeColors.lightGray }}>
+      <View style={{ backgroundColor: themeColors.appBackGroundColor }}>
               <View style={styles.container}>
 
                   <View style={styles.header}>
                       <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
-                          <Fontisto name="arrow-right" size={24} color={themeColors.primaryText} style={{ transform: [{ scaleX: -1 }] }} />
+                          <Fontisto name="arrow-right" size={24} color={themeColors.theme} style={{ transform: [{ scaleX: -1 }] }} />
                       </TouchableOpacity>
-                      <Text style={{ fontSize: 18, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
-                      <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryBackground }]} onPress={handleAddPost}>
+                      <Text style={{ fontSize: 18, color: themeColors.theme, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
+                      <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.theme }]} onPress={handleAddPost}>
                           <Text style={{ fontSize: 15 }}>Post</Text>
                       </TouchableOpacity>
                   </View>
@@ -192,7 +194,7 @@ const AddPostScreen = () => {
                                   multiline
                               />
                               {messError && <Text style={{ color: 'red', fontSize: 15, marginLeft:5 }}>{messError}</Text>}
-                              <Text style={{marginBottom:7}}>{postInput.length}/3000</Text>
+                              <Text style={{color: themeColors.primaryText, marginBottom:7}}>{postInput.length}/3000</Text>
                               <TextInput
                                   value={timeInput}
                                   onChangeText={(text) => handleInputChange(text, setTimeInput, 30)}
@@ -201,7 +203,7 @@ const AddPostScreen = () => {
                                   placeholderTextColor={themeColors.placeholderText}
                                   multiline
                               />
-                              <Text>{timeInput.length}/30</Text>
+                              <Text style={{color: themeColors.primaryText}}>{timeInput.length}/30</Text>
                               <Text></Text>
                           </View>
 
@@ -372,12 +374,12 @@ const AddPostScreen = () => {
 
                           <View style={[styles.modal, { marginTop: '55%', backgroundColor: themeColors.white }]}>
 
-                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Do you agree to publish your location at this post?</Text>
-
-                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
-
-                                  <MyButton
-                                      style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Add the address of the post delivery location:</Text>
+                              <SearchAddress style={{borderColor:themeColors.black, borderWidth:1}} onLocationSelected={setLocation} />
+                              {/* <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
+                                
+                                <MyButton
+                                style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                       text='Yes'
                                       styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
                                       onPress={handleAddLocation}
@@ -389,8 +391,15 @@ const AddPostScreen = () => {
                                       styleText={{ fontSize: 17, color: themeColors.primaryText}}
                                       onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
                                   />
+                                  </View>
+                                  */}
 
-                              </View>
+                              <MyButton
+                                  style={{ paddingLeft:20, height: 40, borderRadius: 10, alignSelf: 'left', marginTop: 10 }}
+                                  text="Attach my current location"
+                                  styleText={{ fontSize: 14, color: themeColors.textLink, textDecorationLine: 'underline' }}
+                                  onPress={() => { setShowLocationModel(false); }}
+                              />
                           </View>
                       </View>
                   </Modal>
@@ -522,6 +531,8 @@ const styles = StyleSheet.create({
       width: 0,
       height: 3,
     },
+    borderColor: "#fff",
+    borderWidth: 0.6,
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
@@ -529,7 +540,9 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 18,
     textAlign: "center",
-    margin: 20,
+    fontWeight: '400',
+    marginTop: 20,
+    // marginBottom: 5,
   },
   checkboxWrapper: {
     flexDirection: "row",

@@ -1,17 +1,39 @@
-import React, { useState,useContext } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import { AuthContext } from '../../navigation/AuthProvider';
-import {COLORS} from '../../styles/colors';
+import { COLORS } from '../../styles/colors';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useTranslation } from 'react-i18next';
-
+import Toast from 'react-native-toast-message';
 
 const ForgotMyPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
-  const {forgotPassword} = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
+  const { forgotPassword } = useContext(AuthContext);
   const { t } = useTranslation();
+
+  const handleForgotPassword = async () => {
+    setLoading(true);
+    try {
+      await forgotPassword(email);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Recovery email sent successfully.',
+      });
+      setLoading(false);
+      navigation.navigate('Login');
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message,
+      });
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.outerContainer}>
@@ -39,8 +61,9 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
           </View>
           <FormButton
             buttonTitle={t("Send recovery mail")}
-            onPress={() => forgotPassword(email)}
+            onPress={handleForgotPassword}
           />
+          {loading && <ActivityIndicator size="large" color={COLORS.primary} />}
           <View style={styles.createAccountContainer}>
             <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account?')} </Text>
             <TouchableOpacity>
@@ -59,17 +82,17 @@ const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
     paddingTop: 5,
-    borderBottomWidth: 0, // Add bottom border
+    borderBottomWidth: 0,
     borderRightWidth: 0,
     borderLeftWidth: 0,
-    borderColor: COLORS.white, // Border color
-    shadowColor: COLORS.black, // Shadow color
+    borderColor: COLORS.white,
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 3,
       height: 3,
     },
-    shadowOpacity: 0.1, // Shadow opacity (0 to 1)
-    shadowRadius: 3, // Shadow radius
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   container: {
     justifyContent: 'center',
@@ -87,22 +110,22 @@ const styles = StyleSheet.create({
     color: '#051d5f',
   },
   rememberPasswordButton: {
-    width: '95%', // Set the width to 95% of the screen
-    alignItems: 'flex-end', // Align items to the right
+    width: '95%',
+    alignItems: 'flex-end',
     color: '#34ebde',
     paddingBottom: 8,
     paddingTop: 10,
   },
   createAccountContainer: {
-    flexDirection: 'row', // Arrange children horizontally
-    marginTop: 20, // Add some margin to separate from the button
-    justifyContent: 'center', // Center the items horizontally
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'center',
   },
   orRowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding:12,
-    marginTop:10,
+    padding: 12,
+    marginTop: 10,
   },
   line: {
     flex: 1,
@@ -115,8 +138,8 @@ const styles = StyleSheet.create({
   },
   SocialButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Adjust as needed
-    paddingHorizontal: 20, // Adjust as needed
-    gap:20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    gap: 20,
   },
 });

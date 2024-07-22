@@ -1,6 +1,7 @@
 import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, startAfter, startAt, endAt, getDocs, deleteDoc, updateDoc, getDoc, arrayRemove } from 'firebase/firestore'; 
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
+import Toast from 'react-native-toast-message';
 
 let PAGE_SIZE =10;
 let PAGE_SIZE_POSTS_PROFILE = 5;
@@ -102,11 +103,19 @@ export const deletePost = async (postId, postUserId) => {
         await updateDoc(userRef, {
             postsId: arrayRemove(postId)
         });
+        Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: 'Post deleted successfully.',
+        });
     } catch (error) {
-        throw error;
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: `Error deleting post: ${error.message}`,
+        });
     }
 }; 
-
 
 export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible) {
     // console.log("\ngetPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible);

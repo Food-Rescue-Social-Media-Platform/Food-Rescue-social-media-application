@@ -9,6 +9,7 @@ import { doc, updateDoc } from "firebase/firestore";
 import { CheckBox } from 'react-native-elements';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 const EditPostScreen = ({ navigation, route }) => {
     const { item } = route.params; // Get the item object from route params
@@ -55,10 +56,18 @@ const EditPostScreen = ({ navigation, route }) => {
             });
             // After successful update, navigate back to the PostCard component
             navigation.goBack();
-            console.log("User post updated successfully");
-        } catch (error) {
-            console.error("Error updating user post:", error);
-        }
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Post updated successfully.',
+            });
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Failed to update post.',
+                });
+            }
     };
 
     return (

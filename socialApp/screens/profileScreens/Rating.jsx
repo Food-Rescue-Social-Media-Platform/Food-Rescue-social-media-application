@@ -7,6 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 // Function to capitalize the first letter of each word
 const capitalizeFirstLetterOfEachWord = (string) => {
@@ -41,10 +42,18 @@ const Rating = ({ route }) => {
         rating: newRating,
         ratingNumber: newRatingNumber,
       });
-      console.log('Rating updated successfully');
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Rating updated successfully.',
+    });
       navigation.goBack(); // Navigate back to the previous screen
     } catch (error) {
-      console.error('Error updating rating: ', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `Error updating post: ${error.message}`,
+      });
     }
   };
 

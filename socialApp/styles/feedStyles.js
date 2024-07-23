@@ -5,12 +5,11 @@ export const Container = styled.View`
   ${'' /* justify-content: center; flex:1; */}
   align-items: center;
   background-color: #f9fafd;
-  padding: 20px;
+  padding: 13px;
 `;
 
 export const Card = styled.View`
     background-color: #CEF0D3;
-    ${Platform.OS === 'web' ? 'width: 70%;' : 'width: 100%;'}
     margin-bottom: 20px;
     border-radius: 10px;
     ${Platform.OS === 'web' ? 'margin-left:15%;' : ''}

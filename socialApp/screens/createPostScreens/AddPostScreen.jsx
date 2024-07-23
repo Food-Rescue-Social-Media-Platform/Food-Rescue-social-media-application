@@ -400,7 +400,6 @@ const AddPostScreen = () => {
                                   styleText={{ fontSize: 14, color: themeColors.textLink, textDecorationLine: 'underline' }}
                                   onPress={() => { setShowLocationModel(false); }}
                               />
-                              {location && <Text style={{color: themeColors.primaryText, marginBottom: 20, marginLeft:20}}>l</Text>}
                           </View>
                       </View>
                   </Modal>

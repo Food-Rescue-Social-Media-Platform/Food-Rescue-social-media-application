@@ -386,7 +386,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
   return (
       <FlatList
-          data={[userPosts]}
+          data={userPosts}
           style={{ width: '100%', backgroundColor: theme.appBackGroundColor }}
           renderItem={renderItem}
           ListHeaderComponent={renderHeader}

@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
         alignItems: 'left',
         justifyContent: 'left',
         width: '38%',
-        marginTop: '-114%',
+        marginTop: '-112%',
       },
       sideContainerOther: {
         zIndex: 2,
@@ -637,7 +637,7 @@ const styles = StyleSheet.create({
       },
       buttons: {
         flexDirection: 'row',
-        gap: 13,
+        gap: 14,
         marginBottom: '1%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -657,7 +657,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       bio: {
-        marginTop: '1%',
+        marginTop: '2%',
         fontSize: 17,
         fontWeight: 'bold',
         marginHorizontal: 20,

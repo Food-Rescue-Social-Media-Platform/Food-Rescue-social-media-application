@@ -435,7 +435,6 @@ const styles = StyleSheet.create({
     postImage: {
         height: 280,
         resizeMode: 'cover',
-        borderRadius: 10,
     },
     scrollView: {
         height: 280,

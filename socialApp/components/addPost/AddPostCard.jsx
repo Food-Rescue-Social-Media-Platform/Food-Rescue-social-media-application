@@ -65,10 +65,10 @@ const styles = StyleSheet.create({
         height: windowHeight / 7,
         flexDirection: 'row',
         marginBottom: 15,
-        borderRadius: 8,
+        borderRadius: 10,
         ...Platform.select({
             web: {
-                width: '70%',
+                width: 620,
                 marginLeft: '15%',
             },
         }),

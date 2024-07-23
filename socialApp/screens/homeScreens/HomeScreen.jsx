@@ -169,7 +169,6 @@ const HomeScreen = () => {
 
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-               <AddPostCard/>
                { permissionDenied &&
                     <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
                         <Button
@@ -184,16 +183,42 @@ const HomeScreen = () => {
                     </View>
                 }
 
-                <PostsList  
-                   posts={posts} 
-                   loadMore={loadMore} 
-                   loadingMore={loadingMore} 
-                   position={position}
-                   refreshing={refreshing}
-                   onRefresh={onRefresh}
-                   isProfilePage={false}
-                   theme={theme}
-                />
+                <FlatList
+                    data={posts}
+                    style={{ width: '100%' }}
+                    ListHeaderComponent={ <AddPostCard/>}
+                    renderItem={({ item, index }) => {
+                        if (item && item.id) 
+                            return <PostCard 
+                                        key={item.id} 
+                                        item={item} 
+                                        postUserId={item.userId} 
+                                        userLocation={position} 
+                                    />;
+                        else 
+                            return null;
+                
+                    }}
+                    keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={theme.primaryText}
+                        />
+                    }
+                    onEndReached={loadMore}
+                    onEndReachedThreshold={0.1}
+                    ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                    ListEmptyComponent={() => (
+                        <View style={styles.emptyContainer}>
+                        { position &&
+                            <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
+                            }
+                        </View>
+                    )}
+    /> 
         </Container>
     );
 };

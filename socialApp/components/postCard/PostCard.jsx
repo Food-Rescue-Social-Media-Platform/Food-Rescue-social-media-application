@@ -200,12 +200,13 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
 
     const handleClickLocationPost = () => {
         if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) return;
+        
         navigation.navigate('MapTab', {
             screen: 'Map',
             params: {
                 id: item.id,
-                latitude: item.coordinates[0],
-                longitude: item.coordinates[1],
+                latitude: item.coordinates.latitude,
+                longitude: item.coordinates.longitude,
                 title: item.postText,
                 image: item.postImg[0],
             }
@@ -325,7 +326,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             </View>
 
             {item.postImg && item.postImg.length > 0 ? (
-                <>
+                <View style={styles.imageContainer}>
                 <ScrollView
                     horizontal
                     pagingEnabled
@@ -351,7 +352,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     ))}
                 </View>
                 <Text style={{ color: theme.primaryText }}>{item.additionalInfo || ''}</Text>
-                </>
+                </View>
             ) : (
                 <Divider />
             )}
@@ -474,11 +475,13 @@ const styles = StyleSheet.create({
     dropdownItemIconStyle: {
         fontSize: 20,
     },
+    imageContainer:{
+      width: '100%',
+      overflow: 'hidden',
+    },
     postImage: {
         width: screenWidth,
-        height: 200,
         resizeMode: 'cover',
-        borderRadius: 8,
         ...Platform.select({
             web: {
                 height: 400, // Adjust height as needed
@@ -487,7 +490,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         width: screenWidth,
-        height: 200,
+        height: 210,
     },
     pagination: {
         flexDirection: 'row',

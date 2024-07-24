@@ -32,10 +32,8 @@ const getCategoryIcon = (category, categoryColor) => {
             return <MaterialCommunityIcons name="food" size={22} color={categoryColor}/>;
         case 'Rice':
             return <MaterialCommunityIcons name="rice" size={22} color={categoryColor}/>;
-        case 'Milky':
+        case 'Dairy':
             return <MaterialCommunityIcons name="cow" size={22} color={categoryColor}/>;
-        case 'Meat':
-            return <MaterialCommunityIcons name="food-steak" size={22} color={categoryColor}/>;
         case 'Sweets':
             return <MaterialCommunityIcons name="cupcake" size={22} color={categoryColor}/>;
         case 'Seafood':

@@ -33,7 +33,7 @@ export class Post {
         this.deliveryRange = deliveryRange;
         this.category = category || "Other";
         this.postImg = postImg;
-        this.status = "wait for rescue";
+        this.status = "waiting for rescue";
         
         const location = postLocation || { coords: { latitude: 0, longitude: 0 } };
         this.coordinates = [location.coords.latitude, location.coords.longitude];

@@ -8,8 +8,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import HomeScreen from '../screens/homeScreens/HomeScreen';
+import WebHomeScreen from '../screens/homeScreens/WebHomeScreen'; // Adjust the import path as necessary
 import HomeChat from '../screens/chatScreens/HomeChat';
 import ProfileScreen from '../screens/profileScreens/ProfileScreen';
+import WebProfileScreen from '../screens/profileScreens/WebProfileScreen';
 import MapScreen from '../screens/mapScreens/MapScreen';
 import AddPostScreen from '../screens/createPostScreens/AddPostScreen';
 import PostCard from '../components/postCard/PostCard';
@@ -40,11 +42,14 @@ const FeedStack = ({ navigation }) => {
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
 
+  const HomeComponent = Platform.OS === 'web' ? WebHomeScreen : HomeScreen;
+  const ProfileComponent = Platform.OS === 'web' ? WebProfileScreen : ProfileScreen;
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home Page"
-        component={HomeScreen}
+        component={HomeComponent}
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -69,7 +74,7 @@ const FeedStack = ({ navigation }) => {
       />
       <Stack.Screen
         name="HomeProfile"
-        component={ProfileScreen}
+        component={ProfileComponent}
         options={{
           title: '',
           headerTitleAlign: 'center',
@@ -98,11 +103,13 @@ const ProfileStack = () => {
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
 
+  const ProfileComponent = Platform.OS === 'web' ? WebProfileScreen : ProfileScreen;
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={ProfileComponent}
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {

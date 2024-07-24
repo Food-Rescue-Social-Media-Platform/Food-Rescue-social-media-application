@@ -7,16 +7,15 @@ import { database } from '../../firebase';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
+import WebPostCard from '../../components/postCard/webPostCard'
 import { Container } from '../../styles/feedStyles';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
 import uuid from 'react-native-uuid';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
 import { useTranslation } from 'react-i18next';
-import PostsList from '../../components/postsLIst/PostsList';
-import { getPostOfUser } from '../../FirebaseFunctions/collections/post';
 
-const ProfileScreen = ({ navigation, route }) => {
+const WebProfileScreen = ({ navigation, route }) => {
   const { user, logout } = useContext(AuthContext);
   const { isDarkMode, theme } = useDarkMode(); // Use the hook to get the current theme
   const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
@@ -28,10 +27,6 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const postUserId = route.params ? route.params.postUserId : user.uid;
-
-  const [lastIndex , setLastIndex ] = useState(0);
-  const [loadingMore, setLoadingMore] = useState(false);
-
   const [isFollowing, setIsFollowing] = useState(false);
   const [rating, setRating] = useState();
   const { t } = useTranslation();
@@ -68,61 +63,48 @@ const ProfileScreen = ({ navigation, route }) => {
     }
   };
 
-  const fetchUserPosts = async (loadMore = false) => {
-    if (loadMore) {
-        setLoadingMore(true);
-    } else {
-        setLoading(true);
+  const fetchUserPosts = async () => {
+    try {
+      const userDocRef = doc(database, "users", postUserId);
+      const userDocSnap = await getDoc(userDocRef);
+      const postsIdArray = userDocSnap.data()?.postsId;
+
+      const userPostsData = [];
+
+      if (postsIdArray?.length === 0 || !postsIdArray || !userDocSnap.exists()) {
+        setUserPosts([]);
+        setLoading(false);
+        return;
+      }
+
+      for (const postId of postsIdArray) {
+        const postDocRef = doc(database, "posts", postId);
+        const postDocSnap = await getDoc(postDocRef);
+        if (postDocSnap.exists()) {
+          const postData = postDocSnap.data();
+          if (userData) {
+            postData.firstName = userData.firstName;
+            postData.lastName = userData.lastName;
+            postData.userName = userData.userName;
+            postData.userImg = userData.profileImg;
+            await updateDoc(postDocRef, {
+              firstName: userData.firstName,
+              lastName: userData.lastName,
+              userName: userData.userName,
+              userImg: userData.profileImg
+            });
+          }
+          userPostsData.push({ id: postId, ...postData });
+        }
+      }
+
+      setUserPosts(userPostsData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+      setError(error.message);
+      setLoading(false);
     }
-    const result = await getPostOfUser(postUserId, userData, lastIndex);
-    console.log("RESULT", result.posts);
-    setUserPosts(result.posts);
-    setLastIndex(lastIndex);
-    setLoading(false);
-
-
-    
-    // try {
-    //   const userDocRef = doc(database, "users", postUserId);
-    //   const userDocSnap = await getDoc(userDocRef);
-    //   const postsIdArray = userDocSnap.data()?.postsId;
-
-    //   const userPostsData = [];
-
-    //   if (postsIdArray?.length === 0 || !postsIdArray || !userDocSnap.exists()) {
-    //     setUserPosts([]);
-    //     setLoading(false);
-    //     return;
-    //   }
-
-    //   for (const postId of postsIdArray) {
-    //     const postDocRef = doc(database, "posts", postId);
-    //     const postDocSnap = await getDoc(postDocRef);
-    //     if (postDocSnap.exists()) {
-    //       const postData = postDocSnap.data();
-    //       if (userData) {
-    //         postData.firstName = userData.firstName;
-    //         postData.lastName = userData.lastName;
-    //         postData.userName = userData.userName;
-    //         postData.userImg = userData.profileImg;
-    //         await updateDoc(postDocRef, {
-    //           firstName: userData.firstName,
-    //           lastName: userData.lastName,
-    //           userName: userData.userName,
-    //           userImg: userData.profileImg
-    //         });
-    //       }
-    //       userPostsData.push({ id: postId, ...postData });
-    //     }
-    //   }
-
-    //   setUserPosts(userPostsData);
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.error("Error fetching user posts:", error);
-    //   setError(error.message);
-    //   setLoading(false);
-    // }
   };
 
   const handleFollowButton = async () => {
@@ -242,10 +224,6 @@ const ProfileScreen = ({ navigation, route }) => {
     return <Text style={{ color: themeColors.black }}>Error: {error}</Text>;
   }
 
-  const loadMore = async () => {
-       await fetchUserPosts(true);
-   }
-
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -317,60 +295,47 @@ const ProfileScreen = ({ navigation, route }) => {
 
           </View>
         </View>
-        <View style={backgroundColor=themeColors.appBackGroundColor}>
-          {postUserId === user.uid ? (
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : (
-            <View style={styles.buttons}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
-                <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          <View>
-            <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
-          </View>
-          <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-            <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
-            <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
-          </View>
+        <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+          <Container style={[
+              postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
+              { backgroundColor: themeColors.appBackGroundColor }
+          ]}>
+            {postUserId === user.uid ?
+              <View style={styles.buttons}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
+                </TouchableOpacity>
+              </View>
+              :
+              <View style={styles.buttons}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
+                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
+                </TouchableOpacity>
+              </View>
+            }
 
-          {/*Add post card*/}
-          <Container style={[styles.containerShowCardAndList, { backgroundColor: theme.appBackGroundColor }]}>
-
-            <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-              {postUserId === user.uid && <AddPostCard />}
+            <View>
+              <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
             </View>
-
+            <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
+              <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
+              <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
+            </View>
+          </Container>
+          <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+            {postUserId === user.uid && <AddPostCard />}
             <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-            <PostsList  
-                  posts={userPosts} 
-                  loadMore={loadMore} 
-                  loadingMore={loadingMore} 
-                  position={null}
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  isProfilePage={true}
-                  theme={theme}
-            />
-
-            {/*<View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-              {userPosts.map(post => (
-                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
-              ))}
-            </View> */}
-            </Container>
-          </View>
+            {userPosts.map(post => (
+              <WebPostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
+            ))}
+          </Container>
+        </View>
       </View>
     </ScrollView>
   );
@@ -524,11 +489,6 @@ const styles = StyleSheet.create({
     marginLeft:18,
     marginRight:18,
   },
-  containerShowCardAndList:{
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   ...Platform.select({
     web: {
       container: {
@@ -544,7 +504,9 @@ const styles = StyleSheet.create({
         alignItems: 'left',
         justifyContent: 'left',
         width: '38%',
-        marginTop: '-26%',
+        marginTop: '-168.3%',
+        marginLeft: 25,
+
       },
       sideContainerOther: {
         zIndex: 2,
@@ -636,7 +598,7 @@ const styles = StyleSheet.create({
       },
       buttons: {
         flexDirection: 'row',
-        gap: 13,
+        gap: 14,
         marginBottom: '1%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -647,7 +609,7 @@ const styles = StyleSheet.create({
       button: {
         padding: 13,
         borderRadius: 10,
-        width: '43%',
+        width: '43.5%',
         justifyContent: 'center',
         alignItems: 'center',
       },
@@ -656,7 +618,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
       },
       bio: {
-        marginTop: '1%',
+        marginTop: '2%',
         fontSize: 17,
         fontWeight: 'bold',
         marginHorizontal: 20,
@@ -692,4 +654,4 @@ const styles = StyleSheet.create({
   }),
 });
 
-export default ProfileScreen;
+export default WebProfileScreen;

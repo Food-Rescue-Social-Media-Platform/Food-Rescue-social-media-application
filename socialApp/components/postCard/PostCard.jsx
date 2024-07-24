@@ -53,7 +53,7 @@ const getCategoryIcon = (category, categoryColor) => {
 };
 
 const emojisWithIcons = [
-    { title: 'wait for rescue', icon: 'emoticon-happy-outline', status: 'wait for rescue' },
+    { title: 'waiting for rescue', icon: 'emoticon-happy-outline', status: 'waiting for rescue' },
     { title: 'rescued', icon: 'emoticon-cool-outline', status: 'rescued' },
     { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
 ];

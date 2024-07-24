@@ -33,7 +33,7 @@ export class Post {
         this.deliveryRange = deliveryRange;
         this.category = category || "Other";
         this.postImg = postImg;
-        this.status = "wait for rescue";
+        this.status = "waiting for rescue";
         
         const location = postLocation || { coords: { latitude: 0, longitude: 0 } };
         this.coordinates = [location.coords.latitude, location.coords.longitude];
@@ -116,6 +116,44 @@ export const deletePost = async (postId, postUserId) => {
         });
     }
 }; 
+
+export async function getPostsWithFiltersForWeb(userId, categories, lastVisible) {
+    console.log("\ngetPosts with filters:", userId, categories, lastVisible);
+    try {
+        let q = query(
+            collection(database, 'posts'),
+            orderBy('createdAt', 'desc'),
+            limit(PAGE_SIZE)
+        );
+
+        if (categories && categories.length > 0) {
+            q = query(q, where('category', 'in', categories));
+        }
+
+        if (lastVisible) {
+            q = query(q, startAfter(lastVisible));
+        }
+
+        const querySnapshot = await getDocs(q);
+        const posts = [];
+        let lastVisibleDoc = null;
+
+        querySnapshot.forEach((doc) => {
+            posts.push({ id: doc.id, ...doc.data() });
+            lastVisibleDoc = doc; // Keep track of the last visible document
+        });
+
+        if (posts.length < PAGE_SIZE) {
+            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+        }
+
+        console.log("posts with filters:", posts);
+        return { posts, lastVisible: lastVisibleDoc };
+    } catch (error) {
+        console.error("Error fetching documents: ", error);
+        throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+    }
+}
 
 export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible) {
     // console.log("\ngetPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible);
@@ -214,6 +252,61 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
     }
 }
 
+export async function getPostsFromFollowersForWeb(userId, lastVisible = null) {
+    const userRef = doc(database, 'users', userId);
+    const userDocSnap = await getDoc(userRef);
+    if (!userDocSnap.exists()) {
+        console.error("User not found while fetching posts");
+        return { posts: [], lastVisible: null };
+    }
+
+    const followers = userDocSnap.data()?.followersUsersId;
+    if (!followers || followers.length === 0) {
+        console.log("No followers found for the user.");
+        return { posts: [], lastVisible: null };
+    }
+
+    const promises = [];
+
+    followers.forEach((followedUserId) => {
+        let q = query(
+            collection(database, 'posts'),
+            where('userId', '==', followedUserId),
+            orderBy('createdAt', 'desc'),
+            limit(PAGE_SIZE)
+        );
+
+        if (lastVisible) {
+            q = query(q, startAfter(lastVisible));
+        }
+
+        promises.push(getDocs(q));
+    });
+
+    try {
+        const snapshots = await Promise.all(promises);
+        console.log("snapshots:", snapshots);
+        const posts = [];
+        let lastVisibleDoc = null;
+
+        snapshots.forEach((snap) => {
+            snap.forEach((doc) => {
+                posts.push({ id: doc.id, ...doc.data() });
+                lastVisibleDoc = doc; // Keep track of the last visible document
+            });
+        });
+
+        console.log("posts from followers:", posts);
+        if (posts.length < PAGE_SIZE) {
+            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+        }
+
+        return { posts, lastVisible: lastVisibleDoc };
+    } catch (error) {
+        console.error("Error fetching documents: ", error);
+        throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+    }
+}
 
 export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = null) {
     const userRef = doc(database, 'users', userId);

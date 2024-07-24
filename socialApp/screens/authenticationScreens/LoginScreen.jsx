@@ -45,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.logo}
           />
           <Text style={styles.text}>{t('Sign in')}</Text>
-          <Text style={{ paddingBottom: 10 }}>{t('Rescue The Food From Wasting')}</Text>
+          <Text style={{ paddingBottom: 10 }}>{t('Rescue The Food From being wasted')}</Text>
           <FormInput
             placeHolderText={t("Email")}
             iconType="email"

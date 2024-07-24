@@ -105,7 +105,7 @@ const AdminScreen = () => {
       </View>
     ) : (
       <View style={styles.container}>
-        <Text style={styles.adminAlert}>{t('Dear Admin, You should login in from web to view the report posts page')}</Text>
+        <Text style={styles.adminAlert}>{t('Dear Admin, You should login from the website to view the report posts page')}</Text>
         <FormButton buttonTitle={t('Logout')} onPress={() => logout()} />
       </View>
     )

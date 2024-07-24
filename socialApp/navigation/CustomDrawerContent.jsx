@@ -169,7 +169,7 @@ const CustomDrawerContent = (props) => {
                   style={[styles.drawerItem]}
                   onPress={() => setCategoriesFilterOpen(!categoriesFilterOpen)}
                 >
-                    <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Category Filter</Text>
+                    <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Categories</Text>
                 </TouchableOpacity> 
                 
                 { categoriesFilterOpen &&
@@ -194,7 +194,7 @@ const CustomDrawerContent = (props) => {
                   style={[styles.drawerItem]}
                   onPress={() => setRadiusFilterOpen(!RadiusFilterOpen)}
                 >
-                  <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Radius Filter</Text>
+                  <Text style={{color: themeColors.primaryText, marginLeft: 10, marginTop: 10}}>Distance</Text>
                 </TouchableOpacity> 
 
               { RadiusFilterOpen && (

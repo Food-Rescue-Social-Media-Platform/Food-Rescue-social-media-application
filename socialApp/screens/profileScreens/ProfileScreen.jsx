@@ -300,7 +300,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 }
 
                 <View>
-                  <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
+                  <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising points:')} {userData?.earningPoints || 0}</Text>
                 </View>
                 <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
                   <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
@@ -336,7 +336,7 @@ const ProfileScreen = ({ navigation, route }) => {
                 </View>
               )}
               <View>
-                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
+                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising points:')} {userData?.earningPoints || 0}</Text>
               </View>
               <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
                 <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>

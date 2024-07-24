@@ -7,7 +7,6 @@ import { database } from '../../firebase';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
 import PostCard from '../../components/postCard/PostCard';
-import WebPostCard from '../../components/postCard/webPostCard'
 import { Container } from '../../styles/feedStyles';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/chat';
@@ -318,105 +317,60 @@ const ProfileScreen = ({ navigation, route }) => {
 
           </View>
         </View>
-        {Platform.OS === 'web' && (
-          <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
-            <Container style={[
-                postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
-                { backgroundColor: themeColors.appBackGroundColor }
-            ]}>
-              {postUserId === user.uid ?
-                <View style={styles.buttons}>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
-                  </TouchableOpacity>
-                </View>
-                :
-                <View style={styles.buttons}>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
-                  </TouchableOpacity>
-                </View>
-              }
+        <View style={backgroundColor=themeColors.appBackGroundColor}>
+          {postUserId === user.uid ? (
+            <View style={styles.buttons}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
+                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
+                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.buttons}>
+              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
+                <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
+                <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <View>
+            <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
+          </View>
+          <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
+            <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
+            <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
+          </View>
 
-              <View>
-                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
-              </View>
-              <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-                <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
-                <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
-              </View>
-            </Container>
-            <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+          {/*Add post card*/}
+          <Container style={[styles.containerShowCardAndList, { backgroundColor: theme.appBackGroundColor }]}>
+
+            <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
               {postUserId === user.uid && <AddPostCard />}
-              <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
+            </View>
+
+            <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
+            <PostsList  
+                  posts={userPosts} 
+                  loadMore={loadMore} 
+                  loadingMore={loadingMore} 
+                  position={null}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
+                  isProfilePage={true}
+                  theme={theme}
+            />
+
+            {/*<View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
               {userPosts.map(post => (
-                <WebPostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
+                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
               ))}
+            </View> */}
             </Container>
           </View>
-        )}
-        {Platform.OS !== 'web' && (
-          <View style={backgroundColor=themeColors.appBackGroundColor}>
-            {postUserId === user.uid ? (
-              <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={styles.buttons}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
-                  <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            <View>
-              <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
-            </View>
-            <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-              <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
-              <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
-            </View>
-
-            {/*Add post card*/}
-            <Container style={[styles.containerShowCardAndList, { backgroundColor: theme.appBackGroundColor }]}>
-
-              <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-                {postUserId === user.uid && <AddPostCard />}
-              </View>
-
-              <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-              <PostsList  
-                    posts={userPosts} 
-                    loadMore={loadMore} 
-                    loadingMore={loadingMore} 
-                    position={null}
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    isProfilePage={true}
-                    theme={theme}
-              />
-
-              {/*<View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-                {userPosts.map(post => (
-                  <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
-                ))}
-              </View> */}
-              </Container>
-            </View>
-        )}
       </View>
     </ScrollView>
   );

@@ -295,52 +295,12 @@ const WebProfileScreen = ({ navigation, route }) => {
 
           </View>
         </View>
-        {Platform.OS === 'web' && (
-          <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
-            <Container style={[
-                postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
-                { backgroundColor: themeColors.appBackGroundColor }
-            ]}>
-              {postUserId === user.uid ?
-                <View style={styles.buttons}>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={logout}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
-                  </TouchableOpacity>
-                </View>
-                :
-                <View style={styles.buttons}>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleFollowButton}>
-                    <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
-                  </TouchableOpacity>
-                </View>
-              }
-
-              <View>
-                <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
-              </View>
-              <View style={[styles.bio, { backgroundColor: themeColors.secondaryTheme }]}>
-                <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
-                <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
-              </View>
-            </Container>
-            <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
-              {postUserId === user.uid && <AddPostCard />}
-              <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-              {userPosts.map(post => (
-                <WebPostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
-              ))}
-            </Container>
-          </View>
-        )}
-        {Platform.OS !== 'web' && (
-          <View style={backgroundColor=themeColors.appBackGroundColor}>
-            {postUserId === user.uid ? (
+        <View style={[styles.CardContainerAndSideContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+          <Container style={[
+              postUserId === user.uid ? styles.sideContainerUser : styles.sideContainerOther,
+              { backgroundColor: themeColors.appBackGroundColor }
+          ]}>
+            {postUserId === user.uid ?
               <View style={styles.buttons}>
                 <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={() => navigation.navigate('Edit Profile', { userData })}>
                   <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Edit Profile')}</Text>
@@ -349,7 +309,7 @@ const WebProfileScreen = ({ navigation, route }) => {
                   <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Logout')}</Text>
                 </TouchableOpacity>
               </View>
-            ) : (
+              :
               <View style={styles.buttons}>
                 <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.secondaryTheme }]} onPress={handleOpenChat}>
                   <Text style={[styles.buttonText, { color: themeColors.black }]}>{t('Chat')}</Text>
@@ -358,7 +318,8 @@ const WebProfileScreen = ({ navigation, route }) => {
                   <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
                 </TouchableOpacity>
               </View>
-            )}
+            }
+
             <View>
               <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising earnings points:')} {userData?.earningPoints || 0}</Text>
             </View>
@@ -366,17 +327,15 @@ const WebProfileScreen = ({ navigation, route }) => {
               <Text style={[styles.bioText, { color: themeColors.black }]}>{t('Bio')}</Text>
               <Text style={[styles.bioContent, { color: themeColors.black }]}>{userData?.bio || '...'}</Text>
             </View>
-            <View style={[styles.AddPostCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-              {postUserId === user.uid && <AddPostCard />}
-            </View>
+          </Container>
+          <Container style={[styles.CardContainer, {backgroundColor: themeColors.appBackGroundColor}]}>
+            {postUserId === user.uid && <AddPostCard />}
             <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
-            <View style={[styles.postCardContainer,{backgroundColor:themeColors.appBackGroundColor}]}>
-              {userPosts.map(post => (
-                <PostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
-              ))}
-            </View>
-          </View>
-        )}
+            {userPosts.map(post => (
+              <WebPostCard key={post.id} item={post} postUserId={postUserId} isProfilePage={true} />
+            ))}
+          </Container>
+        </View>
       </View>
     </ScrollView>
   );

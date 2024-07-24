@@ -54,13 +54,17 @@ const FeedStack = ({ navigation }) => {
             backgroundColor: themeColors.appBackGroundColor,
             shadowColor: themeColors.white,
             elevation: 0,
+            opacity: 1
           },
-          headerTitle: ()=>{
-            <Image
-              source={require('../assets/Images/logoHomePage.png')}
-              style={{ width: 50, height: 50 }}
-            />
-          },
+          headerTitle: ()=>
+            <View style={{marginTop:'10%'}}>
+              <Image
+                source={require('../assets/Images/logoHomePage.png')}
+                resizeMode="contain"
+                style={{ width: 180, height: 180}}
+              />
+          </View>
+          ,
           headerLeft: () => (
             <Ionicons
               name="menu"

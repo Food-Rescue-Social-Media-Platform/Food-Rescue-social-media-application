@@ -504,7 +504,9 @@ const styles = StyleSheet.create({
         alignItems: 'left',
         justifyContent: 'left',
         width: '38%',
-        marginTop: '-112%',
+        marginTop: '-168.3%',
+        marginLeft: 25,
+
       },
       sideContainerOther: {
         zIndex: 2,
@@ -607,7 +609,7 @@ const styles = StyleSheet.create({
       button: {
         padding: 13,
         borderRadius: 10,
-        width: '43%',
+        width: '43.5%',
         justifyContent: 'center',
         alignItems: 'center',
       },

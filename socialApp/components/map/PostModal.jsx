@@ -35,7 +35,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
     setVisible(false);
   };
 
-  const modalHeight = post && post.image ? '35%' : '21%';
+  const modalHeight = post && post.image ? '38%' : '21%';
 
   return (
     <Modal

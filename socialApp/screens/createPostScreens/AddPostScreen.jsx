@@ -285,7 +285,7 @@ const AddPostScreen = () => {
             />
           </TouchableOpacity>
         </View>
-
+         {/* --------Models ----------------*/}
                   <Modal
                       animationType="slide"
                       transparent={true}
@@ -295,7 +295,7 @@ const AddPostScreen = () => {
                       }}
                   >
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                          <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+                          <View style={[styles.modal, { marginTop: Platform.OS === 'web'? '10%': '50%', backgroundColor: themeColors.white }]}>
 
                                 <Text style={[styles.modalText, {padding: '8%', color: themeColors.primaryText}]}>
                                       Would you like to add a number to the post?
@@ -308,10 +308,15 @@ const AddPostScreen = () => {
                                   numberOfLines={1}
                                   editable={phoneNumber.length < 15 }
                                   keyboardType='numeric'
-                                  onChangeText={(text) => setPhoneNumber(text)}
+                                  onChangeText={(text) => {
+                                    const numericText = text.replace(/[^0-9]/g, '');
+                                    if (numericText.length <= 15) {
+                                      setPhoneNumber(numericText);
+                                    }
+                                  }}
                                 /> 
 
-                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10 }}>
+                              <View style={{ flex: 1, flexDirection: 'row', marginTop: Platform.OS === 'web'?'50':'0', justifyContent: 'center', marginBottom:10 }}>
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
@@ -337,7 +342,7 @@ const AddPostScreen = () => {
                       visible={categoryModalVisible}
                   >
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-                          <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
+                          <View style={[styles.modal, { marginTop: Platform.OS === 'web'? '10%': '30%', backgroundColor: themeColors.white }]}>
 
                               <Text style={[styles.modalText, {padding: '8%', fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
                               <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -372,7 +377,7 @@ const AddPostScreen = () => {
                   >
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
 
-                          <View style={[styles.modal, { marginTop: '55%', backgroundColor: themeColors.white }]}>
+                          <View style={[styles.modal, {marginTop: Platform.OS === 'web' ? '14%' : '55%', backgroundColor: themeColors.white }]}>
 
                               <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Add the address of the post delivery location:</Text>
                               <SearchAddress style={{borderColor:themeColors.black, borderWidth:1}} onLocationSelected={setLocation} />
@@ -395,7 +400,7 @@ const AddPostScreen = () => {
                                   */}
 
                               <MyButton
-                                  style={{ paddingLeft:20, height: 40, borderRadius: 10, alignSelf: 'left', marginTop: 10 }}
+                                  style={{ paddingLeft:20, height: 40, borderRadius: 10, alignSelf: 'left', marginTop:Platform.OS === 'web'? 10: 40 }}
                                   text="Attach my current location"
                                   styleText={{ fontSize: 16, color: themeColors.textLink, textDecorationLine: 'underline' }}
                                   onPress={() => { setShowLocationModel(false); }}
@@ -411,7 +416,7 @@ const AddPostScreen = () => {
                   >
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
 
-                          <View style={[styles.modal, { marginTop: '70%', backgroundColor: themeColors.white }]}>
+                          <View style={[styles.modal, {  marginTop: Platform.OS === 'web' ? '17%' : '70%' , backgroundColor: themeColors.white }]}>
 
                               <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
 
@@ -447,22 +452,30 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     height: "100%",
-    marginTop: 15,
+    marginTop: 15,  
     padding: 20,
-    ...Platform.select({
-      web: {
-        marginTop: 0,
-      },
-    }),
     paddingLeft: 20,
     paddingRight: 20,
     paddingTop: 20,
+    ...Platform.select({
+      web: {
+        marginTop: 0,
+        width: "50%",
+        height: "100%",
+        alignSelf: "center",
+      },
+    }),
   },
   header: {
     alignItems: "center",
     flexDirection: "row",
     width: "100%",
     marginBottom: 10,
+    ...Platform.select({
+      web: {
+        width: "95%",
+      },  
+    }),
   },
   iconsWrapper: {
     flexDirection: "row",
@@ -536,11 +549,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    ...Platform.select({
+      web: {
+        width: "50%",
+        alignSelf: "center",
+        alignContent: "center",
+      }
+    })
   },
   modalText: {
     fontSize: 18,
     textAlign: "center",
     fontWeight: '400',
+    ...Platform.select({
+      web: {
+        padding: '7%' 
+      }
+    })
     // marginBottom: 5,
   },
   checkboxWrapper: {

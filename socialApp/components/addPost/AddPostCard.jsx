@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
         ...Platform.select({
             web: {
                 marginRight: '0.1rem',
+                width: 450,
             },
         }),
     },

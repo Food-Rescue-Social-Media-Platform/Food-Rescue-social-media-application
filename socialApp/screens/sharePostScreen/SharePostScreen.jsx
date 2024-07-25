@@ -9,7 +9,6 @@ import { ActivityIndicator, StyleSheet } from 'react-native';
 
 const SharePostScreen = ({ navigation, route }) => {
   const { postId } = route.params;
-  console.log("Post id: ", postId);
   const [post, setPost] = useState(null);
   const [position, setPosition] = useState(null);
   const [loading, setLoading] = useState(true);

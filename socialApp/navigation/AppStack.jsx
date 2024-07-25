@@ -1,6 +1,6 @@
 import 'intl-pluralrules';
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, View, Switch, Share, Platform } from 'react-native';
+import { Text, View, Switch, Share, Platform, Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -59,8 +59,17 @@ const FeedStack = ({ navigation }) => {
             backgroundColor: themeColors.appBackGroundColor,
             shadowColor: themeColors.white,
             elevation: 0,
+            opacity: 1
           },
-          headerTitle: t("Home Page"),
+          headerTitle: ()=>
+            <View style={{marginTop:'10%'}}>
+              <Image
+                source={require('../assets/Images/logoHomePage.png')}
+                resizeMode="contain"
+                style={{ width: 180, height: 180}}
+              />
+          </View>
+          ,
           headerLeft: () => (
             <Ionicons
               name="menu"

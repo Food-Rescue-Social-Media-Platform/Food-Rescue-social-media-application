@@ -297,7 +297,7 @@ const AddPostScreen = () => {
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                           <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
 
-                                <Text style={[styles.modalText, { color: themeColors.primaryText}]}>
+                                <Text style={[styles.modalText, {padding: '8%', color: themeColors.primaryText}]}>
                                       Would you like to add a number to the post?
                                 </Text>
 
@@ -339,7 +339,7 @@ const AddPostScreen = () => {
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                           <View style={[styles.modal, { marginTop: '30%', backgroundColor: themeColors.white }]}>
 
-                              <Text style={[styles.modalText, { fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
+                              <Text style={[styles.modalText, {padding: '8%', fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
                               <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
                                   {options.map((option) => (
                                       <CheckBox
@@ -397,7 +397,7 @@ const AddPostScreen = () => {
                               <MyButton
                                   style={{ paddingLeft:20, height: 40, borderRadius: 10, alignSelf: 'left', marginTop: 10 }}
                                   text="Attach my current location"
-                                  styleText={{ fontSize: 14, color: themeColors.textLink, textDecorationLine: 'underline' }}
+                                  styleText={{ fontSize: 16, color: themeColors.textLink, textDecorationLine: 'underline' }}
                                   onPress={() => { setShowLocationModel(false); }}
                               />
                           </View>
@@ -411,7 +411,7 @@ const AddPostScreen = () => {
                   >
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
 
-                          <View style={[styles.modal, { marginTop: '50%', backgroundColor: themeColors.white }]}>
+                          <View style={[styles.modal, { marginTop: '70%', backgroundColor: themeColors.white }]}>
 
                               <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
 
@@ -541,7 +541,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     fontWeight: '400',
-    marginTop: 20,
     // marginBottom: 5,
   },
   checkboxWrapper: {

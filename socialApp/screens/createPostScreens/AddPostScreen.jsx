@@ -207,85 +207,87 @@ const AddPostScreen = () => {
                               <Text></Text>
                           </View>
 
-            <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
-              {images.map((image, index) => (
-                <View key={index}>
-                  <Image
-                    source={{ uri: image }}
-                    style={{ width: 100, height: 100 }}
-                  />
-                  <TouchableOpacity
-                    style={{
-                      position: "absolute",
-                      top: 10,
-                      right: 10,
-                      backgroundColor: themeColors.black,
-                      borderRadius: 50,
-                      padding: 5,
-                    }}
-                    onPress={() => handleImagePress(index)}
-                  >
-                    <MaterialIcons name="close" size={24} color="white" />
+                          <View style={{ flex: 1, flexDirection: "row", flexWrap: "wrap" }}>
+                            {images.map((image, index) => (
+                              <View key={index}>
+                                <Image
+                                  source={{ uri: image }}
+                                  style={{ width: 100, height: 100 }}
+                                />
+                                <TouchableOpacity
+                                  style={{
+                                    position: "absolute",
+                                    top: 10,
+                                    right: 10,
+                                    backgroundColor: themeColors.black,
+                                    borderRadius: 50,
+                                    padding: 5,
+                                  }}
+                                  onPress={() => handleImagePress(index)}
+                                >
+                                  <MaterialIcons name="close" size={24} color="white" />
+                                </TouchableOpacity>
+                              </View>
+                            ))}
+                          </View>
+                        </View>
+                </ScrollView>
+
+                <View
+                  style={[
+                    styles.iconsWrapper,
+                    { backgroundColor: themeColors.secondaryBackground },
+                  ]}
+                >
+                  <TouchableOpacity>
+                    <Entypo
+                      name="camera"
+                      size={26}
+                      color={themeColors.primaryText}
+                      onPress={handleOpenCamera}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <MaterialIcons
+                      name="photo-library"
+                      size={26}
+                      color={themeColors.primaryText}
+                      onPress={handleAddImages}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <MaterialCommunityIcons
+                      name="map-marker"
+                      size={26}
+                      color={themeColors.primaryText}
+                      onPress={handleAddLocation}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <MaterialCommunityIcons
+                      name="phone"
+                      size={26}
+                      color={themeColors.primaryText}
+                      onPress={handelAddPhone}
+                      style={styles.icon}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <MaterialIcons
+                      name="category"
+                      size={26}
+                      color={themeColors.primaryText}
+                      onPress={handelAddCategory}
+                      style={styles.icon}
+                    />
                   </TouchableOpacity>
                 </View>
-              ))}
-            </View>
-          </View>
-        </ScrollView>
 
-        <View
-          style={[
-            styles.iconsWrapper,
-            { backgroundColor: themeColors.secondaryBackground },
-          ]}
-        >
-          <TouchableOpacity>
-            <Entypo
-              name="camera"
-              size={26}
-              color={themeColors.primaryText}
-              onPress={handleOpenCamera}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialIcons
-              name="photo-library"
-              size={26}
-              color={themeColors.primaryText}
-              onPress={handleAddImages}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialCommunityIcons
-              name="map-marker"
-              size={26}
-              color={themeColors.primaryText}
-              onPress={handleAddLocation}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialCommunityIcons
-              name="phone"
-              size={26}
-              color={themeColors.primaryText}
-              onPress={handelAddPhone}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <MaterialIcons
-              name="category"
-              size={26}
-              color={themeColors.primaryText}
-              onPress={handelAddCategory}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-        </View>
          {/* --------Models ----------------*/}
+
                   <Modal
                       animationType="slide"
                       transparent={true}
@@ -316,7 +318,7 @@ const AddPostScreen = () => {
                                   }}
                                 /> 
 
-                              <View style={{ flex: 1, flexDirection: 'row', marginTop: Platform.OS === 'web'?'50':'0', justifyContent: 'center', marginBottom:10 }}>
+                              <View style={{ flex: 1, flexDirection: 'row', marginTop: Platform.OS === 'web'?'50':'0', justifyContent: 'center', marginVertical:15}}>
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
@@ -381,30 +383,29 @@ const AddPostScreen = () => {
 
                               <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Add the address of the post delivery location:</Text>
                               <SearchAddress style={{borderColor:themeColors.black, borderWidth:1}} onLocationSelected={setLocation} />
-                              {/* <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
-                                
-                                <MyButton
-                                style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                      text='Yes'
-                                      styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
-                                      onPress={handleAddLocation}
-                                  />
-
-                                  <MyButton
-                                      style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                      text='No'
-                                      styleText={{ fontSize: 17, color: themeColors.primaryText}}
-                                      onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
-                                  />
-                                  </View>
-                                  */}
-
+                                     
                               <MyButton
-                                  style={{ paddingLeft:20, height: 40, borderRadius: 10, alignSelf: 'left', marginTop:Platform.OS === 'web'? 10: 40 }}
+                                  style={{ paddingLeft:20, borderRadius: 10, alignSelf: 'left', marginVertical: 20}}
                                   text="Attach my current location"
                                   styleText={{ fontSize: 16, color: themeColors.textLink, textDecorationLine: 'underline' }}
                                   onPress={() => { setShowLocationModel(false); }}
                               />
+                              
+                              <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}> 
+                                  <MyButton
+                                    style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                    text='Yes'
+                                    styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
+                                    onPress={handleAddLocation}
+                                  />
+
+                                  <MyButton
+                                    style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
+                                    text='No'
+                                    styleText={{ fontSize: 17, color: themeColors.primaryText}}
+                                    onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
+                                  />
+                              </View>
                           </View>
                       </View>
                   </Modal>
@@ -416,7 +417,7 @@ const AddPostScreen = () => {
                   >
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
 
-                          <View style={[styles.modal, {  marginTop: Platform.OS === 'web' ? '17%' : '70%' , backgroundColor: themeColors.white }]}>
+                          <View style={[styles.modal, { marginTop: Platform.OS === 'web' ? '17%' : '70%' , backgroundColor: themeColors.white }]}>
 
                               <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
 
@@ -561,6 +562,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
     fontWeight: '400',
+    padding: '6%' ,
     ...Platform.select({
       web: {
         padding: '7%' 

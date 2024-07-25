@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, FlatList, StyleSheet, TextInput } from 'react-native';
+import { View, FlatList, StyleSheet, TextInput, Platform } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { windowHeight, windowWidth } from '../../utils/Dimentions';
@@ -78,6 +78,13 @@ export default HomeChat;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    ...Platform.select({
+      web:{
+        width: '70%',
+        maxWidth: 500,
+        alignSelf: 'left',
+      }
+    })
   },
   searchContainer: {
     width: windowWidth,

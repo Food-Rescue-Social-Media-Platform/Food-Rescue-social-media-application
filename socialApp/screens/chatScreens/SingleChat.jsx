@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -80,7 +81,7 @@ const SingleChat = ({ navigation }) => {
             renderItem={({ item }) => <MsgComponent item={item} />}
         />
 
-        <View style={{ ...styles.containerFooter, backgroundColor: theme.footerBackground }}>
+        <View style={{ ...styles.containerFooter, backgroundColor: theme.secondaryTheme }}>
             <TouchableOpacity style={styles.icon} onPress={onPressAttach}>
                 <MaterialIcons name="attach-file" size={24} color={theme.iconColor} />
             </TouchableOpacity>
@@ -88,17 +89,32 @@ const SingleChat = ({ navigation }) => {
                 <MaterialCommunityIcons name="camera" size={24} color={theme.iconColor} />
             </TouchableOpacity>
 
-            <View style={{ ...styles.windowSend, backgroundColor: theme.inputBackground, borderTopColor: theme.borderColor }}>
+            <View style={{ ...styles.windowSend, backgroundColor: theme.white}}>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                     <TextInput
                         autoFocus={true}
                         placeholder={t('Send message...')}
                         onChangeText={val => setMsg(val)}
                         multiline={true}
-                        numberOfLines={5}
+                        numberOfLines={10}
                         value={msg}
-                        style={{ color: theme.primaryText }}
-                        placeholderTextColor={theme.primaryText}
+                        style={{
+                            color: theme.primaryText,
+                            fontSize: 16,
+                            flex: 1,
+                            aspectRatio: 10,
+                            minHeight: Platform.OS === 'web'? 50:200,
+                        }}
+                        placeholderTextColor={theme.secondaryText}
+                        returnKeyType="send"
+                        blurOnSubmit={false}
+                        onSubmitEditing={sendMsg}
+                        maxLength={1000}
+                        textAlignVertical="top"
+                        autoCapitalize="sentences"
+                        autoCorrect={true}
+                        accessibilityLabel={t('Message input field')}
+                        accessibilityHint={t('Enter your message here')}
                     />
                 </ScrollView>
             </View>
@@ -114,6 +130,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     width: "100%",
     height: "100%",
+    ...Platform.select({
+      web: {
+        width: "60%",
+        alignSelf: "center",
+      },
+    })
   },
   containerFooter: {
     height: windowHeight / 10,
@@ -129,12 +151,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     bottom: 0,
-    padding: 9,
+    paddingHorizontal: 15,
+    paddingVertical: 2,
     marginLeft: 5,
     marginVertical: 2,
     width: windowWidth / 1.45,
     borderRadius: 20,
-    borderTopWidth: 1,
   },
   icon: {
     margin: 4,

@@ -50,8 +50,6 @@ function SearchAddress({style, onLocationSelected }) {
 const styles = StyleSheet.create({
   searchBox: {
     flex:1,
-    // position: 'absolute',
-    marginTop: 20,
     flexDirection: "row",
     backgroundColor: '#fff',
     width: '90%',

@@ -35,7 +35,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
     setVisible(false);
   };
 
-  const modalHeight = post && post.image ? '45%' : '21%';
+  const modalHeight = post && post.image ? '35%' : '21%';
 
   return (
     <Modal
@@ -105,6 +105,8 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 180,
+    borderRadius: 10,
+
   },
   textContainer: {
     flex: 1,

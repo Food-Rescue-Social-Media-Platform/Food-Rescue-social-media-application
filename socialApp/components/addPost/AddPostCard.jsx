@@ -31,8 +31,6 @@ const AddPostCard = () => {
         navigation.navigate('AddPost');
     }
 
-    //console.log("AddPostCard userConnected: ", userConnected);
-
     return (
         <View style={[styles.container, { backgroundColor: themeColors.secondaryTheme }]}>
             <Image

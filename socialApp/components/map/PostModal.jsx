@@ -4,10 +4,16 @@ import ReadMore from 'react-native-read-more-text';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { windowWidth } from '../../utils/Dimentions';
 import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToPost';
+import { useNavigation } from '@react-navigation/native';
+import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
+import { COLORS, DARKCOLORS } from '../../styles/colors';
 
 const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
+  const navigation = useNavigation();
   const [ distance, setDistance ] = useState('Calculating...');
   const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
+  const { isDarkMode, theme } = useDarkMode(); // Use the hook to get the current theme
+  const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
 
   useEffect(() => {
     const fetchDistance = async () => {
@@ -39,7 +45,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
       onRequestClose={onClose}
     >
       <TouchableOpacity style={styles.modalBackground} onPress={onClose}>
-        <TouchableOpacity style={[styles.modalContent, { height: modalHeight }]} onPress={() => { console.log("go to single post..") }}>
+        <TouchableOpacity style={[styles.modalContent, { backgroundColor:themeColors.white ,height: modalHeight }]} onPress={() => { navigation.navigate('SharePost', { postId: post.id }); }}>
           {post && (
             <>
               {post.image && (
@@ -54,14 +60,14 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
                     numberOfLines={2}
                     renderTruncatedFooter={renderTruncatedFooter}
                   >
-                    <Text style={styles.title}>{post.title}</Text>
+                    <Text style={[styles.title, {color:themeColors.black}]}>{post.title}</Text>
                   </ReadMore>
                 </View>
 
                 {haveSharedLocation? (
                    <View style={[styles.distanceContainer, !post.image && { height: '20%' }]}>
                       <MaterialCommunityIcons name="map-marker" size={26} color='black' />
-                      <Text style={styles.distanceText}>{distance}</Text>
+                      <Text style={[styles.distanceText, {color:themeColors.black}]}>{distance}</Text>
                   </View>
                 ): null
                  }
@@ -79,6 +85,7 @@ const styles = StyleSheet.create({
   modalBackground: {
     flex: 1,
     justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   modalContent: {
     width: windowWidth / 1.4,
@@ -86,15 +93,14 @@ const styles = StyleSheet.create({
     marginTop: '17%',
     marginBottom: '17%',
     marginHorizontal: '17%',
-    backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {
       width: 2,
       height: 0,
     },
-    shadowOpacity: 0.25,
     elevation: 5,
     borderRadius: 10,
+    shadowOpacity: 0.25,
   },
   image: {
     width: '100%',

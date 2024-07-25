@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
-import { getPostsWithFilters } from '../../FirebaseFunctions/collections/post';
+import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
 import { getDistance } from '../../hooks/helpersMap/getDistance';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
@@ -28,7 +28,6 @@ const MapScreen = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [MapComponent, setMapComponent] = useState(null);
-  // const [ hasLocationPermission, setHasLocationPermission ] = useState(false);
   const radiusInMeters = 10000;
 
   useEffect(() => {
@@ -42,29 +41,11 @@ const MapScreen = () => {
 
 
   const fetchPosts = async (pos) => {
-    console.log('fetchPosts from Map, pos:', pos);
     if (!pos) return;
     setLoading(true);
     try {
-        const { posts, lastVisible } = await getPostsWithFilters([pos.latitude, pos.longitude], radiusInMeters, true);
-       
-        const validPosts = posts.filter(post => {
-          const lat = parseFloat(post.coordinates.latitude);
-          const lng = parseFloat(post.coordinates.longitude);
-          console.log('lat, lng from Map', lat, lng);
-          return !isNaN(lat) && !isNaN(lng);
-        });
-
-        const offsetPosts = offsetMarkers(validPosts.map(post => ({
-            id: post.id,
-            latitude: post.coordinates.latitude,
-            longitude: post.coordinates.longitude,
-            title: post.title,
-            image: post.image,
-        })));
-
-        console.log('offsetPosts from Map', offsetPosts);
-        setLocationMarkers(offsetPosts);
+        const posts = await getPostsNearby([pos.latitude, pos.longitude], radiusInMeters, null, true);
+        setLocationMarkers(posts);
     } catch (error) {
         console.error("Error fetching posts:", error);
     } finally {
@@ -73,23 +54,14 @@ const MapScreen = () => {
 };
 
   const fetchData = async () => {
-    console.log('fetchData from Map');
     setLoading(true);
     await getLocation(setPosition, setRegion);
     if(position)
       watchLocation(setPosition, setRegion);
-    //   // setLoading(false);
-    //   setHasLocationPermission(true);
-    // }
-    // else{
-    //   setHasLocationPermission(false);
-    // }
-
   };
 
   useEffect(() => {
     if (isFocused) {
-      console.log('isFocused from Map');
       setPostFromFeed(route.params ? route.params : null);
       fetchData();
     } else {
@@ -99,8 +71,6 @@ const MapScreen = () => {
   }, [isFocused]);
 
   useEffect(() => {
-    console.log('position from Map', position);
-    // console.log('hasLocationPermission from Map', hasLocationPermission);
     if (position) {
       fetchPosts(position);
     }
@@ -210,12 +180,6 @@ const MapScreen = () => {
             userLocation={position}
           />
         ) : null}
-
-        {loading && (
-          <View style={styles.loading}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        )}
 
         <View style={styles.zoomButtons}>
           <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>

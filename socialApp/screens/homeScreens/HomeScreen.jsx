@@ -169,6 +169,7 @@ const HomeScreen = () => {
     const headerComponent = () => {
         return(
             <View>
+            <View style={styles.addPostCard}></View>
             <AddPostCard/>
             { permissionDenied &&
                 <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1}}>
@@ -241,7 +242,13 @@ const styles = StyleSheet.create({
         marginTop: '50%',
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    addPostCard: {
+       marginBottom:15,
+       marginTop:10,
+       marginLeft:20,
+       marginRight:20,
+    },
 });
 
 export default HomeScreen;

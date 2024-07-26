@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Platform, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, Image, Animated  } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
@@ -17,6 +17,7 @@ const AddPostCard = () => {
     const [userConnected, setUserConnected] = useState(null);
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+    const [animation] = useState(new Animated.Value(1));
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -28,7 +29,20 @@ const AddPostCard = () => {
     }, []);
 
     const openShareFoodScreen = () => {
+        console.log("open share food");
         navigation.navigate('AddPost');
+    }
+
+    const animatePress = () => {
+        Animated.sequence([
+            Animated.timing(animation, { toValue: 0.8, duration: 100, useNativeDriver: true }),
+            Animated.timing(animation, { toValue: 1, duration: 100, useNativeDriver: true })
+        ]).start();
+    }
+
+    const handlePress = () => {
+        animatePress();
+        openShareFoodScreen();
     }
 
     return (
@@ -42,13 +56,23 @@ const AddPostCard = () => {
                 }
             />
             <View>
-                <TouchableOpacity style={[styles.sharePostWrapper, { backgroundColor: themeColors.secondaryBackground, borderColor: themeColors.black }]} onPress={openShareFoodScreen}>
-                    <Text style={[styles.mainText, { color: themeColors.primaryText }]}>{t('Share food...')}</Text>
+                <TouchableOpacity onPress={handlePress}>
+                    <Animated.View 
+                        style={[
+                            styles.sharePostWrapper, 
+                            { 
+                                backgroundColor: themeColors.secondaryBackground, 
+                                borderColor: themeColors.black,
+                                transform: [{ scale: animation }]
+                            }
+                        ]}
+                    >
+                        <Text style={[styles.mainText, { color: themeColors.primaryText }]}>{t('Share food...')}</Text>
+                    </Animated.View>
                 </TouchableOpacity>
                 <Icons
                     size={20}
                     color={themeColors.black}
-                    handelClick={openShareFoodScreen}
                     iconStyle={styles.icon}
                     wrapperStyle={styles.iconsWrapper}
                 />
@@ -61,6 +85,7 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: windowHeight / 7,
+        flex:1,
         flexDirection: 'row',
         marginBottom: 15,
         borderRadius: 10,

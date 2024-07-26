@@ -192,7 +192,8 @@ const HomeScreen = () => {
                             return <PostCard 
                                         key={item.id} 
                                         item={item} 
-                                        postUserId={item.userId} 
+                                        postUserId={item.userId}
+                                        isProfilePage={false}
                                         userLocation={position} 
                                     />;
                         else 

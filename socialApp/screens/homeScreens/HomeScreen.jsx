@@ -244,10 +244,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     addPostCard: {
-       marginBottom:15,
-       marginTop:10,
-       marginLeft:20,
-       marginRight:20,
+    //    marginBottom:15,
+    //    marginTop:1,
+    //    marginLeft:20,
+    //    marginRight:20,
     },
 });
 

@@ -66,7 +66,7 @@ const FeedStack = ({ navigation }) => {
               <Image
                 source={require('../assets/Images/logoHomePage.png')}
                 resizeMode="contain"
-                style={{ width: 180, height: 180}}
+                style={{ width: 180, height: 160}}
               />
           </View>
           ,

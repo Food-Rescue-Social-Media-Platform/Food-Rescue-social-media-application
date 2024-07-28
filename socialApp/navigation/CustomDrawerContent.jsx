@@ -161,21 +161,6 @@ const CustomDrawerContent = (props) => {
                       />
                     ))}
                   </View>
-                  <View style={styles.filterButtonsContainer}>
-                    <TouchableOpacity
-                      style={[styles.drawerItem, styles.filterButton]}
-                      onPress={() => handelClickFilter()}
-                    >
-                      <Text style={{ color: COLORS.white }}>Done</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                      style={[styles.drawerItem, styles.filterButton]}
-                      onPress={() => handelClickClear()}
-                    >
-                      <Text style={{ color: COLORS.white }}>Clear</Text>
-                    </TouchableOpacity>
-                  </View>
                 </>
               )}
 
@@ -209,6 +194,21 @@ const CustomDrawerContent = (props) => {
             </View>
           </>
         )}
+        <View style={styles.filterButtonsContainer}>
+            <TouchableOpacity
+              style={[styles.drawerItem, styles.filterButton]}
+              onPress={() => handelClickFilter()}
+            >
+              <Text style={{ color: COLORS.white }}>Done</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.drawerItem, styles.filterButton]}
+              onPress={() => handelClickClear()}
+            >
+              <Text style={{ color: COLORS.white }}>Clear</Text>
+            </TouchableOpacity>
+        </View>
 
         <View style={{ marginTop: '10%' }}>
           <View style={styles.switchContainer}>

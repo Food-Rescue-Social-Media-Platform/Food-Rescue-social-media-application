@@ -55,7 +55,9 @@ const AddPostCard = () => {
                         : require('../../assets/Images/emptyProfieImage.png')
                 }
             />
-            <View>
+            <View style={{
+                
+            }}>
                 <TouchableOpacity onPress={handlePress}>
                     <Animated.View 
                         style={[
@@ -71,6 +73,7 @@ const AddPostCard = () => {
                     </Animated.View>
                 </TouchableOpacity>
                 <Icons
+                    handelClick={handlePress}
                     size={20}
                     color={themeColors.black}
                     iconStyle={styles.icon}

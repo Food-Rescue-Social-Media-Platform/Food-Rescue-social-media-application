@@ -1,14 +1,14 @@
 export const categoriesList  = [
+    'Sweets',
     'Bread',
     'Cooked',
-    'Chicken',
-    'Fast Food',
     'Rice',
+    'Chicken',
     'Dairy',
-    'Sweets',
     'Seafood',
-    'Vegetables',
-    'Fruits',
     'Drinks',
+    'Fast Food',
+    'Fruits',
+    'Vegetables',
     'Other'
 ]

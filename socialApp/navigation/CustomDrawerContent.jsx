@@ -157,7 +157,7 @@ const CustomDrawerContent = (props) => {
                         title={category.value}
                         checked={selectedCategories.includes(category.value)}
                         onPress={() => handleClickCategory(category)}
-                        containerStyle={[styles.checkboxWrapper, { backgroundColor: themeColors.white }]}
+                        containerStyle={[styles.checkboxWrapper, { backgroundColor: themeColors.theme,borderRadius:10 }]}
                       />
                     ))}
                   </View>
@@ -275,11 +275,12 @@ const styles = StyleSheet.create({
   },
   checkboxWrapper: {
     padding: 4,
+    width:'42%',
+    gap:0,
   },
   categoriesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    padding: 4,
     marginBottom: 10,
   },
   filterButtonsContainer: {

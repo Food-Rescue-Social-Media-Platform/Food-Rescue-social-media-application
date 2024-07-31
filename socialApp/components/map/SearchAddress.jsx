@@ -1,13 +1,22 @@
 import React from 'react';
 import { useDarkMode } from '../../styles/DarkModeContext';
-import { StyleSheet, Platform, View } from 'react-native';
+import { StyleSheet,FlatList,TextInput,Button, Platform, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { SafeAreaView } from 'react-native';
+import axios from 'axios';
 
 function SearchAddress({style, onLocationSelected }) {
   const { theme } = useDarkMode(); // Access the current theme
 
+  // const [query, setQuery] = useState('');
+  // const [results, setResults] = useState([]);
+
+  // const handleSearch = async () => {
+  //   const searchResults = await searchAddress(query);
+  //   setResults(searchResults);
+  // };
+  
   return (
     <SafeAreaView>
       <View style={[styles.searchBox, style]}>
@@ -49,13 +58,12 @@ function SearchAddress({style, onLocationSelected }) {
         />
       </View>
     </SafeAreaView>
-
   );
 }
 
 const styles = StyleSheet.create({
   searchBox: {
-    flex:1,
+    // flex:1,
     marginTop: 20,
     zIndex: 1,
     flexDirection: "row",
@@ -76,3 +84,29 @@ const styles = StyleSheet.create({
 });
 
 export default SearchAddress;
+
+
+const searchAddress = async (query) => {
+  try {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error searching address:', error);
+    return [];
+  }
+}
+  {/*<View style={searchBox}>
+    <TextInput
+      value={query}
+      onChangeText={setQuery}
+      placeholder="הכנס כתובת לחיפוש"
+    />
+    <Button title="חפש" onPress={handleSearch} />
+    <FlatList
+      data={results}
+      keyExtractor={(item) => item.place_id}
+      renderItem={({ item }) => <Text>{item.display_name}</Text>}
+    />
+  </View>*/}

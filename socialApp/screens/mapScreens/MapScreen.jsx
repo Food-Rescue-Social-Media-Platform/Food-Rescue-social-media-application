@@ -151,10 +151,10 @@ const MapScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
-  {/*<SearchAddress
+  <SearchAddress
          style={{position: 'absolute'}}
            onLocationSelected={setLocationFromSearch} 
-         />*/}
+         />
           {MapComponent && position ? (
               <MapComponent
                 region={region}

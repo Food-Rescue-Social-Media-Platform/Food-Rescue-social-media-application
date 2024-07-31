@@ -1,34 +1,29 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import { useNavigation, useRoute, useIsFocused } from '@react-navigation/native';
-import { getPostsWithFilters } from '../../FirebaseFunctions/collections/post';
+import { useRoute, useIsFocused } from '@react-navigation/native';
+import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
 import { getDistance } from '../../hooks/helpersMap/getDistance';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import Feather from 'react-native-vector-icons/Feather';
-import { offsetMarkers } from '../../hooks/helpersMap/offsetMarkers';
 import PostModal from '../../components/map/PostModal';
+import SearchAddress from '../../components/map/SearchAddress';
+
 
 const MapScreen = () => {
-  const navigation = useNavigation();
   const route = useRoute();
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
   const [locationMarkers, setLocationMarkers] = useState([]);
-  const [region, setRegion] = useState({
-    latitude: 37.4220737,
-    longitude: -122.084923,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
-  });
+  const [region, setRegion] = useState();
   const [loading, setLoading] = useState(false);
+  const [locationFromSearch, setLocationFromSearch] = useState(null);
   const [postFromFeed, setPostFromFeed] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [MapComponent, setMapComponent] = useState(null);
-  // const [ hasLocationPermission, setHasLocationPermission ] = useState(false);
   const radiusInMeters = 10000;
 
   useEffect(() => {
@@ -40,56 +35,28 @@ const MapScreen = () => {
     loadMapComponent();
   }, []);
 
-
   const fetchPosts = async (pos) => {
-    console.log('fetchPosts from Map, pos:', pos);
     if (!pos) return;
     setLoading(true);
     try {
-        const { posts, lastVisible } = await getPostsWithFilters([pos.latitude, pos.longitude], radiusInMeters, true);
-       
-        const validPosts = posts.filter(post => {
-          const lat = parseFloat(post.coordinates.latitude);
-          const lng = parseFloat(post.coordinates.longitude);
-          console.log('lat, lng from Map', lat, lng);
-          return !isNaN(lat) && !isNaN(lng);
-        });
-
-        const offsetPosts = offsetMarkers(validPosts.map(post => ({
-            id: post.id,
-            latitude: post.coordinates.latitude,
-            longitude: post.coordinates.longitude,
-            title: post.title,
-            image: post.image,
-        })));
-
-        console.log('offsetPosts from Map', offsetPosts);
-        setLocationMarkers(offsetPosts);
+        const posts = await getPostsNearby([pos.latitude, pos.longitude], radiusInMeters, null, true);
+        setLocationMarkers(posts);
     } catch (error) {
         console.error("Error fetching posts:", error);
     } finally {
         setLoading(false);
     }
-};
+  };
 
   const fetchData = async () => {
-    console.log('fetchData from Map');
     setLoading(true);
     await getLocation(setPosition, setRegion);
     if(position)
       watchLocation(setPosition, setRegion);
-    //   // setLoading(false);
-    //   setHasLocationPermission(true);
-    // }
-    // else{
-    //   setHasLocationPermission(false);
-    // }
-
   };
 
   useEffect(() => {
     if (isFocused) {
-      console.log('isFocused from Map');
       setPostFromFeed(route.params ? route.params : null);
       fetchData();
     } else {
@@ -99,8 +66,6 @@ const MapScreen = () => {
   }, [isFocused]);
 
   useEffect(() => {
-    console.log('position from Map', position);
-    // console.log('hasLocationPermission from Map', hasLocationPermission);
     if (position) {
       fetchPosts(position);
     }
@@ -111,8 +76,8 @@ const MapScreen = () => {
       mapRef.current?.animateToRegion({
         latitude: postFromFeed.latitude,
         longitude: postFromFeed.longitude,
-        latitudeDelta: 0.001,
-        longitudeDelta: 0.001,
+        latitudeDelta: 0.0001,
+        longitudeDelta: 0.0001,
       }, 500);
     }
   }, [postFromFeed]);
@@ -184,51 +149,52 @@ const MapScreen = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}>
+    >
       <View style={styles.container}>
-        {MapComponent ? (
-          <MapComponent
-            region={region}
-            handleRegionChange={handleRegionChange}
-            handleMapPress={handleMapPress}
-            position={position}
-            locationMarkers={locationMarkers}
-            handleMarkerPress={handleMarkerPress}
-            postFromFeed={postFromFeed}
-            mapRef={mapRef}
-            style={{ flex: 1, opacity: loading ? 0.6 : 1 }}
-            />
-        ) : (
-          <ActivityIndicator size="large" color="#0000ff" />
-        )}
-        {selectedPost ? (
-          <PostModal
-            setVisible={setModalVisible}
-            visible={isModalVisible}
-            post={selectedPost}
-            onClose={closeModal}
-            userLocation={position}
-          />
-        ) : null}
+  <SearchAddress
+         style={{position: 'absolute'}}
+           onLocationSelected={setLocationFromSearch} 
+         />
+          {MapComponent && position ? (
+              <MapComponent
+                region={region}
+                handleRegionChange={handleRegionChange}
+                handleMapPress={handleMapPress}
+                position={position}
+                locationMarkers={locationMarkers}
+                handleMarkerPress={handleMarkerPress}
+                postFromFeed={postFromFeed}
+                mapRef={mapRef}
+                style={{ flex: 1, opacity: loading ? 0.6 : 1 }}
+                />
+            ) : (
+              <View style={{marginTop:'40%'}}>
+                 <ActivityIndicator size="large" color="#0000ff" />
+              </View>
+            )}
 
-        {loading && (
-          <View style={styles.loading}>
-            <ActivityIndicator size="large" color="#0000ff" />
-          </View>
-        )}
+            {selectedPost ? (
+              <PostModal
+                setVisible={setModalVisible}
+                visible={isModalVisible}
+                post={selectedPost}
+                onClose={closeModal}
+                userLocation={position}
+              />
+            ) : null}
 
-        <View style={styles.zoomButtons}>
-          <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>
-            <Feather name="zoom-in" size={27} color='black' />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={zoomOut} style={styles.iconStyle}>
-            <Feather name="zoom-out" size={27} color='black' />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleCurrentLocationPress} style={styles.iconStyle}>
-            <Feather name="navigation" size={24} color='black' />
-          </TouchableOpacity>
+            <View style={styles.zoomButtons}>
+              <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>
+                <Feather name="zoom-in" size={27} color='black' />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={zoomOut} style={styles.iconStyle}>
+                <Feather name="zoom-out" size={27} color='black' />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={handleCurrentLocationPress} style={styles.iconStyle}>
+                <Feather name="navigation" size={24} color='black' />
+              </TouchableOpacity>
+            </View>
         </View>
-      </View>
     </KeyboardAvoidingView>
   );
 };

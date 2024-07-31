@@ -166,27 +166,34 @@ const HomeScreen = () => {
     if (error) {
         return <Text style={{ color: theme.primaryText }}>Error: {error}</Text>;
     }
+    const headerComponent = () => {
+        return(
+            <View>
+            <View style={styles.addPostCard}></View>
+            <AddPostCard/>
+            { permissionDenied &&
+                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1}}>
+                    <Button
+                        title={buttonTitle}
+                        onPress={async () => {
+                            await getLocation(setPosition);
+                            setButtonTitle("Location Shared ...");
+                            if(position) fetchData();
+                        }}
+                        style = {{ width: 200, height: 50,  backgroundColor: '#007BFF', borderRadius: 10}}
+                    />
+                </View>
+            }
+            </View>
+        )
+    }
 
     return (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-               { permissionDenied &&
-                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                        <Button
-                            title={buttonTitle}
-                            onPress={async () => {
-                                await getLocation(setPosition);
-                                setButtonTitle("Location Shared ...");
-                                if(position) fetchData();
-                            }}
-                            style = {{ width: 200, height: 50,  backgroundColor: '#007BFF', borderRadius: 10}}
-                        />
-                    </View>
-                }
-
                 <FlatList
                     data={posts}
                     style={{ width: '100%' }}
-                    ListHeaderComponent={ <AddPostCard/>}
+                    ListHeaderComponent={headerComponent}
                     renderItem={({ item, index }) => {
                         if (item && item.id) 
                             return <PostCard 
@@ -220,7 +227,7 @@ const HomeScreen = () => {
                         </View>
                     )}
     /> 
-        </Container>
+        </Container> 
     );
 };
 
@@ -235,7 +242,13 @@ const styles = StyleSheet.create({
         marginTop: '50%',
         alignItems: 'center',
         justifyContent: 'center',
-    }
+    },
+    addPostCard: {
+    //    marginBottom:15,
+    //    marginTop:1,
+    //    marginLeft:20,
+    //    marginRight:20,
+    },
 });
 
 export default HomeScreen;

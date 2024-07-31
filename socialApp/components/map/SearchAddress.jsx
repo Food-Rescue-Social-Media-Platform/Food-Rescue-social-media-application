@@ -1,19 +1,18 @@
 import React from 'react';
 import { useDarkMode } from '../../styles/DarkModeContext';
-import { StyleSheet, Platform, View } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
+import { StyleSheet,FlatList,TextInput,Button, Platform, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { SafeAreaView } from 'react-native';
+
 function SearchAddress({style, onLocationSelected }) {
   const { theme } = useDarkMode(); // Access the current theme
-
   return (
     <SafeAreaView>
       <View style={[styles.searchBox, style]}>
         <GooglePlacesAutocomplete
           placeholder="Search here"
           onPress={(data, details = null) => {
-            // 'details' is provided when fetchDetails = true
             console.log(data, details);
             onLocationSelected(data, details);
           }}
@@ -40,28 +39,38 @@ function SearchAddress({style, onLocationSelected }) {
               color: '#1faadb',
             },
           }}
+          renderLeftButton={() => (
+            <View style={styles.iconContainer}>
+              <Ionicons name="search" size={26} color='black' />
+            </View>
+          )}
+          // onFail={error => console.error(error)}
         />
       </View>
     </SafeAreaView>
-
   );
 }
 
 const styles = StyleSheet.create({
   searchBox: {
-    flex:1,
+    // flex:1,
+    marginTop: 20,
+    zIndex: 1,
     flexDirection: "row",
     backgroundColor: '#fff',
     width: '90%',
     alignSelf: 'center',
     borderRadius: 5,
-    padding: 10,
+    padding: 7,
     shadowColor: '#ccc',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 10,
   },
+  iconContainer: {
+    padding: 7,
+    }
 });
 
 export default SearchAddress;

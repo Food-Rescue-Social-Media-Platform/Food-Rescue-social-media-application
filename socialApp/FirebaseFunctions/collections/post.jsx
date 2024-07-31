@@ -369,7 +369,6 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
     }
 }
 
-
 export async function getPost(postId) {
     const postRef = doc(database, 'posts', postId);
     const postDocSnap = await getDoc(postRef);
@@ -426,56 +425,58 @@ export async function getPostsOfUser(postUserId, userData, lastIndex) {
       return { posts: [], lastIndex: lastIndex, hasMore: false};
     }
   }
-// export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
-//     const bounds = geofire.geohashQueryBounds(center, radiusInM);
-//     const promises = [];
 
-//     bounds.forEach(b => {
-//         const q = query(
-//             collection(database, 'posts'),
-//             orderBy('geohash'),
-//             startAt(b[0]),
-//             endAt(b[1]),
-//             // userId ? where('userId', '==', userId) : null
-//         );
+export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
+    const bounds = geofire.geohashQueryBounds(center, radiusInM);
+    const promises = [];
 
-//         promises.push(getDocs(q));
-//     });
+    bounds.forEach(b => {
+        const q = query(
+            collection(database, 'posts'),
+            orderBy('geohash'),
+            startAt(b[0]),
+            endAt(b[1]),
+            // userId ? where('userId', '==', userId) : null
+        );
 
-//     const snapshots = await Promise.all(promises);
-//     console.log("snapshots:", snapshots);
-//     const matchingDocs = [];
+        promises.push(getDocs(q));
+    });
 
-//     snapshots.forEach((snap) => {
-//         snap.forEach((doc) => {
-//             console.log("doc:", doc.data());
-//             const lat = parseFloat(doc.get('coordinates')[0]);
-//             const lng = parseFloat(doc.get('coordinates')[1]);
+    const snapshots = await Promise.all(promises);
+    console.log("snapshots:", snapshots);
+    const matchingDocs = [];
 
-//             if (isNaN(lat) || isNaN(lng)) {
-//                 console.error("Invalid coordinates:", lat, lng);
-//                 return;
-//             }
+    snapshots.forEach((snap) => {
+        snap.forEach((doc) => {
+            console.log("doc:", doc.data());
+            const lat = parseFloat(doc.get('coordinates')[0]);
+            const lng = parseFloat(doc.get('coordinates')[1]);
 
-//             const distanceInKm = geofire.distanceBetween([lat, lng], center);
-//             const distanceInM = distanceInKm * 1000;
+            if (isNaN(lat) || isNaN(lng)) {
+                console.error("Invalid coordinates:", lat, lng);
+                return;
+            }
 
-//             if (distanceInM <= radiusInM) {
-//                 if(isMapScreen) {
-//                 matchingDocs.push({
-//                     id: doc.id,
-//                     title: doc.get('postText'),
-//                     coordinates: { latitude: lat, longitude: lng },
-//                     image: doc.get('postImg')[0],
-//                 });
-//             } else {
-//                 matchingDocs.push({ id: doc.id, ...doc.data() });
-//             }
-//             }
-//         });
-//     });
+            const distanceInKm = geofire.distanceBetween([lat, lng], center);
+            const distanceInM = distanceInKm * 1000;
 
-//     console.log("matchingDocs:", matchingDocs);
-//     return matchingDocs;
-// }
+            if (distanceInM <= radiusInM) {
+                if(isMapScreen) {
+                matchingDocs.push({
+                    id: doc.id,
+                    title: doc.get('postText'),
+                    latitude: lat,
+                    longitude: lng,
+                    image: doc.get('postImg')[0],
+                });
+            } else {
+                matchingDocs.push({ id: doc.id, ...doc.data() });
+            }
+            }
+        });
+    });
+
+    console.log("matchingDocs:", matchingDocs);
+    return matchingDocs;
+}
 

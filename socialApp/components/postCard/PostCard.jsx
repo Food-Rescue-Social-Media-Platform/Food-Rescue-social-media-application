@@ -63,7 +63,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const { user } = useContext(AuthContext);
     const { theme } = useDarkMode();
     const { t } = useTranslation();
-    const [distance, setDistance] = useState(0);
+    const [distance, setDistance] = useState('');
     const [haveSharedLocation, setHaveSharedLocation] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -365,12 +365,10 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
                 </View>
                 {haveSharedLocation && !isProfilePage && (
-                    <View style={styles.iconsWrapper}>
-                        <TouchableOpacity onPress={handleClickLocationPost}>
-                            <MaterialCommunityIcons name="map-marker" size={22} color={theme.primaryText} />
-                            <Text style={[styles.text, { color: theme.primaryText }]}>{distance}</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={[styles.iconsWrapper]} onPress={handleClickLocationPost}>
+                        <MaterialCommunityIcons name="map-marker" size={22} color={theme.primaryText} />
+                        <Text style={[styles.text, { color: theme.primaryText }]}>{distance}</Text>
+                    </TouchableOpacity>
                 )}
             </InteractionWrapper>
             <Text></Text>
@@ -407,7 +405,7 @@ const styles = StyleSheet.create({
     },
     iconsWrapper: {
         flexDirection: "row",
-        justifyContent: "space-between",
+        // justifyContent: "space-between",
         alignItems: "center"
     },
     image: {

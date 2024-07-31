@@ -50,45 +50,45 @@ const AdminScreen = () => {
         <Text style={styles.adminMessage}>{t('Reports Table')}</Text>
         <View style={styles.table}>
           <View style={styles.tableRow}>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Reporter ID')}</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('User Id')}</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('User Name')}</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('User Phone')}</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Post Id')}</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Post Img')}</Text>
-            <Text style={[styles.columnHeader, styles.fixedWidth, styles.headerText]}>{t('Actions')}</Text>
+            <Text style={[styles.columnHeaderReporterID, styles.fixedWidth, styles.headerText]}>{t('Reporter ID')}</Text>
+            <Text style={[styles.columnHeaderUserId, styles.fixedWidth, styles.headerText]}>{t('User Id')}</Text>
+            <Text style={[styles.columnHeaderUserName, styles.fixedWidth, styles.headerText]}>{t('User Name')}</Text>
+            <Text style={[styles.columnHeaderUserPhone, styles.fixedWidth, styles.headerText]}>{t('User Phone')}</Text>
+            <Text style={[styles.columnHeaderPostId, styles.fixedWidth, styles.headerText]}>{t('Post Id')}</Text>
+            <Text style={[styles.columnHeaderPostImg, styles.fixedWidth, styles.headerText]}>{t('Post Img')}</Text>
+            <Text style={[styles.columnHeaderActions, styles.fixedWidth, styles.headerText]}>{t('Actions')}</Text>
           </View>
 
           {reports.map(report => (
             <View key={report.id} style={styles.tableRow}>
               <View style={styles.row}>
                 <TextInput
-                  style={[styles.cell, styles.fixedWidth]}
+                  style={[styles.reporterIdCell, styles.fixedWidth]}
                   value={report.reporterId}
                   editable={false}
                 />
                 <TextInput
-                  style={[styles.cell, styles.fixedWidth]}
+                  style={[styles.UserIdCell, styles.fixedWidth]}
                   value={report.postUserId}
                   editable={false}
                 />
                 <TextInput
-                  style={[styles.cell, styles.fixedWidth]}
+                  style={[styles.UserNameCell, styles.fixedWidth]}
                   value={report.post.userName}
                   editable={false}
                 />
                 <TextInput
-                  style={[styles.cell, styles.fixedWidth]}
+                  style={[styles.UserPhoneCell, styles.fixedWidth]}
                   value={report.post.phoneNumber}
                   editable={false}
                 />
                 <TextInput
-                  style={[styles.cell, styles.fixedWidth]}
+                  style={[styles.PostIdCell, styles.fixedWidth]}
                   value={report.postId}
                   editable={false}
                 />
                 <TextInput
-                  style={[styles.cell, styles.fixedWidth]}
+                  style={[styles.PostImgCell, styles.fixedWidth]}
                   value={report.post.postImg}
                   editable={false}
                 />
@@ -145,11 +145,72 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
   },
-  columnHeader: {
+  columnHeaderReporterID: {
     fontWeight: 'bold',
     paddingVertical: 20,
   },
-  cell: {
+  columnHeaderUserId: {
+    fontWeight: 'bold',
+    paddingVertical: 20,
+    paddingLeft:47,
+  },
+  columnHeaderUserName: {
+    fontWeight: 'bold',
+    paddingVertical: 20,
+    paddingLeft:90,
+  },
+  columnHeaderUserPhone: {
+    fontWeight: 'bold',
+    paddingVertical: 20,
+    paddingLeft:70,
+
+  },
+  columnHeaderPostId: {
+    fontWeight: 'bold',
+    paddingVertical: 20,
+    paddingLeft:20,
+    paddingLeft:95,
+  },
+  columnHeaderPostImg: {
+    fontWeight: 'bold',
+    paddingVertical: 20,
+    paddingLeft:120,
+
+
+  },
+  columnHeaderActions: {
+    fontWeight: 'bold',
+    paddingVertical: 20,
+    paddingLeft:140,
+    width:40,
+  },
+  reporterIdCell: {
+    paddingVertical: 20,
+    marginLeft: 5,
+
+  },
+  UserIdCell: {
+    paddingVertical: 20,
+    marginLeft: 5,
+    paddingLeft:20,
+
+  },
+  UserNameCell: {
+    paddingVertical: 20,
+    marginLeft: 5,
+    paddingLeft:40,
+
+  },
+  UserPhoneCell: {
+    paddingVertical: 20,
+
+  },
+  PostIdCell: {
+    paddingVertical: 20,
+    marginLeft: 5,
+
+  },
+  PostImgCell: {
     paddingVertical: 20,
     marginLeft: 5,
   },

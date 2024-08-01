@@ -80,7 +80,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         ? { uri: item.userImg }
         : require('../../assets/Images/emptyProfieImage.png');
 
-    const createdAt = item.createdAt ? moment(item.createdAt.toDate()).startOf('hour').fromNow() : '';
+    const createdAt = item.createdAt ? moment(item.createdAt.toDate()).fromNow() : '';
     const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';
 
     const handleUpdateStatus = async (selectedItem) => {

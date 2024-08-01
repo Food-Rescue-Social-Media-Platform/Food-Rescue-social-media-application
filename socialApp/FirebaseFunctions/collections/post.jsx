@@ -3,7 +3,7 @@ import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 import Toast from 'react-native-toast-message';
 
-let PAGE_SIZE =10;
+let PAGE_SIZE =5;
 let PAGE_SIZE_POSTS_PROFILE = 5;
 
 export class Post {
@@ -155,13 +155,14 @@ export async function getPostsWithFiltersForWeb(userId, categories, lastVisible)
     }
 }
 
-export async function getPostsWithFilters(center, radiusInM, userId, categories, isMapScreen, lastVisible) {
-    // console.log("\ngetPosts with filters:", center, radiusInM, userId, categories, isMapScreen, lastVisible);
-    if (!center || !radiusInM) {
+export async function getPostsWithFilters(center, radiusInKm, userId, categories, lastVisible) {
+    console.log("\ngetPosts with filters:", center, radiusInKm, userId, categories, lastVisible);
+    console.log("\n")
+    if (!center || !radiusInKm) {
         console.error("Center and radius are required for fetching posts");
         return { posts: [], lastVisible: null};
     }
-    radiusInM = radiusInM * 1000; // Convert to meters
+    const radiusInM = radiusInKm * 1000;
 
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
@@ -174,6 +175,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
                 where('geohash', '>=', b[0]),
                 where('geohash', '<=', b[1]),
                 orderBy('geohash'),
+                orderBy('createdAt', 'desc'), // Assuming you want to order by creation date
                 startAfter(lastVisible),
                 limit(PAGE_SIZE)
             );
@@ -198,6 +200,7 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
         const snapshots = await Promise.all(promises);
         const posts = [];
         let lastVisibleDoc = null;
+        let counter = 0; // count all the post also posts that are not in the radius
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
@@ -221,26 +224,17 @@ export async function getPostsWithFilters(center, radiusInM, userId, categories,
                 const distanceInM = distanceInKm * 1000;
 
                 if (distanceInM <= radiusInM) {
-                    if (isMapScreen) {
-                        posts.push({
-                            id: doc.id,
-                            title: doc.get('postText'),
-                            coordinates: { latitude: lat, longitude: lng },
-                            image: doc.get('postImg')[0],
-                        });
-                    } else {
-                        posts.push({ id: doc.id, ...doc.data(), coordinates: { latitude: lat, longitude: lng } });
-                    }
+                    posts.push({ id: doc.id, ...doc.data(), coordinates: { latitude: lat, longitude: lng } });                    
                     lastVisibleDoc = doc; // Keep track of the last visible document
-                    // console.log("id:", doc.id);
-                }
+                };
+
+                counter ++;
             });
         });
+        console.log("posts with filters:", posts);
+        console.log("size of posts:", posts.length);
 
-
-        // console.log("posts with filters:", posts);
-        if(posts.length < PAGE_SIZE) {
-            // console.log("posts.length < PAGE_SIZE");
+        if( counter < PAGE_SIZE ) {
             return { posts, lastVisible: null};
         }
         else{
@@ -427,6 +421,7 @@ export async function getPostsOfUser(postUserId, userData, lastIndex) {
   }
 
 export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
+    console.log("getPostsNearby:", center, radiusInM, userId, isMapScreen);
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
 
@@ -476,7 +471,8 @@ export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
         });
     });
 
-    console.log("matchingDocs:", matchingDocs);
+    console.log("near by:", matchingDocs);
+    console.log("near by size:", matchingDocs.length);
     return matchingDocs;
 }
 

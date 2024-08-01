@@ -325,31 +325,30 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
 
             {item.postImg && item.postImg.length > 0 ? (
                 <View style={styles.imageContainer}>
-                <ScrollView
-                    horizontal
-                    pagingEnabled
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.scrollView}
-                    onScroll={handleScroll}
-                    scrollEventThrottle={16}
-                >
-                    {item.postImg.map((img, index) => (
-                        <Image key={index} source={{ uri: img }} style={styles.postImage} />
-                    ))}
-                </ScrollView>
+                    <ScrollView
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        style={styles.scrollView}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
+                    >
+                        {item.postImg.map((img, index) => (
+                            <Image key={index} source={{ uri: img }} style={styles.postImage} />
+                        ))}
+                    </ScrollView>
 
-                <View style={styles.pagination}>
-                    {item.postImg.map((_, index) => (
-                        <View
-                            key={index}
-                            style={[
-                                styles.dot,
-                                { backgroundColor: index === currentImageIndex ? 'black' : 'grey' }
-                            ]}
-                        />
-                    ))}
-                </View>
-                <Text style={{ color: theme.primaryText }}>{item.additionalInfo || ''}</Text>
+                    <View style={styles.pagination}>
+                        {item.postImg.map((_, index) => (
+                            <View
+                                key={index}
+                                style={[
+                                    styles.dot,
+                                    { backgroundColor: index === currentImageIndex ? 'black' : 'grey' }
+                                ]}
+                            />
+                        ))}
+                    </View>
                 </View>
             ) : (
                 <Divider />
@@ -371,8 +370,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     </TouchableOpacity>
                 )}
             </InteractionWrapper>
-            <Text></Text>
-
+            
             {item.deliveryRange && item.phoneNumber && (
                 <InteractionWrapper style={{ backgroundColor: theme.secondaryBackground }}>
                     {item.phoneNumber && (

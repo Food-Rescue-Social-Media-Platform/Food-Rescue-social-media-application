@@ -4,6 +4,8 @@ export const COLORS = {
     theme: '#A7EAAE',
     secondaryTheme: '#CEF0D3',
     secondaryBackground: '#A7EAAE',
+    skeletonSecondaryTheme: '#fff',
+    skeletonSecondaryThemeWrapper: '#CEF0D3',
     primaryText: '#000',
     secondaryText: '#fff',
     borderColor: '#000',
@@ -25,6 +27,8 @@ export const DARKCOLORS = {
     black: '#fff', // Typically the "black" equivalent in dark mode is white
     theme: '#37474F', // Darker theme color
     secondaryTheme: '#263238', // Darker secondary theme color
+    skeletonSecondaryTheme: '#263238',
+    skeletonSecondaryThemeWrapper: '#CEF0D3',
     secondaryBackground: '#A7EAAE', // Darker secondary background
     primaryText: '#fff', // Light text for dark backgrounds
     secondaryText: '#000', // Dark text for lighter elements in dark mode

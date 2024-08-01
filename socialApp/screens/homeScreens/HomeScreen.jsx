@@ -60,7 +60,6 @@ const HomeScreen = () => {
                     radius,
                     user.uid,
                     selectedCategories,
-                    false,
                     lastVisibleDoc,
                 );
                 newPosts = result.posts;

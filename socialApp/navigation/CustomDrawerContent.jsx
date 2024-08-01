@@ -8,7 +8,7 @@ import { COLORS, DARKCOLORS } from '../styles/colors';
 import FormButton from '../components/formButtonsAndInput/FormButton';
 import { AuthContext } from './AuthProvider';
 import { categoriesList } from '../utils/categories';
-import { CheckBox } from 'react-native-elements';
+import { CheckBox, colors } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
 import { windowHeight } from '../utils/Dimentions';
@@ -129,7 +129,7 @@ const CustomDrawerContent = (props) => {
               style={[styles.drawerItem, currentFeedChoice === feed.value && styles.selectedDrawerItem]}
               onPress={() => changeFeedChoice(feed.value)}
             >
-              <Text style={{ color: currentFeedChoice === feed.value ? '#FFF' : '#000' }}>
+              <Text style={{ color: '#000' }}>
                 {feed.label}
               </Text>
             </TouchableOpacity>
@@ -143,7 +143,7 @@ const CustomDrawerContent = (props) => {
                 style={[styles.drawerItem]}
                 onPress={() => setCategoriesFilterOpen(!categoriesFilterOpen)}
               >
-                <Text style={{ color: themeColors.primaryText, marginLeft: 10, marginTop: 10 }}>Category Filter</Text>
+                <Text style={{ color: colors.black, marginLeft: 10, marginTop: 10 }}>Category Filter</Text>
               </TouchableOpacity>
 
               {categoriesFilterOpen && (
@@ -170,7 +170,7 @@ const CustomDrawerContent = (props) => {
                     style={[styles.drawerItem]}
                     onPress={() => setRadiusFilterOpen(!radiusFilterOpen)}
                   >
-                    <Text style={{ color: themeColors.primaryText, marginLeft: 10, marginTop: 10 }}>Radius Filter</Text>
+                    <Text style={{ color: colors.black, marginLeft: 10, marginTop: 10 }}>Radius Filter</Text>
                   </TouchableOpacity>
 
                   {radiusFilterOpen && (
@@ -199,27 +199,27 @@ const CustomDrawerContent = (props) => {
               style={[styles.drawerItem, styles.filterButton]}
               onPress={() => handelClickFilter()}
             >
-              <Text style={{ color: COLORS.white }}>Done</Text>
+              <Text style={{ color: COLORS.black }}>Done</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.drawerItem, styles.filterButton]}
               onPress={() => handelClickClear()}
             >
-              <Text style={{ color: COLORS.white }}>Clear</Text>
+              <Text style={{ color: COLORS.black }}>Clear</Text>
             </TouchableOpacity>
         </View>
 
         <View style={{ marginTop: '10%' }}>
           <View style={styles.switchContainer}>
-            <Text style={{ color: isDarkMode ? theme.lightGray : theme.primaryText }}>{t('Dark Mode')}</Text>
+            <Text style={{ color: theme.primaryText }}>{t('Dark Mode')}</Text>
             <Switch
               value={isDarkMode}
               onValueChange={(value) => setIsDarkMode(value)}
             />
           </View>
 
-          <Text style={styles.SelectLanguage}>{t('Select Language')}:</Text>
+          <Text style={[styles.SelectLanguage,{ color: theme.primaryText }]}>{t('Select Language')}:</Text>
           <View style={styles.languageButtonsContainer}>
             {languages.map((language) => (
               <TouchableOpacity
@@ -230,7 +230,7 @@ const CustomDrawerContent = (props) => {
                 ]}
                 onPress={() => changeLanguage(language.value)}
               >
-                <Text style={{ color: currentLanguage === language.value ? '#FFF' : '#000' }}>
+                <Text style={{ color: '#000' }}>
                   {language.label}
                 </Text>
               </TouchableOpacity>
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: COLORS.white,
+    color: COLORS.black,
   },
 });
 

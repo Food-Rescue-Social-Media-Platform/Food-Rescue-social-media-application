@@ -185,6 +185,7 @@ export async function getPostsWithFilters(center, radiusInKm, userId, categories
                 where('geohash', '>=', b[0]),
                 where('geohash', '<=', b[1]),
                 orderBy('geohash'),
+                orderBy('createdAt', 'desc'), // Assuming you want to order by creation date
                 limit(PAGE_SIZE)
             );
         }

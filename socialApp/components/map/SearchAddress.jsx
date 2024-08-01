@@ -53,7 +53,7 @@ function SearchAddress({style, onLocationSelected }) {
 
 const styles = StyleSheet.create({
   searchBox: {
-    // flex:1,
+    flex:1,
     marginTop: 20,
     zIndex: 1,
     flexDirection: "row",

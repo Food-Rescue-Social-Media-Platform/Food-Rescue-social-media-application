@@ -5,8 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5c5cc5a0-d7b9-4b6b-88cd-1a53c9b83b32" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/socialApp/components/postCard/webPostCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/socialApp/components/postCard/webPostCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/socialApp/navigation/AppStack.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/socialApp/navigation/AppStack.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialApp/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/socialApp/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialApp/android/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/socialApp/android/app/src/main/res/values/strings.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,9 +23,9 @@
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2jcaNKul6ofZZsoQDf91FYHWs9W" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -39,7 +40,8 @@
     "cidr.known.project.marker": "true",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/my_19/OneDrive/Desktop/Food-Rescue-social-media-application"
+    "last_opened_file_path": "C:/Users/my_19/OneDrive/Desktop/Food-Rescue-social-media-application",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
   }
 }]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />

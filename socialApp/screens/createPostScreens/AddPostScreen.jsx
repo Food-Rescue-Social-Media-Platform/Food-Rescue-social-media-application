@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { View, Modal, StyleSheet, Text, ScrollView, Image,ActivityIndicator, TextInput, TouchableOpacity, Platform, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
-import Fontisto from 'react-native-vector-icons/Fontisto';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { COLORS, DARKCOLORS } from '../../styles/colors';
@@ -174,9 +174,9 @@ const AddPostScreen = () => {
 
                   <View style={styles.header}>
                       <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
-                          <Fontisto name="arrow-right" size={24} color={themeColors.theme} style={{ transform: [{ scaleX: -1 }] }} />
+                          <Ionicons name="arrow-back" size={24} color={themeColors.headerColor} />
                       </TouchableOpacity>
-                      <Text style={{ fontSize: 18, color: themeColors.theme, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
+                      <Text style={{ fontSize: 18, color: themeColors.headerColor, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
                       <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.theme }]} onPress={handleAddPost}>
                           <Text style={{ fontSize: 15 }}>Post</Text>
                       </TouchableOpacity>

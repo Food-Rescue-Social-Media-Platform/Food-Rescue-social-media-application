@@ -53,7 +53,7 @@ const FeedStack = ({ navigation }) => {
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: themeColors.theme,
+            color: themeColors.headerColor,
           },
           headerStyle: {
             backgroundColor: themeColors.appBackGroundColor,
@@ -74,7 +74,7 @@ const FeedStack = ({ navigation }) => {
             <Ionicons
               name="menu"
               size={25}
-              color={themeColors.theme}
+              color={themeColors.headerColor}
               style={{ marginLeft: 15 }}
               onPress={() => navigation.openDrawer()}
             />
@@ -95,11 +95,11 @@ const FeedStack = ({ navigation }) => {
           headerBackTitleVisible: false,
           headerBackImage: () => (
             <View style={{ marginLeft: 15 }}>
-              <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+              <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
             </View>
           ),
           headerTitleStyle: {
-            color: themeColors.theme,
+            color: themeColors.headerColor,
           },
         }}
       />
@@ -122,7 +122,7 @@ const ProfileStack = () => {
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: themeColors.theme,
+            color: themeColors.headerColor,
           },
           headerStyle: {
             backgroundColor: themeColors.appBackGroundColor,
@@ -149,7 +149,7 @@ const ChatStack = () => {
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: themeColors.theme,
+            color: themeColors.headerColor,
           },
           headerStyle: {
             backgroundColor: themeColors.appBackGroundColor,
@@ -176,7 +176,7 @@ const MapStack = () => {
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {
-            color: themeColors.theme,
+            color: themeColors.headerColor,
           },
           headerStyle: {
             backgroundColor: themeColors.appBackGroundColor,
@@ -203,7 +203,7 @@ const DrawerNavigator = () => {
         drawerStyle: {
           backgroundColor: themeColors.secondaryTheme, // Set drawer background color to theme color
         },
-        drawerActiveTintColor: themeColors.theme, // Set active item color to theme color
+        drawerActiveTintColor: themeColors.headerColor, // Set active item color to theme color
         drawerInactiveTintColor: themeColors.primaryText, // Set inactive item color
         drawerActiveBackgroundColor: themeColors.secondaryTheme, // Set active item background color to secondary theme color
         drawerInactiveBackgroundColor: themeColors.appBackGroundColor, // Set inactive item background color
@@ -371,7 +371,7 @@ const RootStackScreen = () => {
                   headerTitle: t("Edit Profile"),
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: themeColors.theme,
+                    color: themeColors.headerColor,
                   },
                   headerStyle: {
                     backgroundColor: themeColors.appBackGroundColor,
@@ -381,7 +381,7 @@ const RootStackScreen = () => {
                   headerBackTitleVisible: false,
                   headerBackImage: () => (
                     <View style={{ marginLeft: 15 }}>
-                      <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
                     </View>
                   ),
                 }}
@@ -394,7 +394,7 @@ const RootStackScreen = () => {
                   title: route.params.receiverData.receiver,
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: themeColors.theme,
+                    color: themeColors.headerColor,
                   },
                   headerStyle: {
                     backgroundColor: themeColors.appBackGroundColor,
@@ -404,7 +404,7 @@ const RootStackScreen = () => {
                   headerBackTitleVisible: false,
                   headerBackImage: () => (
                     <View style={{ marginLeft: 15 }}>
-                      <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
                     </View>
                   ),
                 })}
@@ -423,7 +423,7 @@ const RootStackScreen = () => {
                   headerTitle: t("Edit Post"),
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: themeColors.theme,
+                    color: themeColors.headerColor,
                   },
                   headerStyle: {
                     backgroundColor: themeColors.appBackGroundColor,
@@ -433,7 +433,7 @@ const RootStackScreen = () => {
                   headerBackTitleVisible: false,
                   headerBackImage: () => (
                     <View style={{ marginLeft: 15 }}>
-                      <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
                     </View>
                   ),
                 }}
@@ -445,7 +445,7 @@ const RootStackScreen = () => {
                   headerTitle: t("Followers List"),
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: themeColors.theme,
+                    color: themeColors.headerColor,
                   },
                   headerStyle: {
                     backgroundColor: themeColors.appBackGroundColor,
@@ -455,7 +455,7 @@ const RootStackScreen = () => {
                   headerBackTitleVisible: false,
                   headerBackImage: () => (
                     <View style={{ marginLeft: 15 }}>
-                      <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
                     </View>
                   ),
                 }}
@@ -467,7 +467,7 @@ const RootStackScreen = () => {
                   headerTitle: t("Following List"),
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: themeColors.theme,
+                    color: themeColors.headerColor,
                   },
                   headerStyle: {
                     backgroundColor: themeColors.appBackGroundColor,
@@ -477,7 +477,7 @@ const RootStackScreen = () => {
                   headerBackTitleVisible: false,
                   headerBackImage: () => (
                     <View style={{ marginLeft: 15 }}>
-                      <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
                     </View>
                   ),
                 }}
@@ -489,7 +489,7 @@ const RootStackScreen = () => {
                   headerTitle: t("Rating"),
                   headerTitleAlign: 'center',
                   headerTitleStyle: {
-                    color: themeColors.theme,
+                    color: themeColors.headerColor,
                   },
                   headerStyle: {
                     backgroundColor: themeColors.appBackGroundColor,
@@ -499,7 +499,7 @@ const RootStackScreen = () => {
                   headerBackTitleVisible: false,
                   headerBackImage: () => (
                     <View style={{ marginLeft: 15 }}>
-                      <Ionicons name="arrow-back" size={25} color={themeColors.theme} />
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
                     </View>
                   ),
                 }}

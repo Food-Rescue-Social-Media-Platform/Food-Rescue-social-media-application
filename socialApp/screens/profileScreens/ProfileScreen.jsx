@@ -367,7 +367,7 @@ const ProfileScreen = ({ navigation, route }) => {
 
   if (loading) {
     return (
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <ProfileSkeletonPlaceholder />
       </ScrollView>
     );

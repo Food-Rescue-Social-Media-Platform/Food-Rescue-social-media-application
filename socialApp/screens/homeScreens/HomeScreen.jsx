@@ -20,7 +20,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [firstFetchForYou, setFirstFetchForYou] = useState(true);
   const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
   const [lastVisible, setLastVisible] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -33,6 +33,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const { theme } = useDarkMode();
   const isFocused = useIsFocused();
   const navigation = useNavigation();
+  const [showAddPostCard, setShowAddPostCard] = useState(false);
 
   const fetchData = async (loadMore = false) => {
     if (!position && feedChoice === 'For You') {
@@ -120,6 +121,15 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     }
   }, [position, feedChoice, selectedCategories, radius]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (posts.length === 0) {
+        setShowAddPostCard(true);
+      }
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [posts]);
+
   useFocusEffect(
     useCallback(() => {
       if (isHomeTabPressed) {
@@ -173,7 +183,10 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     <>
       {loading ? (
         <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-          <ScrollView style={{ marginLeft: 2, marginRight: 2 }}>
+          <ScrollView 
+            style={{ marginLeft: 2, marginRight: 2 }} 
+            showsVerticalScrollIndicator={false}
+          >
             <AddPostCardSkeletonPlaceholder />
             <PostCardSkeletonPlaceholder />
             <PostCardSkeletonPlaceholder />
@@ -194,7 +207,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
               />
             </View>
           }
-          {posts.length !== 0 && (
+          {posts.length !== 0 ? (
             <FlatList
               data={posts}
               style={{ width: '100%' }}
@@ -230,6 +243,16 @@ const HomeScreen = ({ isHomeTabPressed }) => {
                 </View>
               )}
             />
+          ) : (
+            <ScrollView 
+              style={{ marginLeft: 2, marginRight: 2 }} 
+              showsVerticalScrollIndicator={false}
+            >
+              <AddPostCard />
+              <PostCardSkeletonPlaceholder />
+              <PostCardSkeletonPlaceholder />
+              <PostCardSkeletonPlaceholder />
+            </ScrollView>
           )}
         </Container>
       )}

@@ -332,6 +332,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                         style={styles.scrollView}
                         onScroll={handleScroll}
                         scrollEventThrottle={16}
+                        showsVerticalScrollIndicator={false}
                     >
                         {item.postImg.map((img, index) => (
                             <Image key={index} source={{ uri: img }} style={styles.postImage} />

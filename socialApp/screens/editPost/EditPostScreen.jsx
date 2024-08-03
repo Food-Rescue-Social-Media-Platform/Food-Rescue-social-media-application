@@ -135,6 +135,7 @@ const EditPostScreen = ({ navigation, route }) => {
                     />
                 )}
                 keyExtractor={(item) => item.value}
+                showsVerticalScrollIndicator={false}
             />
 
             {/* Button to update the post */}

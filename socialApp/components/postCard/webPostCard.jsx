@@ -347,6 +347,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                             contentContainerStyle={{ paddingRight: 10 }} // Adding padding to the right
                             onScroll={handleScroll}
                             scrollEventThrottle={16}
+                            showsVerticalScrollIndicator={false}
                         >
                             {item.postImg.map((img, index) => (
                                 <Image key={index} source={{ uri: img }} style={[styles.postImage, { width: cardWidth - 20 }]} />

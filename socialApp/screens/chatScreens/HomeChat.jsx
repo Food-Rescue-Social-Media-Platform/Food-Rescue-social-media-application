@@ -68,7 +68,12 @@ const HomeChat = ({ navigation }) => {
         />
       </View>
 
-      <FlatList keyExtractor={(item, index) => index.toString()} data={listChats} renderItem={renderItem} />
+      <FlatList 
+        keyExtractor={(item, index) => index.toString()} 
+        data={listChats} 
+        renderItem={renderItem} 
+        showsVerticalScrollIndicator={false}
+      />
     </View>
   );
 };

@@ -78,7 +78,9 @@ const SingleChat = ({ navigation }) => {
             onContentSizeChange={() => chatContainerRef.current?.scrollToEnd({ animated: true })}
             keyExtractor={(item, index) => index.toString()}
             data={allMessages}
-            renderItem={({ item }) => <MsgComponent item={item} />}
+            renderItem={({ item }) => <MsgComponent item={item} 
+            showsVerticalScrollIndicator={false}
+            />}
         />
 
         <View style={{ ...styles.containerFooter, backgroundColor: theme.secondaryTheme }}>
@@ -90,7 +92,7 @@ const SingleChat = ({ navigation }) => {
             </TouchableOpacity>
 
             <View style={{ ...styles.windowSend, backgroundColor: theme.white}}>
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     <TextInput
                         autoFocus={true}
                         placeholder={t('Send message...')}

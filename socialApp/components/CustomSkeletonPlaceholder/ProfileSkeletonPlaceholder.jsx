@@ -10,7 +10,7 @@ const ProfileSkeletonPlaceholder = () => {
   const { theme } = useDarkMode();
 
   return (
-    <ScrollView style={{ backgroundColor: theme.skeletonSecondaryTheme}}>
+    <ScrollView style={{ backgroundColor: theme.skeletonSecondaryTheme}} showsVerticalScrollIndicator={false}>
       <View style={[styles.header, { backgroundColor: theme.skeletonSecondaryTheme }]}>
         <ShimmerPlaceholder style={[styles.coverImage, { backgroundColor: theme.skeletonSecondaryTheme }]} />
         <View style={styles.overlay}>

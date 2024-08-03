@@ -10,7 +10,7 @@ const PostCardSkeletonPlaceholder = () => {
   const { theme } = useDarkMode();
 
   return (
-    <ScrollView>
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View style={[styles.card, { backgroundColor: theme.skeletonSecondaryTheme }]}>
         <View style={styles.userInfo}>
           <ShimmerPlaceholder style={[styles.placeholderImage, { backgroundColor: theme.skeletonSecondaryTheme }]} />

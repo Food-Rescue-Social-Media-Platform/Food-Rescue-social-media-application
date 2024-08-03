@@ -146,14 +146,26 @@ const MapScreen = () => {
     }
   };
 
+  const handleAcceptLocationFromSearch = (data, details) => {
+    const { geometry } = details;
+    const { location } = geometry;
+    setLocationFromSearch(location);
+    setRegion({
+      latitude: location.lat,
+      longitude: location.lng,
+      latitudeDelta: 0.0001,
+      longitudeDelta: 0.0001,
+    });
+  }
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <View style={styles.container}>
-  <SearchAddress
-         style={{position: 'absolute'}}
-           onLocationSelected={setLocationFromSearch} 
+        <SearchAddress
+           style={{position: 'absolute'}}
+           onLocationSelected={handleAcceptLocationFromSearch} 
          />
           {MapComponent && position ? (
               <MapComponent

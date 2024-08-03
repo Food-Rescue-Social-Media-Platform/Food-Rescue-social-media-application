@@ -23,6 +23,7 @@ function SearchAddress({style, onLocationSelected }) {
         returnKeyType={'default'}
         fetchDetails={true}
         onPress={(data, details = null) => {
+          console.log('data', data);
           onLocationSelected(data, details);
         }}
         query={{
@@ -58,13 +59,13 @@ function SearchAddress({style, onLocationSelected }) {
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    borderRadius: 5,
+    borderRadius: 1,
     backgroundColor: 'white',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    // shadowColor: '#000',
+    shadowOffset: { width: 0, height: 11 },
+    shadowOpacity: 0.15,
+    shadowRadius: 1.84,
+    elevation: 3,
   },
   textInputContainer: {
     flexDirection: 'row',

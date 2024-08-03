@@ -18,7 +18,7 @@ export class Post {
          deliveryRange,
          category,
          postImg,
-         postLocation
+         location
         ) {
         if(!postText || !userId) {
            throw new Error("body and userIid are required for a new post!");
@@ -34,10 +34,8 @@ export class Post {
         this.category = category || "Other";
         this.postImg = postImg;
         this.status = "waiting for rescue";
-        
-        const location = postLocation || { coords: { latitude: 0, longitude: 0 } };
-        this.coordinates = [location.coords.latitude, location.coords.longitude];
-        this.geohash = geofire.geohashForLocation([location.coords.latitude, location.coords.longitude]);
+        this.coordinates = [location.latitude, location.longitude];
+        this.geohash = geofire.geohashForLocation([location.latitude, location.longitude]);
         this.createdAt = serverTimestamp();       
     }
 }

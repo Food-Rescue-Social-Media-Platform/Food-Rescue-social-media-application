@@ -23,7 +23,7 @@ function SearchAddress({style, onLocationSelected }) {
         returnKeyType={'default'}
         fetchDetails={true}
         onPress={(data, details = null) => {
-          console.log(data, details);
+          // console.log(data, details);
           onLocationSelected(data, details);
         }}
         query={{

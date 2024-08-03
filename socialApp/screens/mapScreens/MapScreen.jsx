@@ -150,13 +150,21 @@ const MapScreen = () => {
   const handleAcceptLocationFromSearch = (data, details) => {
     const { geometry } = details;
     const { location } = geometry;
+    console.log('\nlocation from user', location);
     setLocationFromSearch(location);
-    setRegion({
+    const newRegion = {
       latitude: location.lat,
       longitude: location.lng,
-      latitudeDelta: 0.0001,
-      longitudeDelta: 0.0001,
-    });
+      latitudeDelta: 0.01,  // הגדל ערכים אלו
+      longitudeDelta: 0.01, // לתצוגה טובה יותר
+    };
+    
+    setRegion(newRegion);
+    if (isNaN(newRegion.latitude) || isNaN(newRegion.longitude)) {
+      console.error('Invalid coordinates:', newRegion);
+      return;
+    }
+    mapRef.current?.animateToRegion(newRegion, 1000);
   }
 
   return (
@@ -178,7 +186,6 @@ const MapScreen = () => {
             handleMarkerPress={handleMarkerPress}
             postFromFeed={postFromFeed}
             mapRef={mapRef}
-            style={styles.map}
           />
         ) : (
           <View style={styles.loadingContainer}>
@@ -234,9 +241,6 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     flex: 1,
-  },
-  map: {
-    ...StyleSheet.absoluteFillObject,
   },
   loadingContainer: {
     flex: 1,

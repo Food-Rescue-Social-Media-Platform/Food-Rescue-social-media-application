@@ -58,29 +58,15 @@ function SearchAddress({style, onLocationSelected }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: "row",
-    zIndex: 1,
-    width: '90%',
-    height: 50,
-    alignSelf: 'center',
+    width: '100%',
     borderRadius: 5,
-    marginTop: 10,
-    padding: 7,
-    // shadowOffset: { width: 0, height: 3 },
-    // shadowColor: '#000',
-    marginTop: 20,
-    // elevation: 10,
-
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 3,
-    // },
-    // shadowOpacity: 0.5,
-    // shadowRadius: 3.84,
-    // elevation: 5,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  
   textInputContainer: {
     flexDirection: 'row',
   },

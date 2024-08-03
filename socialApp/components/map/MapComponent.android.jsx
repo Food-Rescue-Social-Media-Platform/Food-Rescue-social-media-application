@@ -1,9 +1,10 @@
 import React from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { View, StyleSheet } from 'react-native';
-import { Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions } from 'react-native';
 
-const MapComponent = ({ region, handleRegionChange, handleMapPress, position, locationMarkers, handleMarkerPress, postFromFeed, mapRef, style }) => (
+const { width, height } = Dimensions.get('window');
+
+const MapComponent = ({ region, handleRegionChange, handleMapPress, position, locationMarkers, handleMarkerPress, postFromFeed, mapRef }) => (
   <View style={styles.container}>
     <MapView
         provider={PROVIDER_GOOGLE}
@@ -48,10 +49,10 @@ const MapComponent = ({ region, handleRegionChange, handleMapPress, position, lo
       justifyContent: 'flex-end',
       alignItems: 'center',
     },
-  map: {
-    flex:1,
-    ...StyleSheet.absoluteFillObject,
-    height: Dimensions.get('window').height,  },
+    map: {
+      width,
+      height,
+    },
   });
 
   

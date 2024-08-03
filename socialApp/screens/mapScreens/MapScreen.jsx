@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, KeyboardAvoidingView, Platform, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { View, KeyboardAvoidingView, Platform, StyleSheet, Dimensions ,ActivityIndicator, Text } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { useRoute, useIsFocused } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
@@ -10,6 +10,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import PostModal from '../../components/map/PostModal';
 import SearchAddress from '../../components/map/SearchAddress';
 
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const MapScreen = () => {
   const route = useRoute();
@@ -146,61 +147,111 @@ const MapScreen = () => {
     }
   };
 
+  const handleAcceptLocationFromSearch = (data, details) => {
+    const { geometry } = details;
+    const { location } = geometry;
+    console.log('\nlocation from user', location);
+    setLocationFromSearch(location);
+    const newRegion = {
+      latitude: location.lat,
+      longitude: location.lng,
+      latitudeDelta: 0.01,    
+      longitudeDelta: 0.01,   
+    };
+    
+    setRegion(newRegion);
+    if (isNaN(newRegion.latitude) || isNaN(newRegion.longitude)) {
+      console.error('Invalid coordinates:', newRegion);
+      return;
+    }
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(newRegion, 1000);
+    }
+
+    // fetch posts near the selected location
+    fetchPosts({ latitude: newRegion.latitude, longitude: newRegion.longitude });
+  }
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      <View style={styles.container}>
-  <SearchAddress
-         style={{position: 'absolute'}}
-           onLocationSelected={setLocationFromSearch} 
-         />
-          {MapComponent && position ? (
-              <MapComponent
-                region={region}
-                handleRegionChange={handleRegionChange}
-                handleMapPress={handleMapPress}
-                position={position}
-                locationMarkers={locationMarkers}
-                handleMarkerPress={handleMarkerPress}
-                postFromFeed={postFromFeed}
-                mapRef={mapRef}
-                style={{ flex: 1, opacity: loading ? 0.6 : 1 }}
-                />
-            ) : (
-              <View style={{marginTop:'40%'}}>
-                 <ActivityIndicator size="large" color="#0000ff" />
-              </View>
-            )}
+    <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <SearchAddress
+          onLocationSelected={handleAcceptLocationFromSearch}
+          containerStyle={styles.searchInputContainer}
+        />
+      </View>
+      <View style={styles.mapContainer}>
+        {MapComponent && position ? (
+          <MapComponent
+            region={region}
+            handleRegionChange={handleRegionChange}
+            handleMapPress={handleMapPress}
+            position={position}
+            locationMarkers={locationMarkers}
+            handleMarkerPress={handleMarkerPress}
+            postFromFeed={postFromFeed}
+            mapRef={mapRef}
+          />
+        ) : (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        )}
 
-            {selectedPost ? (
-              <PostModal
-                setVisible={setModalVisible}
-                visible={isModalVisible}
-                post={selectedPost}
-                onClose={closeModal}
-                userLocation={position}
-              />
-            ) : null}
+        {selectedPost ? (
+          <PostModal
+            setVisible={setModalVisible}
+            visible={isModalVisible}
+            post={selectedPost}
+            onClose={closeModal}
+            userLocation={position}
+          />
+        ) : null}
 
-            <View style={styles.zoomButtons}>
-              <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>
-                <Feather name="zoom-in" size={27} color='black' />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={zoomOut} style={styles.iconStyle}>
-                <Feather name="zoom-out" size={27} color='black' />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleCurrentLocationPress} style={styles.iconStyle}>
-                <Feather name="navigation" size={24} color='black' />
-              </TouchableOpacity>
-            </View>
+        <View style={styles.zoomButtons}>
+          <TouchableOpacity onPress={zoomIn} style={styles.iconStyle}>
+            <Feather name="zoom-in" size={27} color='black' />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={zoomOut} style={styles.iconStyle}>
+            <Feather name="zoom-out" size={27} color='black' />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleCurrentLocationPress} style={styles.iconStyle}>
+            <Feather name="navigation" size={24} color='black' />
+          </TouchableOpacity>
         </View>
-    </KeyboardAvoidingView>
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { height: '100%', width: '100%' },
+  container: {
+    flex: 1,
+  },
+  searchContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  searchInputContainer: {
+    backgroundColor: 'white',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  mapContainer: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   zoomButtons: {
     position: 'absolute',
     bottom: 20,
@@ -223,12 +274,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  loading: {
-    position: 'absolute',
-    top: '17%',
-    left: '50%',
-    transform: [{ translateX: -25 }, { translateY: -25 }],
-  },
 });
+
 
 export default MapScreen;

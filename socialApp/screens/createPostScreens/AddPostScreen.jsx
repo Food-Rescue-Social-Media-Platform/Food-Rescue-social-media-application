@@ -89,10 +89,12 @@ const AddPostScreen = () => {
     }
 
     let location = await Location.getCurrentPositionAsync({});
+    location = {latitude: location.coords.latitude, longitude: location.coords.longitude};
+
     setLocation(location);
     console.log("Location", location);
-    setShowLocationModel(showLocationModel ? false : true);
-    updateUserLocation(userConnected.id, location);
+    // setShowLocationModel(showLocationModel ? false : true);
+    // updateUserLocation(userConnected.id, location);
   };
 
   const handelAddPhone = () => {
@@ -104,18 +106,25 @@ const AddPostScreen = () => {
     setCategoryModalVisible(true);
   };
 
+  useEffect(() => {
+    console.log("Location updated:", location);
+  }, [location]);
+
   const handleAddPost = async () => {
+    console.log("Location at handleAddPost", location);
+
     if(postInput.length === 0){
       setMessError('Please enter the post content');
       return;  
     }
 
-    if(location.length === 0){
-      console.log("Location Alert");
-      showAlert("Location Alert", "To publish the post it is necessary to add a location")
+    if (!location || typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
+      console.log("Invalid Location");
+      showAlert("Location Alert", "Please add a valid location to publish the post");
       return;
     }
-    if (isPosting) return; // Prevent multiple submissions
+    
+    // if (isPosting) return; // Prevent multiple submissions
   
     setIsPosting(true);
 
@@ -142,7 +151,16 @@ const AddPostScreen = () => {
       location,
     );
 
-    await addPost(newPost);
+    try {
+      await addPost(newPost);
+      navigation.navigate("Home Page");
+    } catch (error) {
+      console.error("Error adding post:", error);
+      showAlert("Error", "Failed to add post. Please try again.");
+    } finally {
+      setIsPosting(false);
+      setIsUploading(false);
+    }
     
     navigation.navigate("Home Page");
   };
@@ -167,7 +185,26 @@ const AddPostScreen = () => {
         setInput(text);
     }
   };
+
+  const handleAcceptLocationFromSearch = async (data, details) => {
+    const { geometry } = details;
+    const { location } = geometry;
+    console.log('\nlocation from user', location);
+    
+    if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') {
+      console.error('Invalid location data:', location);
+      return;
+    }
   
+    const locationFromSearch = {
+      latitude: location.lat,
+      longitude: location.lng,
+    };
+  
+    setLocation(locationFromSearch);
+    console.log('Location set:', locationFromSearch);
+  };
+
   return (
       <View style={{ backgroundColor: themeColors.appBackGroundColor }}>
               <View style={styles.container}>
@@ -262,7 +299,7 @@ const AddPostScreen = () => {
                       name="map-marker"
                       size={26}
                       color={themeColors.primaryText}
-                      onPress={handleAddLocation}
+                      onPress={() => setShowLocationModel(true)}
                       style={styles.icon}
                     />
                   </TouchableOpacity>
@@ -382,28 +419,41 @@ const AddPostScreen = () => {
                           <View style={[styles.modal, {marginTop: Platform.OS === 'web' ? '14%' : '55%', backgroundColor: themeColors.white }]}>
 
                               <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Add the address of the post delivery location:</Text>
-                              <SearchAddress style={{borderColor:themeColors.black, borderWidth:1}} onLocationSelected={setLocation} />
+                             
+                              <View style={{marginHorizontal:15}}>
+                                <SearchAddress 
+                                      onLocationSelected={handleAcceptLocationFromSearch}  
+                                />
+                              </View>
                                      
-                              <MyButton
-                                  style={{ paddingLeft:20, borderRadius: 10, alignSelf: 'left', marginVertical: 20}}
-                                  text="Attach my current location"
-                                  styleText={{ fontSize: 16, color: themeColors.textLink, textDecorationLine: 'underline' }}
-                                  onPress={() => { setShowLocationModel(false); }}
-                              />
+                              <View style={{flex:1, flexDirection:'row', marginHorizontal:8, paddingTop:25, paddingBottom:25, justifyContent:'flex-start'}}>
+                                  <Entypo
+                                    name="direction"
+                                    size={26}
+                                    color={themeColors.primaryText}
+                                    style={styles.icon}
+                                  />
+                                  <MyButton
+                                      style={{ width: '50%', padding:5}}
+                                      text="Your current location"
+                                      styleText={{ fontSize: 17, color: themeColors.textLink, textDecorationLine: 'underline' }}
+                                      onPress={handleAddLocation}
+                                  />
+                              </View>
                               
                               <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}> 
                                   <MyButton
                                     style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                     text='Yes'
                                     styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
-                                    onPress={handleAddLocation}
+                                    onPress={() => {setShowLocationModel(false);}}
                                   />
 
                                   <MyButton
                                     style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                     text='No'
                                     styleText={{ fontSize: 17, color: themeColors.primaryText}}
-                                    onPress={() => { console.log("no want to add his location."); setShowLocationModel(false) }}
+                                    onPress={() => { setLocation(''); setShowLocationModel(false) }}
                                   />
                               </View>
                           </View>
@@ -605,17 +655,17 @@ const fetchUser = async (id) => {
   }
 };
 
-const updateUserLocation = async (userID, location) => {
-  try {
-    const userDocRef = doc(database, "users", userID);
-    // await setDoc(docRef, {location: location});
-    await updateDoc(userDocRef, {
-      location: location,
-    });
-  } catch (error) {
-    console.error("updateUserLocation, Error getting document:", error);
-  }
-};
+// const updateUserLocation = async (userID, location) => {
+//   try {
+//     const userDocRef = doc(database, "users", userID);
+//     // await setDoc(docRef, {location: location});
+//     await updateDoc(userDocRef, {
+//       location: location,
+//     });
+//   } catch (error) {
+//     console.error("updateUserLocation, Error getting document:", error);
+//   }
+// };
 
 const MyButton = ({ style, text, styleText, onPress }) => {
   return (

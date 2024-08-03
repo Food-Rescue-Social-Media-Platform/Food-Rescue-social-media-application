@@ -164,7 +164,12 @@ const MapScreen = () => {
       console.error('Invalid coordinates:', newRegion);
       return;
     }
-    mapRef.current?.animateToRegion(newRegion, 1000);
+    if (mapRef.current) {
+      mapRef.current.animateToRegion(newRegion, 1000);
+    }
+
+    // fetch posts near the selected location
+    fetchPosts({ latitude: newRegion.latitude, longitude: newRegion.longitude });
   }
 
   return (

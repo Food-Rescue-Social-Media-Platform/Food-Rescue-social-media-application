@@ -15,6 +15,15 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const handleForgotPassword = async () => {
+    if (!email) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter your email address.',
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       await forgotPassword(email);

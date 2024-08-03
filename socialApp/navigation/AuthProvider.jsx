@@ -4,6 +4,7 @@ import { auth, database } from '../firebase';
 import { getDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
 import { setUserData, removerUserData } from '../redux/reducer/user';
+import Toast from 'react-native-toast-message';
 
 export const AuthContext = createContext();
 
@@ -11,7 +12,7 @@ export const AuthProvider = ({ children }) => {
     const dispatch = useDispatch();
 
     const [user, setUser] = useState(null);
-    
+
     return (
         <AuthContext.Provider 
             value={{
@@ -94,10 +95,19 @@ export const AuthProvider = ({ children }) => {
                     try {
                         await signOut(auth);
                         dispatch(removerUserData());
-                        console.log("logout");
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Success',
+                            text2: 'Logged out successfully.',
+                        });
                     } catch (e) {
                         dispatch(removerUserData());
                         console.log(e);
+                        Toast.show({
+                            type: 'error',
+                            text1: 'Error',
+                            text2: 'Failed to log out.',
+                        });
                     }
                 },
             }}

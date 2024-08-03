@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Switch, StyleSheet, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { View, Text, Switch, StyleSheet, TouchableOpacity, Platform, ScrollView, I18nManager } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useDarkMode } from '../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, DARKCOLORS } from '../styles/colors';
-import FormButton from '../components/formButtonsAndInput/FormButton';
 import { AuthContext } from './AuthProvider';
 import { categoriesList } from '../utils/categories';
 import { CheckBox, colors } from 'react-native-elements';
 import Slider from '@react-native-community/slider';
 import { useNavigation } from '@react-navigation/native';
 import { windowHeight } from '../utils/Dimentions';
+import * as Updates from 'expo-updates';
 
 const MIN_RADIUS = 10;
 const MAX_RADIUS = 50;
@@ -19,7 +19,7 @@ const MAX_RADIUS = 50;
 const CustomDrawerContent = (props) => {
   const { isDarkMode, setIsDarkMode, theme } = useDarkMode();
   const { t, i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState('');
+  const [currentLanguage, setCurrentLanguage] = useState('en');
   const [currentFeedChoice, setCurrentFeedChoice] = useState('For You');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categories, setCategories] = useState(categoriesList.map((category) => ({ label: category, value: category })));
@@ -47,8 +47,13 @@ const CustomDrawerContent = (props) => {
       const savedLanguage = await AsyncStorage.getItem('user-language');
       if (savedLanguage) {
         setCurrentLanguage(savedLanguage);
+        i18n.changeLanguage(savedLanguage);
+        const isRTL = savedLanguage === 'ar' || savedLanguage === 'he';
+        I18nManager.forceRTL(isRTL);
       } else {
-        setCurrentLanguage('en'); // Default language if none is saved
+        setCurrentLanguage('en');
+        i18n.changeLanguage('en');
+        I18nManager.forceRTL(false);
       }
     };
     fetchLanguage();
@@ -56,9 +61,12 @@ const CustomDrawerContent = (props) => {
 
   const changeLanguage = async (lng) => {
     try {
+      const isRTL = lng === 'ar' || lng === 'he';
       await i18n.changeLanguage(lng);
       await AsyncStorage.setItem('user-language', lng);
       setCurrentLanguage(lng);
+      I18nManager.forceRTL(isRTL);
+      Updates.reloadAsync();
     } catch (error) {
       console.error("Error changing language:", error);
     }

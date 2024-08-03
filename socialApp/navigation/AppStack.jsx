@@ -37,7 +37,9 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 
-const FeedStack = ({ navigation }) => {
+
+
+const FeedStack = ({ navigation, isHomeTabPressed }) => {
   const { isDarkMode, theme } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
@@ -45,11 +47,12 @@ const FeedStack = ({ navigation }) => {
   const HomeComponent = Platform.OS === 'web' ? WebHomeScreen : HomeScreen;
   const ProfileComponent = Platform.OS === 'web' ? WebProfileScreen : ProfileScreen;
 
+  console.log("FeedStack isHomeTabPressed:", isHomeTabPressed);
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name="Home Page"
-        component={HomeComponent}
         options={{
           headerTitleAlign: 'center',
           headerTitleStyle: {
@@ -80,7 +83,14 @@ const FeedStack = ({ navigation }) => {
             />
           ),
         }}
-      />
+      >
+        {props => (
+          <HomeComponent
+            {...props}
+            isHomeTabPressed={isHomeTabPressed}
+          />
+        )}
+      </Stack.Screen>
       <Stack.Screen
         name="HomeProfile"
         component={ProfileComponent}
@@ -190,7 +200,8 @@ const MapStack = () => {
   );
 };
 
-const DrawerNavigator = () => {
+
+const DrawerNavigator = ({ isHomeTabPressed }) => {
   const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
@@ -201,17 +212,25 @@ const DrawerNavigator = () => {
       screenOptions={{
         headerShown: false,
         drawerStyle: {
-          backgroundColor: themeColors.secondaryTheme, // Set drawer background color to theme color
+          backgroundColor: themeColors.secondaryTheme,
         },
-        drawerActiveTintColor: themeColors.headerColor, // Set active item color to theme color
-        drawerInactiveTintColor: themeColors.primaryText, // Set inactive item color
-        drawerActiveBackgroundColor: themeColors.secondaryTheme, // Set active item background color to secondary theme color
-        drawerInactiveBackgroundColor: themeColors.appBackGroundColor, // Set inactive item background color
+        drawerActiveTintColor: themeColors.headerColor,
+        drawerInactiveTintColor: themeColors.primaryText,
+        drawerActiveBackgroundColor: themeColors.secondaryTheme,
+        drawerInactiveBackgroundColor: themeColors.appBackGroundColor,
       }}
     >
       <Drawer.Screen 
-        name={t("Go Back")} 
-        component={FeedStack} />
+        name={t("Go Back")}
+        options={{ headerShown: false }}
+      >
+        {props => (
+          <FeedStack
+            {...props}
+            isHomeTabPressed={isHomeTabPressed}
+          />
+        )}
+      </Drawer.Screen>
     </Drawer.Navigator>
   );
 };
@@ -220,55 +239,37 @@ const AppStack = () => {
   const { isDarkMode, theme } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
+  const [isHomeTabPressed, setIsHomeTabPressed] = useState(false);
 
   return (
-    <Tab.Navigator
-      initialRouteName="HomeTab"
-      screenOptions={{
-        elevation: 0,
-        tabBarStyle: {
-          backgroundColor: themeColors.appBackGroundColor,
+      <Tab.Navigator
+        initialRouteName="HomeTab"
+        screenOptions={{
           elevation: 0,
-          height: 55,
-          borderTopWidth: 0,
-        },
-        tabBarItemStyle: {
-          marginBottom: 5,
-          paddingBottom: 5,
-          marginLeft: 12,
-          marginRight: 12,
-          borderRadius: 30,
-          height: 52,
-          width: 20,
-        },
-        tabBarActiveTintColor: themeColors.black,
-        tabBarInactiveTintColor: themeColors.black,
-        tabBarActiveBackgroundColor: themeColors.secondaryTheme,
-      }}
-    >
-      <Tab.Screen
-        name="HomeTab"
-        component={DrawerNavigator}
-        options={{
-          tabBarLabel: t('Home'),
-          tabBarLabelStyle: {
-            fontWeight: 'bold',
-            fontSize: 12,
+          tabBarStyle: {
+            backgroundColor: themeColors.appBackGroundColor,
+            elevation: 0,
+            height: 55,
+            borderTopWidth: 0,
           },
-          headerShown: false,
+          tabBarItemStyle: {
+            marginBottom: 5,
+            paddingBottom: 5,
+            marginLeft: 12,
+            marginRight: 12,
+            borderRadius: 30,
+            height: 52,
+            width: 20,
+          },
           tabBarActiveTintColor: themeColors.black,
           tabBarInactiveTintColor: themeColors.black,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="home-outline" color={color} size={28} />
-          ),
+          tabBarActiveBackgroundColor: themeColors.secondaryTheme,
         }}
-      />
-      {Platform.OS !== 'web' && (
+      >
         <Tab.Screen
-          name="MapTab"
-          component={MapStack}
+          name="HomeTab"
           options={{
-            tabBarLabel: t('Map'),
+            tabBarLabel: t('Home'),
             tabBarLabelStyle: {
               fontWeight: 'bold',
               fontSize: 12,
@@ -277,46 +278,77 @@ const AppStack = () => {
             tabBarActiveTintColor: themeColors.black,
             tabBarInactiveTintColor: themeColors.black,
             tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="map-marker-outline" color={color} size={28} />
+              <MaterialCommunityIcons name="home-outline" color={color} size={28} />
+            ),
+          }}
+          listeners={({ navigation, route }) => ({
+            tabPress: e => {
+              setIsHomeTabPressed(true);
+              setTimeout(() => setIsHomeTabPressed(false), 1000); // Reset after 1 second
+            },
+          })}
+        >
+          {props => (
+            <DrawerNavigator
+              {...props}
+              isHomeTabPressed={isHomeTabPressed}
+            />
+          )}
+        </Tab.Screen>
+        {Platform.OS !== 'web' && (
+          <Tab.Screen
+            name="MapTab"
+            component={MapStack}
+            options={{
+              tabBarLabel: t('Map'),
+              tabBarLabelStyle: {
+                fontWeight: 'bold',
+                fontSize: 12,
+              },
+              headerShown: false,
+              tabBarActiveTintColor: themeColors.black,
+              tabBarInactiveTintColor: themeColors.black,
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons name="map-marker-outline" color={color} size={28} />
+              ),
+            }}
+          />
+        )}
+        <Tab.Screen
+          name="chatTab"
+          component={ChatStack}
+          options={{
+            tabBarLabel: t('Chat'),
+            tabBarLabelStyle: {
+              fontWeight: 'bold',
+              fontSize: 12,
+            },
+            headerShown: false,
+            tabBarActiveTintColor: themeColors.black,
+            tabBarInactiveTintColor: themeColors.black,
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="message-processing-outline" color={color} size={28} />
             ),
           }}
         />
-      )}
-      <Tab.Screen
-        name="chatTab"
-        component={ChatStack}
-        options={{
-          tabBarLabel: t('Chat'),
-          tabBarLabelStyle: {
-            fontWeight: 'bold',
-            fontSize: 12,
-          },
-          headerShown: false,
-          tabBarActiveTintColor: themeColors.black,
-          tabBarInactiveTintColor: themeColors.black,
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="message-processing-outline" color={color} size={28} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="ProfileTab"
-        component={ProfileStack}
-        options={{
-          tabBarLabel: t('Profile'),
-          tabBarLabelStyle: {
-            fontWeight: 'bold',
-            fontSize: 12,
-          },
-          headerShown: false,
-          tabBarActiveTintColor: themeColors.black,
-          tabBarInactiveTintColor: themeColors.black,
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons name="person-outline" color={color} size={28} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+        <Tab.Screen
+          name="ProfileTab"
+          component={ProfileStack}
+          options={{
+            tabBarLabel: t('Profile'),
+            tabBarLabelStyle: {
+              fontWeight: 'bold',
+              fontSize: 12,
+            },
+            headerShown: false,
+            tabBarActiveTintColor: themeColors.black,
+            tabBarInactiveTintColor: themeColors.black,
+            tabBarIcon: ({ color }) => (
+              <MaterialIcons name="person-outline" color={color} size={28} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
   );
 };
 

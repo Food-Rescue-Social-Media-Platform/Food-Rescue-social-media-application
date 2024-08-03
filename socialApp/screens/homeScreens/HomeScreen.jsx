@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text, ScrollView } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import AddPostCard from '../../components/addPost/AddPostCard';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation, useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
@@ -13,9 +13,9 @@ import { Button } from 'react-native-elements';
 import PostCardSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/PostCardSkeletonPlaceholder';
 import AddPostCardSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/AddPostCardSkeletonPlaceholder';
 
-const HomeScreen = () => {
+const HomeScreen = ({ isHomeTabPressed }) => {
   const route = useRoute();
-  const { user, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
   const [firstFetchForYou, setFirstFetchForYou] = useState(true);
   const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
@@ -24,7 +24,6 @@ const HomeScreen = () => {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [position, setPosition] = useState(null);
   const [radius, setRadius] = useState(10);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -41,63 +40,61 @@ const HomeScreen = () => {
       return;
     }
 
-        if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
-                console.log("No lastVisible found for initial load");
-                return;
-        }
-        try {
-            if (loadMore) {
-                setLoadingMore(true);
-            } else {
-                setLoading(true);
-            }
-    
-            let newPosts = [];
-            let lastVisibleDoc = loadMore ? lastVisible : null;
-    
-            if (feedChoice === 'For You') {
-                const result = await getPostsWithFilters(
-                    [position.latitude, position.longitude],
-                    radius,
-                    user.uid,
-                    selectedCategories,
-                    lastVisibleDoc,
-                );
-                newPosts = result.posts;
-                lastVisibleDoc = result.lastVisible;
-            } else {
-                const result = await getPostsFromFollowers(user.uid, false, lastVisibleDoc);
-                newPosts = result.posts;
-                lastVisibleDoc = result.lastVisible;
-            }
-    
-            if (loadMore) {
-                setPosts(prevPosts => {
-                    return [...prevPosts, ...newPosts];
-                });
-            } else {
-                setPosts(newPosts);
-            }
-    
-            if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
-            if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(false);
-    
-            setLastVisible(lastVisibleDoc);
-            setLoading(false);
-            setLoadingMore(false);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setError(error.message);
-            setLoading(false);
-            setLoadingMore(false);
-        }
-    };
+    if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
+      console.log("No lastVisible found for initial load");
+      return;
+    }
+    try {
+      if (loadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+      }
+
+      let newPosts = [];
+      let lastVisibleDoc = loadMore ? lastVisible : null;
+
+      if (feedChoice === 'For You') {
+        const result = await getPostsWithFilters(
+          [position.latitude, position.longitude],
+          radius,
+          user.uid,
+          selectedCategories,
+          lastVisibleDoc,
+        );
+        newPosts = result.posts;
+        lastVisibleDoc = result.lastVisible;
+      } else {
+        const result = await getPostsFromFollowers(user.uid, false, lastVisibleDoc);
+        newPosts = result.posts;
+        lastVisibleDoc = result.lastVisible;
+      }
+
+      if (loadMore) {
+        setPosts(prevPosts => [...prevPosts, ...newPosts]);
+      } else {
+        setPosts(newPosts);
+      }
+
+      if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
+      if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(false);
+
+      setLastVisible(lastVisibleDoc);
+      setLoading(false);
+      setLoadingMore(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError(error.message);
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
   useEffect(() => {
     const fetchLocationAndPosts = async () => {
-      console.log("before permissionDenied", permissionDenied)
+      console.log("before permissionDenied", permissionDenied);
       await getLocation(setPosition, null, setPermissionDenied);
-      console.log("after permissionDenied", permissionDenied)
+      console.log("after permissionDenied", permissionDenied);
     };
     fetchLocationAndPosts();
   }, []);
@@ -123,6 +120,15 @@ const HomeScreen = () => {
     }
   }, [position, feedChoice, selectedCategories, radius]);
 
+  useFocusEffect(
+    useCallback(() => {
+      if (isHomeTabPressed) {
+        console.log('Home tab pressed: Refreshing...');
+        onRefresh();
+      }
+    }, [isHomeTabPressed])
+  );
+
   const onRefresh = async () => {
     setRefreshing(true);
     setLastVisible(null);
@@ -132,9 +138,9 @@ const HomeScreen = () => {
 
   const loadMore = async () => {
     if (!loadingMore && lastVisible) {
-      setIsLoadingMore(true);
+      setLoadingMore(true);
       if (position) await fetchData(true);
-      setIsLoadingMore(false);
+      setLoadingMore(false);
     }
   };
 
@@ -193,18 +199,17 @@ const HomeScreen = () => {
               data={posts}
               style={{ width: '100%' }}
               ListHeaderComponent={headerComponent}
-              renderItem={({ item, index }) => {
-                if (item && item.id)
-                  return <PostCard
+              renderItem={({ item }) => (
+                item && item.id ? (
+                  <PostCard
                     key={item.id}
                     item={item}
                     postUserId={item.userId}
                     isProfilePage={false}
                     userLocation={position}
-                  />;
-                else
-                  return null;
-              }}
+                  />
+                ) : null
+              )}
               keyExtractor={(item, index) => item.id ? item.id : index.toString()}
               showsVerticalScrollIndicator={false}
               refreshControl={

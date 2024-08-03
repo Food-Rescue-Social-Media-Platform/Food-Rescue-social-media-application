@@ -23,7 +23,6 @@ function SearchAddress({style, onLocationSelected }) {
         returnKeyType={'default'}
         fetchDetails={true}
         onPress={(data, details = null) => {
-          // console.log(data, details);
           onLocationSelected(data, details);
         }}
         query={{
@@ -48,7 +47,7 @@ function SearchAddress({style, onLocationSelected }) {
         )}
         renderRightButton={() => (
           <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
-            <Ionicons name="close" size={24} color='black' />
+            <Ionicons name="close" size={26} color='black' />
           </TouchableOpacity>
         )}
       />
@@ -80,7 +79,19 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     height:45,
-    // backgroundColor: '#ccc',
+    width: 45,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 10,
+    paddingLeft: 8,
+    }
+    ,clearButton: {
+      height: 45,
+      width: 45,
+      backgroundColor: 'white',
+      alignItems: 'center',
+      justifyContent: 'center',
     }
 });
 

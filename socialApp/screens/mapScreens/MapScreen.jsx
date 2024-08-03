@@ -155,8 +155,8 @@ const MapScreen = () => {
     const newRegion = {
       latitude: location.lat,
       longitude: location.lng,
-      latitudeDelta: 0.01,  // הגדל ערכים אלו
-      longitudeDelta: 0.01, // לתצוגה טובה יותר
+      latitudeDelta: 0.01,    
+      longitudeDelta: 0.01,   
     };
     
     setRegion(newRegion);
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 2, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

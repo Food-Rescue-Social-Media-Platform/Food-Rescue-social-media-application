@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Keyboard, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Keyboard, Alert, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
@@ -20,66 +20,134 @@ const SignUpScreen = ({ navigation }) => {
   const { t } = useTranslation();
 
   const { register } = useContext(AuthContext);
-  const [topPadding, setTopPadding] = useState(5); // Initial top padding
+  const [topPadding, setTopPadding] = useState(5);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
-        setTopPadding(48); // Update top padding when keyboard is shown
+        setTopPadding(48);
       }
     );
 
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
-        setTopPadding(1); // Reset top padding when keyboard is hidden
+        setTopPadding(1);
       }
     );
 
-    // Cleanup function to remove listeners
     return () => {
       keyboardDidShowListener.remove();
       keyboardDidHideListener.remove();
     };
   }, []);
 
+  const validateFirstName = (name) => {
+    return /^[A-Za-z]{2,10}$/.test(name);
+  };
+
+  const validateLastName = (name) => {
+    return /^[A-Za-z]{2,10}$/.test(name);
+  };
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePhoneNumber = (number) => {
+    return /^[0-9]{9,15}$/.test(number);
+  };
+
+  const validatePassword = (password) => {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{12,20}$/.test(password);
+  };
+
   const handleSignUp = async () => {
     if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
-        Toast.show({
-          type: 'error',
-          text1: 'Registration Error',
-          text2: 'Please fill in all fields',
-        });
-    } else if (password !== confirmPassword) {
-        Toast.show({
-          type: 'error',
-          text1: 'Registration Error',
-          text2: 'Passwords do not match',
-        });
-    } else {
-        setLoading(true);
-        try {
-            await register(email, password, {
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                phoneNumber: phoneNumber
-            });
-            Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Account created successfully.',
-            });
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Registration Error',
-                text2: error.message,
-            });
-        } finally {
-            setLoading(false);
-        }
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'Please fill in all fields',
+      });
+      return;
+    }
+
+    if (!validateFirstName(firstName)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'First name must be between 2 and 10 characters and contain only letters',
+      });
+      return;
+    }
+
+    if (!validateLastName(lastName)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'Last name must be between 2 and 10 characters and contain only letters',
+      });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'Please enter a valid email address',
+      });
+      return;
+    }
+
+    if (!validatePhoneNumber(phoneNumber)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'Phone number must be between 9 and 15 digits',
+      });
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'Password must be between 12 and 20 characters and include at least one uppercase letter, one lowercase letter, and one number',
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: 'Passwords do not match',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await register(email, password, {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber
+      });
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Account created successfully.',
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: error.message,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,17 +271,17 @@ export default SignUpScreen;
 const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
-    borderBottomWidth: 0, // Add bottom border
+    borderBottomWidth: 0,
     borderRightWidth: 0,
     borderLeftWidth: 0,
-    borderColor: COLORS.white, // Border color
-    shadowColor: COLORS.black, // Shadow color
+    borderColor: COLORS.white,
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 3,
       height: 3,
     },
-    shadowOpacity: 0.1, // Shadow opacity (0 to 1)
-    shadowRadius: 3, // Shadow radius
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   container: {
     justifyContent: 'center',
@@ -225,17 +293,17 @@ const styles = StyleSheet.create({
     color: '#051d5f',
   },
   createAccountContainer: {
-    flexDirection: 'row', // Arrange children horizontally
-    marginTop: 20, // Add some margin to separate from the button
-    justifyContent: 'center', // Center the items horizontally
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'center',
   },
   orRowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding:5,
+    padding: 5,
     paddingRight: 11,
     paddingLeft: 11,
-    marginTop:10,
+    marginTop: 10,
   },
   line: {
     flex: 1,
@@ -252,7 +320,6 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     justifyContent: 'center',
     width: '95%',
-    
   },
   color_textPrivate: {
     fontSize: 13,
@@ -261,8 +328,8 @@ const styles = StyleSheet.create({
   },
   SocialButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Adjust as needed
-    paddingHorizontal: 20, // Adjust as needed
-    gap:20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    gap: 20,
   },
 });

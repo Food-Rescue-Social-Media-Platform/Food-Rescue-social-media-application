@@ -301,7 +301,7 @@ export async function getPostsFromFollowersForWeb(userId, lastVisible = null) {
     }
 }
 
-export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = null) {
+export async function getPostsFromFollowers(userId, lastVisible = null) {
     const userRef = doc(database, 'users', userId);
     const userDocSnap = await getDoc(userRef);
     if (!userDocSnap.exists()) {
@@ -336,16 +336,7 @@ export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = n
 
         snapshots.forEach((snap) => {
             snap.forEach((doc) => {
-                if (isMapScreen) {
-                    posts.push({
-                        id: doc.id,
-                        title: doc.get('postText'),
-                        coordinates: { latitude: doc.get('coordinates')[0], longitude: doc.get('coordinates')[1] },
-                        image: doc.get('postImg')[0],
-                    });
-                } else {
-                    posts.push({ id: doc.id, ...doc.data() });
-                }
+                posts.push({ id: doc.id, ...doc.data(), coordinates: {latitude: doc.get('coordinates')[0], longitude: doc.get('coordinates')[1] } });                    
                 lastVisibleDoc = doc; // Keep track of the last visible document
             });
         });

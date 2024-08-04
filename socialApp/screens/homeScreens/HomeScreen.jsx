@@ -66,7 +66,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
         newPosts = result.posts;
         lastVisibleDoc = result.lastVisible;
       } else {
-        const result = await getPostsFromFollowers(user.uid, false, lastVisibleDoc);
+        const result = await getPostsFromFollowers(user.uid, lastVisibleDoc);
         newPosts = result.posts;
         lastVisibleDoc = result.lastVisible;
       }

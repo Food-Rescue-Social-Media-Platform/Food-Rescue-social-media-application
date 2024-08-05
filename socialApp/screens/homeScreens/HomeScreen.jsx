@@ -19,7 +19,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [posts, setPosts] = useState([]);
   const [firstFetchForYou, setFirstFetchForYou] = useState(true);
   const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
-  const [lastVisible, setLastVisible] = useState(null);
+  const [lastVisibleForYou, setLastVisibleForYou] = useState(null);
+  const [lastVisibleForFollowers, setLastVisibleFollowers ] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -36,16 +37,19 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [showAddPostCard, setShowAddPostCard] = useState(false);
 
   const fetchData = async (loadMore = false) => {
+    // if position is null and feedChoice is 'For You', return
     if (!position && feedChoice === 'For You') {
       console.info("No position found");
       return;
     }
 
-    if (!loadMore && !lastVisible && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
-      console.log("No lastVisible found for initial load");
+    // if loadMore is true, get the lastVisibleDoc from state
+    if (!loadMore && !lastVisibleForYou && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
+      console.log("No lastVisibleForYou found for initial load");
       return;
     }
     try {
+      // set loading to true before fetching data
       if (loadMore) {
         setLoadingMore(true);
       } else {
@@ -53,34 +57,54 @@ const HomeScreen = ({ isHomeTabPressed }) => {
       }
 
       let newPosts = [];
-      let lastVisibleDoc = loadMore ? lastVisible : null;
+      let lastVisibleDoc; // lastVisibleDoc for pagination
 
+      console.log("feedChoice", feedChoice);
       if (feedChoice === 'For You') {
-        const result = await getPostsWithFilters(
-          [position.latitude, position.longitude],
-          radius,
-          user.uid,
-          selectedCategories,
-          lastVisibleDoc,
-        );
-        newPosts = result.posts;
-        lastVisibleDoc = result.lastVisible;
-      } else {
-        const result = await getPostsFromFollowers(user.uid, lastVisibleDoc);
-        newPosts = result.posts;
-        lastVisibleDoc = result.lastVisible;
+            // if(firstFetchForYou) { // if firstFetchForYou is true, set posts to empty array
+            //   setPosts([]);
+            // }
+            lastVisibleDoc = loadMore ? lastVisibleForYou : null; // get lastVisibleDoc for pagination
+
+            // get posts with filters
+            const result = await getPostsWithFilters(
+              [position.latitude, position.longitude],
+              radius,
+              user.uid,
+              selectedCategories,
+              lastVisibleDoc,
+            );
+            newPosts = result?.posts;
+            lastVisibleDoc = result?.lastVisible;
+            setLastVisibleForYou(lastVisibleDoc);
+            setFirstFetchFollowing(false); // set firstFetchFollowing to false after fetching data of 'For You'
+      } 
+      else {
+            // if(firstFetchFollowing) { // if firstFetchFollowing is true, set posts to empty array
+            //   setPosts([]);
+            // }
+            lastVisibleDoc = loadMore ? lastVisibleForFollowers : null; // get lastVisibleDoc for pagination
+
+            // get posts from followers
+            const result = await getPostsFromFollowers(user.uid, lastVisibleDoc);
+            newPosts = result?.posts;
+            lastVisibleDoc = result?.lastVisible;
+            setLastVisibleFollowers(lastVisibleDoc);
+            setFirstFetchForYou(false); // set firstFetchForYou to false after fetching data of 'Following'
       }
 
+      // if loadMore is true, append newPosts to the existing posts
       if (loadMore) {
         setPosts(prevPosts => [...prevPosts, ...newPosts]);
       } else {
         setPosts(newPosts);
       }
 
+      // set firstFetchForYou and firstFetchFollowing to false after fetching data
       if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
       if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(false);
 
-      setLastVisible(lastVisibleDoc);
+      // set loading to false after fetching data
       setLoading(false);
       setLoadingMore(false);
     } catch (error) {
@@ -105,7 +129,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
       setFeedChoice(route.params?.feedChoice || 'For You');
       setRadius(route.params?.radius || 10);
       setSelectedCategories(route.params?.selectedCategories || []);
-      setLastVisible(null);
+      setLastVisibleForYou(null);
+      setLastVisibleFollowers(null);
       setFirstFetchForYou(true);
       setFirstFetchFollowing(true);
       if (position) {
@@ -116,7 +141,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
 
   useEffect(() => {
     if (position) {
-      setLastVisible(null);
+      setLastVisibleForYou(null);
+      setLastVisibleFollowers(null);
       fetchData();
     }
   }, [position, feedChoice, selectedCategories, radius]);
@@ -141,15 +167,19 @@ const HomeScreen = ({ isHomeTabPressed }) => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    setLastVisible(null);
+    setLastVisibleForYou(null);
+    setLastVisibleFollowers(null);
     if (position) await fetchData();
     setRefreshing(false);
   };
 
+  // Load more posts when end of the list is reached
   const loadMore = async () => {
-    if (!loadingMore && lastVisible) {
+    if (!loadingMore && (lastVisibleForYou || lastVisibleForFollowers) ) {
       setLoadingMore(true);
-      if (position) await fetchData(true);
+      if (position) {
+        await fetchData(true);
+      }
       setLoadingMore(false);
     }
   };

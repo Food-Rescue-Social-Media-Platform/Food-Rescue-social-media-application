@@ -1,6 +1,8 @@
 import { database } from "../../firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 
+const HISTORY_POSTS = 5;
+
 export class FeedFollowers {
     constructor(userId) {
         if(!userId ) {
@@ -43,7 +45,32 @@ export async function addPostToFeedFollowers(followersUsersIds, postId) {
     }; 
 }
 
+/*
+@userFollowId: userId of the user who is followed 
+@userfollowerId: userId of the user who is following
+*/ 
 
+export async function fetchHistoryPostsFromUserToUserFollow(userFollowedData, userfollowerId) {
+    
+    // loop through the posts of the userFollowedData and add the post to the feed of the userfollowerId
+    try{
+        const docRef = doc(database, "feedFollowers", userfollowerId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            let feedData = docSnap.data();
+            for(let i = 0; i < userFollowedData.postsId.length && i < HISTORY_POSTS ; i++) {
+                const postId = userFollowedData.postsId[i];
+                if (!feedData.posts.includes(postId)) {
+                    feedData.posts.push(postId);
+                }
+            }
+            await setDoc(doc(database, "feedFollowers", userfollowerId), feedData);
+        }
+    }
+    catch (error) {
+        console.error("fetchHistoryPostsFromUserToUserFollow, Error adding post to feed:", error.message);
+    };    
+}
 
 export function fetchFeedFollowers(userId, callback) {}
 

@@ -306,89 +306,154 @@ export async function getPostsFromFollowersForWeb(userId, lastVisible = null) {
     }
 }
 
-export async function getPostsFromFollowers(userId, lastVisible) {
+
+// the function getPostsFromFollowers is used to get the posts of the followers of the user
+export async function getPostsFromFollowers(userId, lastVisible, firstFetch) {
+    if(!firstFetch && !lastVisible) {
+        console.log("There is no posts to fetch");
+        return { posts: [], lastVisible: null };
+    }
     try {
-        // קבלת רשימת הנעקבים של המשתמש
-        const userRef = doc(database, 'users', userId);
-        const userDocSnap = await getDoc(userRef);
-        if (!userDocSnap.exists()) {
-            console.error("User not found while fetching posts");
-            return { posts: [], lastVisible: null };
-        }
+        const docRef = doc(database, "feedFollowers", userId);
+        const docSnap = await getDoc(docRef);
         
-        const followingUsersId = userDocSnap.data()?.followingUsersId || [];
-        console.log("following users:", followingUsersId);
+        if (docSnap.exists()) {
+            let feedData = docSnap.data();
+            let posts = [];
+            
+            if (!Array.isArray(feedData?.posts)) {
+                console.error("Feed posts is not an array or is undefined");
+                return { posts: [], lastVisible: null };
+            }
+            
+            let startIndex = typeof lastVisible === 'number'  ? lastVisible : 0;
+            
+            for (let i = startIndex; i < startIndex + PAGE_SIZE && i < feedData.posts.length; i++) {
+                const postId = feedData.posts[i];
+                const postRef = doc(database, "posts", postId);
 
-        if (followingUsersId.length === 0) {
-            console.log("User is not following anyone");
+                try{
+                    const postDocSnap = await getDoc(postRef);
+                    if (postDocSnap.exists()) {
+                        const postData = postDocSnap.data();
+                        console.log("POST DATA:", postData);
+
+                        posts.push({ 
+                            id: postId, 
+                            ...postData,
+                            coordinates: {
+                                latitude: postData.coordinates ? postData.coordinates[0] : 0,
+                                longitude: postData.coordinates ? postData.coordinates[1] : 0
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching post:", error);
+                }
+            }
+            
+            posts.sort((a, b) => b.createdAt - a.createdAt);
+            
+            const newLastVisible = startIndex + PAGE_SIZE < feedData.posts.length ? startIndex + PAGE_SIZE : null;
+            
+            return {
+                posts,
+                lastVisible: newLastVisible
+            };
+        } else {
+            console.error("Feed not found");
             return { posts: [], lastVisible: null };
         }
-
-        // divide the following users into chunks of 10
-        const chunkedFollowing = [];
-        for (let i = 0; i < followingUsersId.length; i += 10) {
-            // slice the array into chunks of 10
-            chunkedFollowing.push(followingUsersId.slice(i, i + 10));
-        }
-
-        let allPosts = [];
-        let lastVisibleDoc = lastVisible;
-
-        // ביצוע שאילתות עבור כל קבוצת נעקבים
-        for (const chunk of chunkedFollowing) {
-            let chunkQuery;
-            if (lastVisibleDoc) {
-                chunkQuery = query(
-                    collection(database, 'posts'),
-                    where('userId', 'in', chunk),
-                    orderBy('createdAt', 'desc'),
-                    startAfter(lastVisibleDoc),
-                    limit(PAGE_SIZE)
-                );
-            } else {
-                chunkQuery = query(
-                    collection(database, 'posts'),
-                    where('userId', 'in', chunk),
-                    orderBy('createdAt', 'desc'),
-                    limit(PAGE_SIZE)
-                );
-            }
-
-            const snapshot = await getDocs(chunkQuery);
-            snapshot.forEach((doc) => {
-                allPosts.push({ 
-                    id: doc.id, 
-                    ...doc.data(), 
-                    coordinates: {
-                        latitude: doc.get('coordinates')[0], 
-                        longitude: doc.get('coordinates')[1] 
-                    } 
-                });
-                lastVisibleDoc = doc;
-            });
-
-            // אם יש לנו מספיק פוסטים, נפסיק את הלולאה
-            if (allPosts.length >= PAGE_SIZE) break;
-        }
-
-        // מיון הפוסטים לפי תאריך יצירה (מהחדש לישן)
-        allPosts.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-
-        // חיתוך לגודל העמוד הרצוי
-        const posts = allPosts.slice(0, PAGE_SIZE);
-
-        console.log("posts from following:", posts);
-        console.log("size of posts:", posts.length);
-
-        return {
-            posts,
-            lastVisible: posts.length < PAGE_SIZE ? null : lastVisibleDoc
-        };
     } catch (error) {
-        console.error("Error fetching documents: ", error);
-        throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+        console.error("Error fetching posts from followers:", error);
+        return { posts: [], lastVisible: null };
     }
 }
+
+
+// export async function getPostsFromFollowers(userId, lastVisible) {
+//     try {
+//         // קבלת רשימת הנעקבים של המשתמש
+//         const userRef = doc(database, 'users', userId);
+//         const userDocSnap = await getDoc(userRef);
+//         if (!userDocSnap.exists()) {
+//             console.error("User not found while fetching posts");
+//             return { posts: [], lastVisible: null };
+//         }
+        
+//         const followingUsersId = userDocSnap.data()?.followingUsersId || [];
+//         console.log("following users:", followingUsersId);
+
+//         if (followingUsersId.length === 0) {
+//             console.log("User is not following anyone");
+//             return { posts: [], lastVisible: null };
+//         }
+
+//         // divide the following users into chunks of 10
+//         const chunkedFollowing = [];
+//         for (let i = 0; i < followingUsersId.length; i += 10) {
+//             // slice the array into chunks of 10
+//             chunkedFollowing.push(followingUsersId.slice(i, i + 10));
+//         }
+
+//         let allPosts = [];
+//         let lastVisibleDoc = lastVisible;
+
+//         // ביצוע שאילתות עבור כל קבוצת נעקבים
+//         for (const chunk of chunkedFollowing) {
+//             let chunkQuery;
+//             if (lastVisibleDoc) {
+//                 chunkQuery = query(
+//                     collection(database, 'posts'),
+//                     where('userId', 'in', chunk),
+//                     orderBy('createdAt', 'desc'),
+//                     startAfter(lastVisibleDoc),
+//                     limit(PAGE_SIZE)
+//                 );
+//             } else {
+//                 chunkQuery = query(
+//                     collection(database, 'posts'),
+//                     where('userId', 'in', chunk),
+//                     orderBy('createdAt', 'desc'),
+//                     limit(PAGE_SIZE)
+//                 );
+//             }
+
+//             const snapshot = await getDocs(chunkQuery);
+//             snapshot.forEach((doc) => {
+//                 allPosts.push({ 
+//                     id: doc.id, 
+//                     ...doc.data(), 
+//                     coordinates: {
+//                         latitude: doc.get('coordinates')[0], 
+//                         longitude: doc.get('coordinates')[1] 
+//                     } 
+//                 });
+//                 lastVisibleDoc = doc;
+//             });
+
+//             // אם יש לנו מספיק פוסטים, נפסיק את הלולאה
+//             if (allPosts.length >= PAGE_SIZE) break;
+//         }
+
+//         // מיון הפוסטים לפי תאריך יצירה (מהחדש לישן)
+//         allPosts.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+
+//         // חיתוך לגודל העמוד הרצוי
+//         const posts = allPosts.slice(0, PAGE_SIZE);
+
+//         console.log("posts from following:", posts);
+//         console.log("size of posts:", posts.length);
+
+//         return {
+//             posts,
+//             lastVisible: posts.length < PAGE_SIZE ? null : lastVisibleDoc
+//         };
+//     } catch (error) {
+//         console.error("Error fetching documents: ", error);
+//         throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+//     }
+// }
 
 export async function getPost(postId) {
     const postRef = doc(database, 'posts', postId);

@@ -20,7 +20,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [firstFetchForYou, setFirstFetchForYou] = useState(true);
   const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
   const [lastVisibleForYou, setLastVisibleForYou] = useState(null);
-  const [lastVisibleForFollowers, setLastVisibleFollowers ] = useState(null);
+  const [lastVisibleForFollowers, setLastVisibleFollowers ] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -86,7 +86,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
             lastVisibleDoc = loadMore ? lastVisibleForFollowers : null; // get lastVisibleDoc for pagination
 
             // get posts from followers
-            const result = await getPostsFromFollowers(user.uid, lastVisibleDoc);
+            const result = await getPostsFromFollowers(user.uid, lastVisibleDoc, firstFetchFollowing);
             newPosts = result?.posts;
             lastVisibleDoc = result?.lastVisible;
             setLastVisibleFollowers(lastVisibleDoc);

@@ -31,9 +31,9 @@
       }
     },
     "scheme": "foodrescue",
-    "icon": "./assets/Images/FR_logo.jpg",
+    "icon": "./assets/Images/FR_logo.png",
     "splash": {
-      "image": "./assets/Images/FR_logo.jpg",
+      "image": "./assets/Images/FR_logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     }

@@ -4,7 +4,7 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
 import AddPostCard from '../../components/addPost/AddPostCard';
-import { useNavigation, useIsFocused, useFocusEffect } from '@react-navigation/native';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
@@ -33,7 +33,6 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [permissionDenied, setPermissionDenied] = useState(false);
   const { theme } = useDarkMode();
   const isFocused = useIsFocused();
-  const navigation = useNavigation();
   const [showAddPostCard, setShowAddPostCard] = useState(false);
 
   const fetchData = async (loadMore = false) => {
@@ -59,13 +58,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
       let newPosts = [];
       let lastVisibleDoc; // lastVisibleDoc for pagination
 
-      console.log("feedChoice", feedChoice);
       if (feedChoice === 'For You') {
-            // if(firstFetchForYou) { // if firstFetchForYou is true, set posts to empty array
-            //   setPosts([]);
-            // }
             lastVisibleDoc = loadMore ? lastVisibleForYou : null; // get lastVisibleDoc for pagination
-
             // get posts with filters
             const result = await getPostsWithFilters(
               [position.latitude, position.longitude],
@@ -80,11 +74,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
             setFirstFetchFollowing(false); // set firstFetchFollowing to false after fetching data of 'For You'
       } 
       else {
-            // if(firstFetchFollowing) { // if firstFetchFollowing is true, set posts to empty array
-            //   setPosts([]);
-            // }
             lastVisibleDoc = loadMore ? lastVisibleForFollowers : null; // get lastVisibleDoc for pagination
-
             // get posts from followers
             const result = await getPostsFromFollowers(user.uid, lastVisibleDoc, firstFetchFollowing);
             newPosts = result?.posts;
@@ -117,9 +107,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
 
   useEffect(() => {
     const fetchLocationAndPosts = async () => {
-      console.log("before permissionDenied", permissionDenied);
       await getLocation(setPosition, null, setPermissionDenied);
-      console.log("after permissionDenied", permissionDenied);
     };
     fetchLocationAndPosts();
   }, []);

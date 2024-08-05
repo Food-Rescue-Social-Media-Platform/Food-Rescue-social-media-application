@@ -156,8 +156,6 @@ export async function getPostsWithFiltersForWeb(userId, categories, lastVisible)
 }
 
 export async function getPostsWithFilters(center, radiusInKm, userId, categories, lastVisible) {
-    console.log("\ngetPosts with filters:", center, radiusInKm, userId, categories, lastVisible);
-    console.log("\n")
     if (!center || !radiusInKm) {
         console.error("Center and radius are required for fetching posts");
         return { posts: [], lastVisible: null};
@@ -234,9 +232,6 @@ export async function getPostsWithFilters(center, radiusInKm, userId, categories
         });
 
         posts.sort((a, b) => b?.createdAt - a?.createdAt);
-
-        console.log("posts with filters:", posts);
-        console.log("size of posts:", posts.length);
 
         if( counter < PAGE_SIZE ) {
             return { posts, lastVisible: null};
@@ -336,7 +331,6 @@ export async function getPostsFromFollowers(userId, lastVisible, firstFetch) {
                     const postDocSnap = await getDoc(postRef);
                     if (postDocSnap.exists()) {
                         const postData = postDocSnap.data();
-                        console.log("POST DATA:", postData);
 
                         posts.push({ 
                             id: postId, 
@@ -370,90 +364,6 @@ export async function getPostsFromFollowers(userId, lastVisible, firstFetch) {
     }
 }
 
-
-// export async function getPostsFromFollowers(userId, lastVisible) {
-//     try {
-//         // קבלת רשימת הנעקבים של המשתמש
-//         const userRef = doc(database, 'users', userId);
-//         const userDocSnap = await getDoc(userRef);
-//         if (!userDocSnap.exists()) {
-//             console.error("User not found while fetching posts");
-//             return { posts: [], lastVisible: null };
-//         }
-        
-//         const followingUsersId = userDocSnap.data()?.followingUsersId || [];
-//         console.log("following users:", followingUsersId);
-
-//         if (followingUsersId.length === 0) {
-//             console.log("User is not following anyone");
-//             return { posts: [], lastVisible: null };
-//         }
-
-//         // divide the following users into chunks of 10
-//         const chunkedFollowing = [];
-//         for (let i = 0; i < followingUsersId.length; i += 10) {
-//             // slice the array into chunks of 10
-//             chunkedFollowing.push(followingUsersId.slice(i, i + 10));
-//         }
-
-//         let allPosts = [];
-//         let lastVisibleDoc = lastVisible;
-
-//         // ביצוע שאילתות עבור כל קבוצת נעקבים
-//         for (const chunk of chunkedFollowing) {
-//             let chunkQuery;
-//             if (lastVisibleDoc) {
-//                 chunkQuery = query(
-//                     collection(database, 'posts'),
-//                     where('userId', 'in', chunk),
-//                     orderBy('createdAt', 'desc'),
-//                     startAfter(lastVisibleDoc),
-//                     limit(PAGE_SIZE)
-//                 );
-//             } else {
-//                 chunkQuery = query(
-//                     collection(database, 'posts'),
-//                     where('userId', 'in', chunk),
-//                     orderBy('createdAt', 'desc'),
-//                     limit(PAGE_SIZE)
-//                 );
-//             }
-
-//             const snapshot = await getDocs(chunkQuery);
-//             snapshot.forEach((doc) => {
-//                 allPosts.push({ 
-//                     id: doc.id, 
-//                     ...doc.data(), 
-//                     coordinates: {
-//                         latitude: doc.get('coordinates')[0], 
-//                         longitude: doc.get('coordinates')[1] 
-//                     } 
-//                 });
-//                 lastVisibleDoc = doc;
-//             });
-
-//             // אם יש לנו מספיק פוסטים, נפסיק את הלולאה
-//             if (allPosts.length >= PAGE_SIZE) break;
-//         }
-
-//         // מיון הפוסטים לפי תאריך יצירה (מהחדש לישן)
-//         allPosts.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
-
-//         // חיתוך לגודל העמוד הרצוי
-//         const posts = allPosts.slice(0, PAGE_SIZE);
-
-//         console.log("posts from following:", posts);
-//         console.log("size of posts:", posts.length);
-
-//         return {
-//             posts,
-//             lastVisible: posts.length < PAGE_SIZE ? null : lastVisibleDoc
-//         };
-//     } catch (error) {
-//         console.error("Error fetching documents: ", error);
-//         throw new Error("Firestore query failed. Ensure that the required indexes are created.");
-//     }
-// }
 
 export async function getPost(postId) {
     const postRef = doc(database, 'posts', postId);
@@ -513,7 +423,6 @@ export async function getPostsOfUser(postUserId, userData, lastIndex) {
   }
 
 export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
-    console.log("getPostsNearby:", center, radiusInM, userId, isMapScreen);
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
 
@@ -523,14 +432,12 @@ export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
             orderBy('geohash'),
             startAt(b[0]),
             endAt(b[1]),
-            // userId ? where('userId', '==', userId) : null
         );
 
         promises.push(getDocs(q));
     });
 
     const snapshots = await Promise.all(promises);
-    console.log("snapshots:", snapshots);
     const matchingDocs = [];
 
     snapshots.forEach((snap) => {
@@ -563,8 +470,6 @@ export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
         });
     });
 
-    console.log("near by:", matchingDocs);
-    console.log("near by size:", matchingDocs.length);
     return matchingDocs;
 }
 

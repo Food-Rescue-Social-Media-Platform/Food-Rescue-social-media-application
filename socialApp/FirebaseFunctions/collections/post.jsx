@@ -2,6 +2,7 @@ import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, st
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 import Toast from 'react-native-toast-message';
+import { addPostToFeedFollowers } from './feedFollowers';
 
 let PAGE_SIZE =5;
 let PAGE_SIZE_POSTS_PROFILE = 5;
@@ -69,6 +70,7 @@ export class Post {
 
         if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
+            addPostToFeedFollowers(userData.followersUsersId, docRef.id)
             await updateDoc(userRef, {
                 postsId: userData.postsId ? [...userData.postsId, docRef.id] : [docRef.id],
                 postsNum: userData.postsNum ? userData.postsNum + 1 : 1,
@@ -230,6 +232,9 @@ export async function getPostsWithFilters(center, radiusInKm, userId, categories
                 counter ++;
             });
         });
+
+        posts.sort((a, b) => b?.createdAt - a?.createdAt);
+
         console.log("posts with filters:", posts);
         console.log("size of posts:", posts.length);
 
@@ -301,52 +306,84 @@ export async function getPostsFromFollowersForWeb(userId, lastVisible = null) {
     }
 }
 
-export async function getPostsFromFollowers(userId, lastVisible = null) {
-    const userRef = doc(database, 'users', userId);
-    const userDocSnap = await getDoc(userRef);
-    if (!userDocSnap.exists()) {
-        console.error("User not found while fetching posts");
-        return { posts: [], lastVisible: null };
-    }
-
-    const followers = userDocSnap.data()?.followersUsersId;
-    const promises = [];
-
-    followers.forEach((followedUserId) => {
-        let queries = [
-            collection(database, 'posts'),
-            where('userId', '==', followedUserId),
-            orderBy('createdAt', 'desc'),
-            limit(PAGE_SIZE) 
-        ];
-
-        if (lastVisible) {
-            queries.push(startAfter(lastVisible));
-        }
-
-        const q = query(...queries);
-        promises.push(getDocs(q));
-    });
-
+export async function getPostsFromFollowers(userId, lastVisible) {
     try {
-        const snapshots = await Promise.all(promises);
-        console.log("snapshots:", snapshots);
-        const posts = [];
-        let lastVisibleDoc = null;
+        // קבלת רשימת הנעקבים של המשתמש
+        const userRef = doc(database, 'users', userId);
+        const userDocSnap = await getDoc(userRef);
+        if (!userDocSnap.exists()) {
+            console.error("User not found while fetching posts");
+            return { posts: [], lastVisible: null };
+        }
+        
+        const followingUsersId = userDocSnap.data()?.followingUsersId || [];
+        console.log("following users:", followingUsersId);
 
-        snapshots.forEach((snap) => {
-            snap.forEach((doc) => {
-                posts.push({ id: doc.id, ...doc.data(), coordinates: {latitude: doc.get('coordinates')[0], longitude: doc.get('coordinates')[1] } });                    
-                lastVisibleDoc = doc; // Keep track of the last visible document
-            });
-        });
-
-        console.log("posts from followers:", posts);
-        if(posts.length < PAGE_SIZE) {
-            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+        if (followingUsersId.length === 0) {
+            console.log("User is not following anyone");
+            return { posts: [], lastVisible: null };
         }
 
-        return { posts, lastVisible: lastVisibleDoc };
+        // divide the following users into chunks of 10
+        const chunkedFollowing = [];
+        for (let i = 0; i < followingUsersId.length; i += 10) {
+            // slice the array into chunks of 10
+            chunkedFollowing.push(followingUsersId.slice(i, i + 10));
+        }
+
+        let allPosts = [];
+        let lastVisibleDoc = lastVisible;
+
+        // ביצוע שאילתות עבור כל קבוצת נעקבים
+        for (const chunk of chunkedFollowing) {
+            let chunkQuery;
+            if (lastVisibleDoc) {
+                chunkQuery = query(
+                    collection(database, 'posts'),
+                    where('userId', 'in', chunk),
+                    orderBy('createdAt', 'desc'),
+                    startAfter(lastVisibleDoc),
+                    limit(PAGE_SIZE)
+                );
+            } else {
+                chunkQuery = query(
+                    collection(database, 'posts'),
+                    where('userId', 'in', chunk),
+                    orderBy('createdAt', 'desc'),
+                    limit(PAGE_SIZE)
+                );
+            }
+
+            const snapshot = await getDocs(chunkQuery);
+            snapshot.forEach((doc) => {
+                allPosts.push({ 
+                    id: doc.id, 
+                    ...doc.data(), 
+                    coordinates: {
+                        latitude: doc.get('coordinates')[0], 
+                        longitude: doc.get('coordinates')[1] 
+                    } 
+                });
+                lastVisibleDoc = doc;
+            });
+
+            // אם יש לנו מספיק פוסטים, נפסיק את הלולאה
+            if (allPosts.length >= PAGE_SIZE) break;
+        }
+
+        // מיון הפוסטים לפי תאריך יצירה (מהחדש לישן)
+        allPosts.sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate());
+
+        // חיתוך לגודל העמוד הרצוי
+        const posts = allPosts.slice(0, PAGE_SIZE);
+
+        console.log("posts from following:", posts);
+        console.log("size of posts:", posts.length);
+
+        return {
+            posts,
+            lastVisible: posts.length < PAGE_SIZE ? null : lastVisibleDoc
+        };
     } catch (error) {
         console.error("Error fetching documents: ", error);
         throw new Error("Firestore query failed. Ensure that the required indexes are created.");

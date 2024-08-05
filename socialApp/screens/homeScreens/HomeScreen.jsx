@@ -157,6 +157,9 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     setRefreshing(true);
     setLastVisibleForYou(null);
     setLastVisibleFollowers(null);
+    setFirstFetchForYou(true);
+    setFirstFetchFollowing(true);
+    setPosts([]);  
     if (position) await fetchData();
     setRefreshing(false);
   };

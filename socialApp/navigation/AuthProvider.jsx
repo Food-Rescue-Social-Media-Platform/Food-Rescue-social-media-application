@@ -4,6 +4,7 @@ import { auth, database } from '../firebase';
 import { getDoc, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { useDispatch } from 'react-redux';
 import { setUserData, removerUserData } from '../redux/reducer/user';
+import { FeedFollowers, addFeedFollowers } from '../FirebaseFunctions/collections/feedFollowers';
 import Toast from 'react-native-toast-message';
 
 export const AuthContext = createContext();
@@ -73,6 +74,9 @@ export const AuthProvider = ({ children }) => {
                             };
 
                             await setDoc(doc(database, 'users', uid), additionalUserInfo);
+
+                            const feedFollowers = new FeedFollowers(uid);
+                            await addFeedFollowers(feedFollowers);
                         }
                     } catch (error) {
                         if (error.code === 'auth/email-already-in-use') {

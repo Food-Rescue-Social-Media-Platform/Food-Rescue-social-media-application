@@ -1,10 +1,11 @@
 import React from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, StyleSheet, Dimensions } from 'react-native';
+import MapViewDirections from 'react-native-maps-directions';
 
 const { width, height } = Dimensions.get('window');
 
-const MapComponent = ({ region, handleRegionChange, handleMapPress, position, locationMarkers, handleMarkerPress, postFromFeed, mapRef }) => (
+const MapComponent = ({ region, handleRegionChange, handleMapPress, userPosition, locationMarkers, handleMarkerPress, postFromFeed, mapRef, postDestination }) => (
   <View style={styles.container}>
     <MapView
         provider={PROVIDER_GOOGLE}
@@ -15,9 +16,9 @@ const MapComponent = ({ region, handleRegionChange, handleMapPress, position, lo
         ref={mapRef}
         onPress={handleMapPress}
       >
-      {position && (
+      {userPosition && (
         <Marker
-          coordinate={{ latitude: position.latitude, longitude: position.longitude }}
+          coordinate={{ latitude: userPosition.latitude, longitude: userPosition.longitude }}
           title="You are here"
           pinColor="red"
           style={{ zIndex: 1 }}
@@ -40,6 +41,14 @@ const MapComponent = ({ region, handleRegionChange, handleMapPress, position, lo
             onPress={() => handleMarkerPress(postFromFeed)}
           />
         )}
+        {postDestination && (
+          <MapViewDirections
+            origin={userPosition}
+            destination={postDestination}
+            apikey={'AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY'}
+          />
+        )}
+        
     </MapView>
   </View>)
   

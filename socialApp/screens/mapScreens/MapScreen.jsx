@@ -17,6 +17,7 @@ const MapScreen = () => {
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
+  const [postDestination, setPostDestination] = useState(null);
   const [locationMarkers, setLocationMarkers] = useState([]);
   const [region, setRegion] = useState();
   const [loading, setLoading] = useState(false);
@@ -121,6 +122,7 @@ const MapScreen = () => {
   };
 
   const closeModal = () => {
+    setPosition(null);
     setModalVisible(false);
     setSelectedPost(null);
   };
@@ -146,6 +148,11 @@ const MapScreen = () => {
       closeModal();
     }
   };
+
+  const handleUserPressToNavigateToPost = (post) => {
+    console.log("navigate to post", post);
+    setPostDestination({latitude:post?.latitude, longitude:post?.longitude});
+  }
 
   const handleAcceptLocationFromSearch = (data, details) => {
     const { geometry } = details;
@@ -186,11 +193,12 @@ const MapScreen = () => {
             region={region}
             handleRegionChange={handleRegionChange}
             handleMapPress={handleMapPress}
-            position={position}
+            userPosition={position}
             locationMarkers={locationMarkers}
             handleMarkerPress={handleMarkerPress}
             postFromFeed={postFromFeed}
             mapRef={mapRef}
+            postDestination={postDestination}
           />
         ) : (
           <View style={styles.loadingContainer}>
@@ -198,13 +206,14 @@ const MapScreen = () => {
           </View>
         )}
 
-        {selectedPost ? (
+        {(selectedPost ) ? (
           <PostModal
             setVisible={setModalVisible}
             visible={isModalVisible}
             post={selectedPost}
             onClose={closeModal}
             userLocation={position}
+            handleUserPosition={handleUserPressToNavigateToPost}
           />
         ) : null}
 

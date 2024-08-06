@@ -16,7 +16,30 @@ const LoginScreen = ({ navigation }) => {
   const { login } = useContext(AuthContext);
   const { t } = useTranslation();
 
+  // Email validation function
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleLogin = async () => {
+    if (!email || !password) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please fill in all fields.',
+      });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter a valid email address.',
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       await login(email, password);

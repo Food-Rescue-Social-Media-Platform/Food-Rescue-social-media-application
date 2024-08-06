@@ -42,8 +42,48 @@ const EditPostScreen = ({ navigation, route }) => {
         setSelectedCategory(option.value === selectedCategory ? null : option.value);
     };
 
+    // Validation functions
+    const validatePhoneNumber = (number) => {
+        return /^[0-9]{9,15}$/.test(number);
+    };
+
+    const validateDeliveryTime = (time) => {
+        return time.length <= 30;
+    };
+
+    const validatePostText = (text) => {
+        return text.length <= 3000;
+    };
+
     // Function to handle post update
     const handleUpdatePost = async () => {
+        if (!validatePhoneNumber(phoneNumber)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Phone number must be between 9 and 15 digits',
+            });
+            return;
+        }
+
+        if (!validateDeliveryTime(deliveryTime)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Delivery time must be less than or equal to 30 characters',
+            });
+            return;
+        }
+
+        if (!validatePostText(postText)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Post text must be less than or equal to 3000 characters',
+            });
+            return;
+        }
+
         try {
             const postDocRef = doc(database, "posts", item.id);
             // update the post in the database with the new values
@@ -60,13 +100,13 @@ const EditPostScreen = ({ navigation, route }) => {
                 text1: 'Success',
                 text2: 'Post updated successfully.',
             });
-            } catch (error) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Failed to update post.',
-                });
-            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to update post.',
+            });
+        }
     };
 
     return (

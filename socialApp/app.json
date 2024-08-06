@@ -1,8 +1,8 @@
 {
-  "name": "socialApp",
-  "displayName": "socialApp",
+  "name": "FOOD RESCUE",
+  "displayName": "FOOD RESCUE",
   "expo": {
-    "name": "socialApp",
+    "name": "FOOD RESCUE",
     "slug": "socialApp",
     "version": "1.0.0",
     "assetBundlePatterns": [
@@ -30,6 +30,12 @@
         "projectId": "a3c76fc0-4054-4bdf-afb4-a432deb8da57"
       }
     },
-    "scheme": "myapp"
+    "scheme": "foodrescue",
+    "icon": "./assets/Images/FR_logo.png",
+    "splash": {
+      "image": "./assets/Images/FR_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    }
   }
 }

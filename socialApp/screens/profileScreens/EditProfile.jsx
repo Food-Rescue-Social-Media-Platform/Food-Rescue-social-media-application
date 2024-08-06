@@ -38,7 +38,73 @@ const EditProfile = ({ navigation, route }) => {
         await openGalleryAndSelectImage(setUserProfileImage, false, false, true);
     }
 
+    // Validation functions
+    const validateFirstName = (name) => {
+        return /^[A-Za-z]{2,10}$/.test(name);
+    };
+
+    const validateLastName = (name) => {
+        return /^[A-Za-z]{2,10}$/.test(name);
+    };
+
+    const validatePhoneNumber = (number) => {
+        return /^[0-9]{9,15}$/.test(number);
+    };
+
+    const validateEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
+
+    const validateBio = (bio) => {
+        return bio.length <= 300;
+    };
+
     const updateUserProfile = async () => {
+        if (!validateFirstName(firstName)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'First name must be between 2 and 10 characters and contain only letters',
+            });
+            return;
+        }
+
+        if (!validateLastName(lastName)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Last name must be between 2 and 10 characters and contain only letters',
+            });
+            return;
+        }
+
+        if (!validatePhoneNumber(phone)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Phone number must be between 9 and 15 digits',
+            });
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Please enter a valid email address',
+            });
+            return;
+        }
+
+        if (!validateBio(bio)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Validation Error',
+                text2: 'Bio must be less than or equal to 300 characters',
+            });
+            return;
+        }
+
         setLoading(true);
         try {
             const profileURL = userProfileImage ? await uploadImages(userProfileImage, 'usersImages/', 'image') : userData.profileImg;

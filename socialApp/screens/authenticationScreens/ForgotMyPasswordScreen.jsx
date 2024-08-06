@@ -14,12 +14,26 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
   const { forgotPassword } = useContext(AuthContext);
   const { t } = useTranslation();
 
+  // Email validation function
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleForgotPassword = async () => {
     if (!email) {
       Toast.show({
         type: 'error',
         text1: 'Error',
         text2: 'Please enter your email address.',
+      });
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please enter a valid email address.',
       });
       return;
     }
@@ -55,7 +69,7 @@ const ForgotMyPasswordScreen = ({ navigation }) => {
           <Text style={styles.text}>{t('Forgot My Password')}</Text>
           <Text style={{ paddingBottom: 10 }}>{t('Enter your Email to continue')}</Text>
           <FormInput
-            placeHolderText="Email"
+            placeHolderText={t("Email")}
             iconType="email"
             keyboardType="email-address"
             labelValue={email}

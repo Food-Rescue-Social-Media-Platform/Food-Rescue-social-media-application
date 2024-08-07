@@ -184,7 +184,7 @@ const CustomDrawerContent = (props) => {
 
                   {radiusFilterOpen && (
                     <View style={styles.sliderContainer}>
-                      <Text style={styles.sliderLabel}>{t("Radius")}: {radius} KM</Text>
+                      <Text style={styles.sliderLabel}>{t("Radius")}: {radius} {t("KM")}</Text>
                       <Slider
                         style={{ width: '100%', height: 40 }}
                         minimumValue={MIN_RADIUS}

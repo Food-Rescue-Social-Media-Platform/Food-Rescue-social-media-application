@@ -4,10 +4,12 @@ import { StyleSheet,TouchableOpacity ,FlatList,TextInput,Button, Platform, View 
 import { Ionicons } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useTranslation } from 'react-i18next';
 
 function SearchAddress({style, onLocationSelected }) {
   const { theme } = useDarkMode(); // Access the current theme
   const autocompleteRef = useRef();
+  const { t } = useTranslation();
 
   const clearInput = () => {
     autocompleteRef.current?.setAddressText('');
@@ -16,7 +18,7 @@ function SearchAddress({style, onLocationSelected }) {
   return (
     <View style={styles.container}>
       <GooglePlacesAutocomplete
-        placeholder='Search location'
+        placeholder={t("Search location")}
         ref={autocompleteRef}
         minLength={2}
         autoFocus={false}

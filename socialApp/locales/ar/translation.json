@@ -105,5 +105,7 @@
   "clear": "مسح",
   "Done": "تم",
   "Radius": "نصف القطر",
-  "Radius Filter": "تصفية النصف القطر"
+  "Radius Filter": "تصفية النصف القطر",
+  "Search location": "البحث عن الموقع",
+  "KM": "كم",
 }

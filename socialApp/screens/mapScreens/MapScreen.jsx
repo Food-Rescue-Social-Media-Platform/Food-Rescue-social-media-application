@@ -26,6 +26,8 @@ const MapScreen = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [MapComponent, setMapComponent] = useState(null);
+  const [locationSubscription, setLocationSubscription] = useState(null); // for watching location
+  const [initialPostsLoaded, setInitialPostsLoaded] = useState(false);
   const radiusInMeters = 10000;
 
   useEffect(() => {
@@ -50,27 +52,42 @@ const MapScreen = () => {
     }
   };
 
-  const fetchData = async () => {
+  const fetchLocation = async () => {
     setLoading(true);
     await getLocation(setPosition, setRegion);
-    if(position)
-      watchLocation(setPosition, setRegion);
+    if(position){
+      const subscription = await watchLocation(setPosition, setRegion);
+      setLocationSubscription(subscription);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
     if (isFocused) {
       setPostFromFeed(route.params ? route.params : null);
-      fetchData();
+      fetchLocation();
     } else {
       resetStates();
     }
   }, [isFocused]);
 
   useEffect(() => {
-    if (position) {
+    if (position && !initialPostsLoaded) {
       fetchPosts(position);
+      setInitialPostsLoaded(true);
+    } else if (position && region) {
+      const distance = getDistance(region.latitude, region.longitude, position.latitude, position.longitude);
+      if (distance > radiusInMeters) {
+        setRegion({
+          latitude: position.latitude,
+          longitude: position.longitude,
+          latitudeDelta: region.latitudeDelta,
+          longitudeDelta: region.longitudeDelta
+        });
+        fetchPosts(position);
+      }
     }
-  }, [position]);
+  }, [position, initialPostsLoaded]);
 
   useEffect(() => {
     if (postFromFeed && isFocused) {
@@ -83,6 +100,24 @@ const MapScreen = () => {
     }
   }, [postFromFeed]);
 
+  useEffect(() => {
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, [locationSubscription]);
+
+  useEffect(() => {
+    if (position && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: position.latitude,
+        longitude: position.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
+    }
+  }, [position]);
 
   const resetStates = () =>{
      setPostDestination(null);

@@ -7,7 +7,6 @@ import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToP
 import { useNavigation } from '@react-navigation/native';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
 import { COLORS, DARKCOLORS } from '../../styles/colors';
-import styled from 'styled-components';
 
 const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUserPosition }) => {
   const navigation = useNavigation();

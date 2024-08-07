@@ -36,6 +36,11 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
     setVisible(false);
   };
 
+  const handleNavigatePress = () => {
+    handleUserPosition(post);
+    setVisible(false);  
+  };
+
   const modalHeight = post && post.image ? '44%' : '24%';
 
   return (
@@ -73,7 +78,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
                       </View>
                       <View>
                           <TouchableOpacity 
-                              onPress={() => handleUserPosition(post)}
+                              onPress={handleNavigatePress}
                               style={[styles.buttonNavigate, { backgroundColor:themeColors.secondaryBackground }]}
                           >
                               <Text style={[styles.text, {fontWeight:'bold', color:themeColors.black}]}>Navigate</Text>

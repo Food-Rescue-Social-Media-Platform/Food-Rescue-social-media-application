@@ -85,16 +85,11 @@ const MapScreen = () => {
 
 
   const resetStates = () =>{
-     setPosition(null);
      setPostDestination(null);
-     setLocationMarkers([]);
-     setRegion();
-     setLoading(false);
      setLocationFromSearch(null);
      setPostFromFeed(null);
      setSelectedPost(null);
      setModalVisible(false);
-     setMapComponent(null);
   }
 
   const zoomIn = () => {
@@ -213,7 +208,7 @@ const MapScreen = () => {
           </View>
         )}
 
-        {(selectedPost ) ? (
+        {(selectedPost) ? (
           <PostModal
             setVisible={setModalVisible}
             visible={isModalVisible}
@@ -270,8 +265,8 @@ const styles = StyleSheet.create({
   },
   zoomButtons: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 65,
+    right: 10,
     flexDirection: 'column',
   },
   iconStyle: {
@@ -288,7 +283,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
 });
 

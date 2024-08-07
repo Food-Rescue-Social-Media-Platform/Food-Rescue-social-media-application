@@ -36,7 +36,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
     setVisible(false);
   };
 
-  const modalHeight = post && post.image ? '44%' : '27%';
+  const modalHeight = post && post.image ? '44%' : '24%';
 
   return (
     <Modal
@@ -56,7 +56,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
                 />
               )}
               <View style={styles.textContainer}>
-                <View style={[styles.titleContainer, !post.image && { height: '45%' }]}>
+                <View style={[styles.titleContainer, !post.image && { height: '45%', marginTop:10 }]}>
                   <ReadMore
                     numberOfLines={2}
                     renderTruncatedFooter={renderTruncatedFooter}

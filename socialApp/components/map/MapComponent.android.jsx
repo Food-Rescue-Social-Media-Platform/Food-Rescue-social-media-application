@@ -5,7 +5,16 @@ import MapViewDirections from 'react-native-maps-directions';
 
 const { width, height } = Dimensions.get('window');
 
-const MapComponent = ({ region, handleRegionChange, handleMapPress, userPosition, locationMarkers, handleMarkerPress, postFromFeed, mapRef, postDestination }) => (
+const MapComponent = ({ region,
+                        handleRegionChange,
+                        handleMapPress,
+                        userPosition, 
+                        locationMarkers, 
+                        handleMarkerPress, 
+                        postFromFeed, 
+                        mapRef, 
+                        postDestination 
+                      }) => (
   <View style={styles.container}>
     <MapView
         provider={PROVIDER_GOOGLE}

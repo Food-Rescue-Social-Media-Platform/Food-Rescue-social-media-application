@@ -62,8 +62,7 @@ const MapScreen = () => {
       setPostFromFeed(route.params ? route.params : null);
       fetchData();
     } else {
-      setSelectedPost(null);
-      setPostFromFeed(null);
+      resetStates();
     }
   }, [isFocused]);
 
@@ -83,6 +82,20 @@ const MapScreen = () => {
       }, 500);
     }
   }, [postFromFeed]);
+
+
+  const resetStates = () =>{
+     setPosition(null);
+     setPostDestination(null);
+     setLocationMarkers([]);
+     setRegion();
+     setLoading(false);
+     setLocationFromSearch(null);
+     setPostFromFeed(null);
+     setSelectedPost(null);
+     setModalVisible(false);
+     setMapComponent(null);
+  }
 
   const zoomIn = () => {
     if (mapRef.current) {
@@ -121,12 +134,7 @@ const MapScreen = () => {
     setModalVisible(true);
   };
 
-  const closeModal = () => {
-    setPosition(null);
-    setModalVisible(false);
-    setSelectedPost(null);
-  };
-
+  
   const handleCurrentLocationPress = () => {
     if (position) {
       const currentRegion = {
@@ -138,17 +146,16 @@ const MapScreen = () => {
       setRegion(currentRegion);
     }
   };
-
+  
   const handleMapPress = (event) => {
-    const { coordinate } = event.nativeEvent;
-    const pressedMarker = locationMarkers.find(marker =>
-      marker.latitude === coordinate.latitude && marker.longitude === coordinate.longitude
-    );
-    if (!pressedMarker) {
-      closeModal();
-    }
+    closeModal();
   };
-
+  
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedPost(null);
+  };
+  
   const handleUserPressToNavigateToPost = (post) => {
     console.log("navigate to post", post);
     setPostDestination({latitude:post?.latitude, longitude:post?.longitude});

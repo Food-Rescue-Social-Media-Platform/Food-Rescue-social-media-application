@@ -98,5 +98,12 @@
   "Following List": "قائمة المتابَعين",
   "Followers List": "قائمة المتابعين",
   "Edit Post": "تعديل المنشور",
-  "Admin": "المشرف"
+  "Admin": "المشرف",
+  "For You": "لك",
+  "Category Filter": "تصفية الفئات",
+  "Select Categories": "اختر الفئات",
+  "clear": "مسح",
+  "Done": "تم",
+  "Radius": "نصف القطر",
+  "Radius Filter": "تصفية النصف القطر"
 }

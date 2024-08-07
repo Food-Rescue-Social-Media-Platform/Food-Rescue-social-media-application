@@ -81,7 +81,7 @@
     "Create Post": "צור פוסט",
     "Post": "פוסט",
     "What food would you like to save today?": "איזה אוכל היית רוצה להציל היום?",
-    "What are the delivery times?": "מהם זמני המשלוח?",
+    "What are the delivery times?": "הוסף זמני איסוף",
     "Would you like to post your number": "האם תרצה לפרסם את המספר שלך ",
     "Select categories": "בחר קטגוריות",
     "Should you add your current location to the post?": "האם להוסיף את המיקום הנוכחי שלך לפוסט?",
@@ -98,5 +98,12 @@
     "Following List": "רשימת נעקבים",
     "Followers List": "רשימת עוקבים",
     "Edit Post": "ערוך פוסט",
-    "Admin": "מנהל מערכת"
+    "Admin": "מנהל מערכת",
+    "Category Filter": "סנן לפי קטגוריה",
+    "Select Categories": "בחר קטגוריה",
+    "clear": "נקה",
+    "Done": "חפש",
+    "For You": "עבורך",
+    "Radius": "רדיוס",
+    "Radius Filter": "סנן לפי רדיוס"
   }

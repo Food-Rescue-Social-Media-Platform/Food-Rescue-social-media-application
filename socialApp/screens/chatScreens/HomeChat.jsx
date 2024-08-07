@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, FlatList, StyleSheet, TextInput, Platform } from 'react-native';
+import { View, FlatList, StyleSheet,Text, Platform, RefreshControl } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import { windowHeight, windowWidth } from '../../utils/Dimentions';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { getListChats } from '../../FirebaseFunctions/collections/chat';
@@ -17,17 +17,26 @@ const HomeChat = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [userConnected, setUserConnected] = useState(null);
   const { t } = useTranslation();
+  const [refreshing, setRefreshing] = useState(false);
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user_data = await fetchUser(user.uid);
-      user_data.id = user.uid;
-      setUserConnected(user_data);
-      getListChats(user.uid, setListChats);
-    };
-
+  
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    const user_data = await fetchUser(user.uid);
+    user_data.id = user.uid;
+    setUserConnected(user_data);
+    getListChats(user.uid, setListChats);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   const renderItem = ({ item }) => (
     <ListItem
@@ -53,26 +62,33 @@ const HomeChat = ({ navigation }) => {
     </ListItem>
   );
 
+
+  const ListEmptyComponent = () => {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop:'50%' }}>
+        <Entypo name="chat" size={80} color={theme.primaryText} />
+        <Text style={{fontWeight:'bold', fontSize:20, padding:10, marginTop:7}}>Nothing to see here</Text>
+        <Text style={{fontSize:15}}>Start a conversation with any of the {'\n'} users.
+              Your chats will show here </Text>
+      </View>
+    );
+  };
+
   return (
     <View style={{ ...styles.container, backgroundColor: theme.appBackGroundColor }}>
-      <View style={{ ...styles.searchContainer, backgroundColor: theme.searchBackground }}>
-        <AntDesign name="search1" size={18} style={{ ...styles.searchIcon, color: theme.primaryText }} />
-
-        <TextInput
-          style={{ ...styles.searchInput, color: theme.primaryText }}
-          value={search}
-          onChangeText={(text) => setSearch(text)}
-          placeholder={t("Search")}
-          placeholderTextColor={theme.primaryText}
-          keyboardType="default"
-        />
-      </View>
-
       <FlatList 
         keyExtractor={(item, index) => index.toString()} 
         data={listChats} 
         renderItem={renderItem} 
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.primaryText}
+          />
+        }
+        ListEmptyComponent={ListEmptyComponent}
       />
     </View>
   );
@@ -112,7 +128,8 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   listItemTitle: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: '600',
   },
   listItemSubtitle: {
     fontSize: 12,

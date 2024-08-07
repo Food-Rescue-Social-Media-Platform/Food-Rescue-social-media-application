@@ -2,6 +2,7 @@ import { addDoc, doc, serverTimestamp, collection,query, orderBy,where,limit, st
 import { database } from '../../firebase.js';
 import * as geofire from 'geofire-common';
 import Toast from 'react-native-toast-message';
+import { addPostToFeedFollowers } from './feedFollowers';
 
 let PAGE_SIZE =5;
 let PAGE_SIZE_POSTS_PROFILE = 5;
@@ -69,6 +70,7 @@ export class Post {
 
         if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
+            addPostToFeedFollowers(userData.followersUsersId, docRef.id)
             await updateDoc(userRef, {
                 postsId: userData.postsId ? [...userData.postsId, docRef.id] : [docRef.id],
                 postsNum: userData.postsNum ? userData.postsNum + 1 : 1,
@@ -154,8 +156,6 @@ export async function getPostsWithFiltersForWeb(userId, categories, lastVisible)
 }
 
 export async function getPostsWithFilters(center, radiusInKm, userId, categories, lastVisible) {
-    console.log("\ngetPosts with filters:", center, radiusInKm, userId, categories, lastVisible);
-    console.log("\n")
     if (!center || !radiusInKm) {
         console.error("Center and radius are required for fetching posts");
         return { posts: [], lastVisible: null};
@@ -230,8 +230,8 @@ export async function getPostsWithFilters(center, radiusInKm, userId, categories
                 counter ++;
             });
         });
-        console.log("posts with filters:", posts);
-        console.log("size of posts:", posts.length);
+
+        posts.sort((a, b) => b?.createdAt - a?.createdAt);
 
         if( counter < PAGE_SIZE ) {
             return { posts, lastVisible: null};
@@ -301,66 +301,69 @@ export async function getPostsFromFollowersForWeb(userId, lastVisible = null) {
     }
 }
 
-export async function getPostsFromFollowers(userId, isMapScreen, lastVisible = null) {
-    const userRef = doc(database, 'users', userId);
-    const userDocSnap = await getDoc(userRef);
-    if (!userDocSnap.exists()) {
-        console.error("User not found while fetching posts");
+
+// the function getPostsFromFollowers is used to get the posts of the followers of the user
+export async function getPostsFromFollowers(userId, lastVisible, firstFetch) {
+    if(!firstFetch && !lastVisible) {
+        console.log("There is no posts to fetch");
         return { posts: [], lastVisible: null };
     }
-
-    const followers = userDocSnap.data()?.followersUsersId;
-    const promises = [];
-
-    followers.forEach((followedUserId) => {
-        let queries = [
-            collection(database, 'posts'),
-            where('userId', '==', followedUserId),
-            orderBy('createdAt', 'desc'),
-            limit(PAGE_SIZE) 
-        ];
-
-        if (lastVisible) {
-            queries.push(startAfter(lastVisible));
-        }
-
-        const q = query(...queries);
-        promises.push(getDocs(q));
-    });
-
     try {
-        const snapshots = await Promise.all(promises);
-        console.log("snapshots:", snapshots);
-        const posts = [];
-        let lastVisibleDoc = null;
+        const docRef = doc(database, "feedFollowers", userId);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            let feedData = docSnap.data();
+            let posts = [];
+            
+            if (!Array.isArray(feedData?.posts)) {
+                console.error("Feed posts is not an array or is undefined");
+                return { posts: [], lastVisible: null };
+            }
+            
+            let startIndex = typeof lastVisible === 'number'  ? lastVisible : 0;
+            
+            for (let i = startIndex; i < startIndex + PAGE_SIZE && i < feedData.posts.length; i++) {
+                const postId = feedData.posts[i];
+                const postRef = doc(database, "posts", postId);
 
-        snapshots.forEach((snap) => {
-            snap.forEach((doc) => {
-                if (isMapScreen) {
-                    posts.push({
-                        id: doc.id,
-                        title: doc.get('postText'),
-                        coordinates: { latitude: doc.get('coordinates')[0], longitude: doc.get('coordinates')[1] },
-                        image: doc.get('postImg')[0],
-                    });
-                } else {
-                    posts.push({ id: doc.id, ...doc.data() });
+                try{
+                    const postDocSnap = await getDoc(postRef);
+                    if (postDocSnap.exists()) {
+                        const postData = postDocSnap.data();
+
+                        posts.push({ 
+                            id: postId, 
+                            ...postData,
+                            coordinates: {
+                                latitude: postData.coordinates ? postData.coordinates[0] : 0,
+                                longitude: postData.coordinates ? postData.coordinates[1] : 0
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching post:", error);
                 }
-                lastVisibleDoc = doc; // Keep track of the last visible document
-            });
-        });
-
-        console.log("posts from followers:", posts);
-        if(posts.length < PAGE_SIZE) {
-            lastVisibleDoc = null; // Stop loading more if fewer posts than the limit
+            }
+            
+            posts.sort((a, b) => b.createdAt - a.createdAt);
+            
+            const newLastVisible = startIndex + PAGE_SIZE < feedData.posts.length ? startIndex + PAGE_SIZE : null;
+            
+            return {
+                posts,
+                lastVisible: newLastVisible
+            };
+        } else {
+            console.error("Feed not found");
+            return { posts: [], lastVisible: null };
         }
-
-        return { posts, lastVisible: lastVisibleDoc };
     } catch (error) {
-        console.error("Error fetching documents: ", error);
-        throw new Error("Firestore query failed. Ensure that the required indexes are created.");
+        console.error("Error fetching posts from followers:", error);
+        return { posts: [], lastVisible: null };
     }
 }
+
 
 export async function getPost(postId) {
     const postRef = doc(database, 'posts', postId);
@@ -420,7 +423,6 @@ export async function getPostsOfUser(postUserId, userData, lastIndex) {
   }
 
 export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
-    console.log("getPostsNearby:", center, radiusInM, userId, isMapScreen);
     const bounds = geofire.geohashQueryBounds(center, radiusInM);
     const promises = [];
 
@@ -430,14 +432,12 @@ export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
             orderBy('geohash'),
             startAt(b[0]),
             endAt(b[1]),
-            // userId ? where('userId', '==', userId) : null
         );
 
         promises.push(getDocs(q));
     });
 
     const snapshots = await Promise.all(promises);
-    console.log("snapshots:", snapshots);
     const matchingDocs = [];
 
     snapshots.forEach((snap) => {
@@ -470,8 +470,6 @@ export async function getPostsNearby(center, radiusInM, userId, isMapScreen) {
         });
     });
 
-    console.log("near by:", matchingDocs);
-    console.log("near by size:", matchingDocs.length);
     return matchingDocs;
 }
 

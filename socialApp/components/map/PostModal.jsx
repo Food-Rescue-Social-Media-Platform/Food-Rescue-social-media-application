@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
 import { COLORS, DARKCOLORS } from '../../styles/colors';
 
-const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
+const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUserPosition }) => {
   const navigation = useNavigation();
   const [ distance, setDistance ] = useState('Calculating...');
   const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
@@ -35,7 +35,12 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
     setVisible(false);
   };
 
-  const modalHeight = post && post.image ? '38%' : '21%';
+  const handleNavigatePress = () => {
+    handleUserPosition(post);
+    setVisible(false);  
+  };
+
+  const modalHeight = post && post.image ? '44%' : '24%';
 
   return (
     <Modal
@@ -55,7 +60,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
                 />
               )}
               <View style={styles.textContainer}>
-                <View style={[styles.titleContainer, !post.image && { height: '45%' }]}>
+                <View style={[styles.titleContainer, !post.image && { height: '45%', marginTop:10 }]}>
                   <ReadMore
                     numberOfLines={2}
                     renderTruncatedFooter={renderTruncatedFooter}
@@ -65,9 +70,19 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation }) => {
                 </View>
 
                 {haveSharedLocation? (
-                   <View style={[styles.distanceContainer, !post.image && { height: '20%' }]}>
-                      <MaterialCommunityIcons name="map-marker" size={26} color='black' />
-                      <Text style={[styles.distanceText, {color:themeColors.black}]}>{distance}</Text>
+                  <View style={{flex:1, flexDirection:'column' , margin:5}}>
+                      <View style={[styles.distanceContainer, !post.image && { height: '20%' }]}>
+                          <MaterialCommunityIcons name="map-marker" size={26} color='black' />
+                          <Text style={[styles.text, {color:themeColors.black}]}>{distance}</Text>
+                      </View>
+                      <View>
+                          <TouchableOpacity 
+                              onPress={handleNavigatePress}
+                              style={[styles.buttonNavigate, { backgroundColor:themeColors.secondaryBackground }]}
+                          >
+                              <Text style={[styles.text, {fontWeight:'bold', color:themeColors.black}]}>Navigate</Text>
+                          </TouchableOpacity>
+                      </View>
                   </View>
                 ): null
                  }
@@ -130,7 +145,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 10,
   },
-  distanceText: {
+  text: {
     fontSize: 16,
     paddingLeft: 10,
   },
@@ -138,6 +153,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: 'gray',
   },
+  buttonNavigate: {
+    marginTop:11, 
+    marginHorizontal:10, 
+    marginBottom:5, 
+    alignItems:'center',
+    justifyContent:'center',
+    borderRadius: 5,
+    height: 35,
+  }
 });
 
 export default PostModal;

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import PostsList from '../../components/postsLIst/PostsList';
 import { getPostsOfUser } from '../../FirebaseFunctions/collections/post';
 import ProfileSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/ProfileSkeletonPlaceholder'; // Import the skeleton component
+import { fetchHistoryPostsFromUserToUserFollow } from '../../FirebaseFunctions/collections/feedFollowers';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -32,7 +33,8 @@ const ProfileScreen = ({ navigation, route }) => {
   const [userData, setUserData] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const postUserId = route.params ? route.params.postUserId : user.uid;
+  // If the postUserId is not passed as a parameter, it means that the user is viewing his own profile
+  const postUserId = route.params ? route.params.postUserId : user.uid; 
 
   const [lastIndex, setLastIndex] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -105,20 +107,22 @@ const ProfileScreen = ({ navigation, route }) => {
       const followedUserDocSnap = await getDoc(followedUserDocRef);
       const followedUserData = followedUserDocSnap.data();
 
-      if (isFollowing) {
+      
+      if (isFollowing) { 
         const updatedFollowingUsersId = loggedInUserData.followingUsersId.filter(id => id !== postUserId);
         const updatedFollowingNum = loggedInUserData.followingNum - 1;
         const updatedFollowersUsersId = followedUserData.followersUsersId.filter(id => id !== user.uid);
         const updatedFollowersNum = followedUserData.followersNum - 1;
         await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId, followingNum: updatedFollowingNum });
         await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId, followersNum: updatedFollowersNum });
-      } else {
+      } else { 
         const updatedFollowingUsersId = [...loggedInUserData.followingUsersId, postUserId];
         const updatedFollowingNum = loggedInUserData.followingNum + 1;
         const updatedFollowersUsersId = [...followedUserData.followersUsersId, user.uid];
         const updatedFollowersNum = followedUserData.followersNum + 1;
         await updateDoc(loggedInUserDocRef, { followingUsersId: updatedFollowingUsersId, followingNum: updatedFollowingNum });
         await updateDoc(followedUserDocRef, { followersUsersId: updatedFollowersUsersId, followersNum: updatedFollowersNum });
+        fetchHistoryPostsFromUserToUserFollow(followedUserData, user.uid);
       }
     } catch (error) {
       console.error("Error updating follow status:", error);

@@ -98,5 +98,14 @@
   "Following List": "Following List",
   "Followers List": "Followers List",
   "Edit Post": "Edit Post",
-  "Admin": "Admin"
+  "Admin": "Admin",
+  "Category Filter": "Category Filter",
+  "Select Categories": "Select Categories",
+  "Clear": "Clear",
+  "Done": "Done",
+  "For You": "For You",
+  "Radius": "Radius",
+  "Radius Filter":"Radius Filter",
+  "Search location": "Search location",
+  "KM": "KM"
 }

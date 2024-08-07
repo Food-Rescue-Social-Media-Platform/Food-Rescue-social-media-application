@@ -20,6 +20,7 @@ import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path a
 import { t } from 'i18next';
 import SearchAddress from '../../components/map/SearchAddress';
 import { color } from 'react-native-elements/dist/helpers';
+import { useTranslation } from 'react-i18next';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -42,7 +43,9 @@ const AddPostScreen = () => {
     const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
     const [isPosting, setIsPosting] = useState(false);
-    const themeColors = isDarkMode ? DARKCOLORS : COLORS;
+    const themeColors = isDarkMode ? DARKCOLORS : COLORS;  
+    const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -213,9 +216,9 @@ const AddPostScreen = () => {
                       <TouchableOpacity style={{ marginLeft: 5 }} onPress={handleClose}>
                           <Ionicons name="arrow-back" size={24} color={themeColors.headerColor} />
                       </TouchableOpacity>
-                      <Text style={{ fontSize: 18, color: themeColors.headerColor, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>Create Post</Text>
+                      <Text style={{ fontSize: 18, color: themeColors.headerColor, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>{t('Create Post')}</Text>
                       <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.theme }]} onPress={handleAddPost}>
-                          <Text style={{ fontSize: 15 }}>Post</Text>
+                          <Text style={{ fontSize: 15 }}>{t('Post')}</Text>
                       </TouchableOpacity>
                   </View>
 
@@ -226,7 +229,7 @@ const AddPostScreen = () => {
                                   value={postInput}
                                   onChangeText={(text) => handleInputChange(text, setPostInput, 3000)}
                                   style={[styles.postInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
-                                  placeholder="What food would you like to save today?"
+                                  placeholder={t("What food would you like to save today?")}
                                   placeholderTextColor={themeColors.placeholderText}
                                   multiline
                               />
@@ -236,7 +239,7 @@ const AddPostScreen = () => {
                                   value={timeInput}
                                   onChangeText={(text) => handleInputChange(text, setTimeInput, 30)}
                                   style={[styles.timeInput, { backgroundColor: themeColors.white, color: themeColors.primaryText }]}
-                                  placeholder="What are the delivery times?"
+                                  placeholder={t("What are the delivery times?")}
                                   placeholderTextColor={themeColors.placeholderText}
                                   multiline
                               />

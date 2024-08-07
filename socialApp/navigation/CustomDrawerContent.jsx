@@ -31,6 +31,7 @@ const CustomDrawerContent = (props) => {
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const navigation = useNavigation();
 
+
   const languages = [
     { label: 'English', value: 'en' },
     { label: 'العربية', value: 'ar' },
@@ -38,8 +39,8 @@ const CustomDrawerContent = (props) => {
   ];
 
   const feedChoice = [
-    { label: 'For You', value: 'For You' },
-    { label: 'Following', value: 'Following' },
+    { label: t('For You'), value: 'For You' },
+    { label: t('Following'), value: 'Following' },
   ];
 
   useEffect(() => {
@@ -151,12 +152,12 @@ const CustomDrawerContent = (props) => {
                 style={[styles.drawerItem]}
                 onPress={() => setCategoriesFilterOpen(!categoriesFilterOpen)}
               >
-                <Text style={{ color: colors.black, marginLeft: 10, marginTop: 10 }}>Category Filter</Text>
+                <Text style={{ color: colors.black, marginLeft: 10, marginTop: 10 }}>{t("Category Filter")}</Text>
               </TouchableOpacity>
 
               {categoriesFilterOpen && (
                 <>
-                  <Text style={{ color: themeColors.primaryText, margin: 17 }}>Select Categories:</Text>
+                  <Text style={{ color: themeColors.primaryText, margin: 17 }}>{t("Select Categories")}:</Text>
                   <View style={styles.categoriesContainer}>
                     {categories.map((category) => (
                       <CheckBox
@@ -178,12 +179,12 @@ const CustomDrawerContent = (props) => {
                     style={[styles.drawerItem]}
                     onPress={() => setRadiusFilterOpen(!radiusFilterOpen)}
                   >
-                    <Text style={{ color: colors.black, marginLeft: 10, marginTop: 10 }}>Radius Filter</Text>
+                    <Text style={{ color: colors.black, marginLeft: 10, marginTop: 10 }}>{t("Radius Filter")}</Text>
                   </TouchableOpacity>
 
                   {radiusFilterOpen && (
                     <View style={styles.sliderContainer}>
-                      <Text style={styles.sliderLabel}>Radius: {radius} KM</Text>
+                      <Text style={styles.sliderLabel}>{t("Radius")}: {radius} {t("KM")}</Text>
                       <Slider
                         style={{ width: '100%', height: 40 }}
                         minimumValue={MIN_RADIUS}
@@ -207,14 +208,14 @@ const CustomDrawerContent = (props) => {
               style={[styles.drawerItem, styles.filterButton]}
               onPress={() => handelClickFilter()}
             >
-              <Text style={{ color: COLORS.black }}>Done</Text>
+              <Text style={{ color: COLORS.black }}>{t("Done")}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.drawerItem, styles.filterButton]}
               onPress={() => handelClickClear()}
             >
-              <Text style={{ color: COLORS.black }}>Clear</Text>
+              <Text style={{ color: COLORS.black }}>{t("Clear")}</Text>
             </TouchableOpacity>
         </View>
 

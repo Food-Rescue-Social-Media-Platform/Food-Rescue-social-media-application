@@ -17,6 +17,7 @@ const MapScreen = () => {
   const isFocused = useIsFocused();
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
+  const [postDestination, setPostDestination] = useState(null);
   const [locationMarkers, setLocationMarkers] = useState([]);
   const [region, setRegion] = useState();
   const [loading, setLoading] = useState(false);
@@ -25,6 +26,8 @@ const MapScreen = () => {
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);
   const [MapComponent, setMapComponent] = useState(null);
+  const [locationSubscription, setLocationSubscription] = useState(null); // for watching location
+  const [initialPostsLoaded, setInitialPostsLoaded] = useState(false);
   const radiusInMeters = 10000;
 
   useEffect(() => {
@@ -49,28 +52,42 @@ const MapScreen = () => {
     }
   };
 
-  const fetchData = async () => {
+  const fetchLocation = async () => {
     setLoading(true);
     await getLocation(setPosition, setRegion);
-    if(position)
-      watchLocation(setPosition, setRegion);
+    if(position){
+      const subscription = await watchLocation(setPosition, setRegion);
+      setLocationSubscription(subscription);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
     if (isFocused) {
       setPostFromFeed(route.params ? route.params : null);
-      fetchData();
+      fetchLocation();
     } else {
-      setSelectedPost(null);
-      setPostFromFeed(null);
+      resetStates();
     }
   }, [isFocused]);
 
   useEffect(() => {
-    if (position) {
+    if (position && !initialPostsLoaded) {
       fetchPosts(position);
+      setInitialPostsLoaded(true);
+    } else if (position && region) {
+      const distance = getDistance(region.latitude, region.longitude, position.latitude, position.longitude);
+      if (distance > radiusInMeters) {
+        setRegion({
+          latitude: position.latitude,
+          longitude: position.longitude,
+          latitudeDelta: region.latitudeDelta,
+          longitudeDelta: region.longitudeDelta
+        });
+        fetchPosts(position);
+      }
     }
-  }, [position]);
+  }, [position, initialPostsLoaded]);
 
   useEffect(() => {
     if (postFromFeed && isFocused) {
@@ -82,6 +99,33 @@ const MapScreen = () => {
       }, 500);
     }
   }, [postFromFeed]);
+
+  useEffect(() => {
+    return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
+    };
+  }, [locationSubscription]);
+
+  useEffect(() => {
+    if (position && mapRef.current) {
+      mapRef.current.animateToRegion({
+        latitude: position.latitude,
+        longitude: position.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }, 1000);
+    }
+  }, [position]);
+
+  const resetStates = () =>{
+     setPostDestination(null);
+     setLocationFromSearch(null);
+     setPostFromFeed(null);
+     setSelectedPost(null);
+     setModalVisible(false);
+  }
 
   const zoomIn = () => {
     if (mapRef.current) {
@@ -120,11 +164,7 @@ const MapScreen = () => {
     setModalVisible(true);
   };
 
-  const closeModal = () => {
-    setModalVisible(false);
-    setSelectedPost(null);
-  };
-
+  
   const handleCurrentLocationPress = () => {
     if (position) {
       const currentRegion = {
@@ -136,16 +176,20 @@ const MapScreen = () => {
       setRegion(currentRegion);
     }
   };
-
+  
   const handleMapPress = (event) => {
-    const { coordinate } = event.nativeEvent;
-    const pressedMarker = locationMarkers.find(marker =>
-      marker.latitude === coordinate.latitude && marker.longitude === coordinate.longitude
-    );
-    if (!pressedMarker) {
-      closeModal();
-    }
+    closeModal();
   };
+  
+  const closeModal = () => {
+    setModalVisible(false);
+    setSelectedPost(null);
+  };
+  
+  const handleUserPressToNavigateToPost = (post) => {
+    console.log("navigate to post", post);
+    setPostDestination({latitude:post?.latitude, longitude:post?.longitude});
+  }
 
   const handleAcceptLocationFromSearch = (data, details) => {
     const { geometry } = details;
@@ -186,11 +230,12 @@ const MapScreen = () => {
             region={region}
             handleRegionChange={handleRegionChange}
             handleMapPress={handleMapPress}
-            position={position}
+            userPosition={position}
             locationMarkers={locationMarkers}
             handleMarkerPress={handleMarkerPress}
             postFromFeed={postFromFeed}
             mapRef={mapRef}
+            postDestination={postDestination}
           />
         ) : (
           <View style={styles.loadingContainer}>
@@ -198,13 +243,14 @@ const MapScreen = () => {
           </View>
         )}
 
-        {selectedPost ? (
+        {(selectedPost) ? (
           <PostModal
             setVisible={setModalVisible}
             visible={isModalVisible}
             post={selectedPost}
             onClose={closeModal}
             userLocation={position}
+            handleUserPosition={handleUserPressToNavigateToPost}
           />
         ) : null}
 
@@ -254,8 +300,8 @@ const styles = StyleSheet.create({
   },
   zoomButtons: {
     position: 'absolute',
-    bottom: 20,
-    right: 20,
+    bottom: 65,
+    right: 10,
     flexDirection: 'column',
   },
   iconStyle: {
@@ -272,7 +318,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 3,
   },
 });
 

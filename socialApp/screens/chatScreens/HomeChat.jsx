@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, FlatList, StyleSheet,Text, Platform } from 'react-native';
+import { View, FlatList, StyleSheet,Text, Platform, RefreshControl } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { windowHeight, windowWidth } from '../../utils/Dimentions';
@@ -17,17 +17,26 @@ const HomeChat = ({ navigation }) => {
   const [search, setSearch] = useState('');
   const [userConnected, setUserConnected] = useState(null);
   const { t } = useTranslation();
+  const [refreshing, setRefreshing] = useState(false);
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user_data = await fetchUser(user.uid);
-      user_data.id = user.uid;
-      setUserConnected(user_data);
-      getListChats(user.uid, setListChats);
-    };
-
+  
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    const user_data = await fetchUser(user.uid);
+    user_data.id = user.uid;
+    setUserConnected(user_data);
+    getListChats(user.uid, setListChats);
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   const renderItem = ({ item }) => (
     <ListItem
@@ -72,6 +81,13 @@ const HomeChat = ({ navigation }) => {
         data={listChats} 
         renderItem={renderItem} 
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.primaryText}
+          />
+        }
         ListEmptyComponent={ListEmptyComponent}
       />
     </View>

@@ -45,11 +45,10 @@ const MapComponent =
         ))}
         {postFromFeed && (
           <Marker
-            key={postFromFeed.id}
             coordinate={{ latitude: postFromFeed.latitude, longitude: postFromFeed.longitude }}
-            pinColor="purple"
-            style={{ zIndex: 1 }}
-            onPress={() => handleMarkerPress(postFromFeed)}
+            pinColor="blue"
+            title={postFromFeed.title}
+            description={postFromFeed.description}
           />
         )}
         {postDestination && (

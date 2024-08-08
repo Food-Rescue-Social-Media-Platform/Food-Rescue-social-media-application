@@ -11,18 +11,19 @@ import { COLORS, DARKCOLORS } from '../../styles/colors';
 const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUserPosition }) => {
   const navigation = useNavigation();
   const [ distance, setDistance ] = useState('Calculating...');
-  const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
   const { isDarkMode, theme } = useDarkMode(); // Use the hook to get the current theme
   const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
+  console.log("post", post);
+  console.log("userLocation", userLocation);
 
   useEffect(() => {
     const fetchDistance = async () => {
       if((post.latitude === 0 && post.longitude === 0) || !userLocation) return;
-      setHaveSharedLocation(true);
       calDistanceUserToPost(userLocation.latitude, userLocation.longitude, post.latitude, post.longitude, setDistance )
     }
     fetchDistance();  
-  }, []); 
+  }, [distance, userLocation]); 
+
   const renderTruncatedFooter = () => {
     return (
       <Text style={styles.readMore} onPress={handleReadMorePress}>
@@ -30,6 +31,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
       </Text>
     );
   };
+  
   const handleReadMorePress = () => {
     console.log("read more go to single post..");
     setVisible(false);
@@ -69,7 +71,6 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
                   </ReadMore>
                 </View>
 
-                {haveSharedLocation? (
                   <View style={{flex:1, flexDirection:'column' , margin:5}}>
                       <View style={[styles.distanceContainer, !post.image && { height: '20%' }]}>
                           <MaterialCommunityIcons name="map-marker" size={26} color='black' />
@@ -84,8 +85,6 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
                           </TouchableOpacity>
                       </View>
                   </View>
-                ): null
-                 }
 
               </View>
             </>

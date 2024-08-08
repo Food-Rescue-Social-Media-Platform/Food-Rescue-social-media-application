@@ -24,6 +24,7 @@ const MapScreen = () => {
   const [locationFromSearch, setLocationFromSearch] = useState(null);
   const [postFromFeed, setPostFromFeed] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [isViewingSpecificPost, setIsViewingSpecificPost] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [MapComponent, setMapComponent] = useState(null);
   const [locationSubscription, setLocationSubscription] = useState(null); // for watching location
@@ -64,12 +65,18 @@ const MapScreen = () => {
 
   useEffect(() => {
     if (isFocused) {
-      setPostFromFeed(route.params ? route.params : null);
+      const params = route.params;
+      if (params) {
+        setPostFromFeed(params);
+        setSelectedPost(params);
+        setModalVisible(true); 
+        setIsViewingSpecificPost(true); 
+      }
       fetchLocation();
     } else {
       resetStates();
     }
-  }, [isFocused]);
+  }, [isFocused, postFromFeed]);
 
   useEffect(() => {
     if (position && !initialPostsLoaded) {
@@ -90,15 +97,15 @@ const MapScreen = () => {
   }, [position, initialPostsLoaded]);
 
   useEffect(() => {
-    if (postFromFeed && isFocused) {
+    if (postFromFeed && isFocused && mapRef.current && !isViewingSpecificPost) {
       mapRef.current?.animateToRegion({
         latitude: postFromFeed.latitude,
         longitude: postFromFeed.longitude,
-        latitudeDelta: 0.0001,
-        longitudeDelta: 0.0001,
-      }, 500);
+        latitudeDelta: 0.001,
+        longitudeDelta: 0.001,
+      }, 10);
     }
-  }, [postFromFeed]);
+  }, [postFromFeed, mapRef.current, isFocused]);
 
   useEffect(() => {
     return () => {
@@ -109,7 +116,7 @@ const MapScreen = () => {
   }, [locationSubscription]);
 
   useEffect(() => {
-    if (position && mapRef.current) {
+    if (position && mapRef.current && !isViewingSpecificPost) {
       mapRef.current.animateToRegion({
         latitude: position.latitude,
         longitude: position.longitude,
@@ -125,6 +132,7 @@ const MapScreen = () => {
      setPostFromFeed(null);
      setSelectedPost(null);
      setModalVisible(false);
+     setIsViewingSpecificPost(false);
   }
 
   const zoomIn = () => {
@@ -174,6 +182,7 @@ const MapScreen = () => {
       };
       mapRef.current.animateToRegion(currentRegion, 500);
       setRegion(currentRegion);
+      setIsViewingSpecificPost(false); 
     }
   };
   
@@ -214,6 +223,7 @@ const MapScreen = () => {
 
     // fetch posts near the selected location
     fetchPosts({ latitude: newRegion.latitude, longitude: newRegion.longitude });
+    setIsViewingSpecificPost(false);
   }
 
   return (

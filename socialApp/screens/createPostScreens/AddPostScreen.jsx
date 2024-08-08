@@ -14,13 +14,12 @@ import { windowHeight } from '../../utils/Dimentions';
 import { categoriesList } from '../../utils/categories';
 import * as Location from 'expo-location';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { getDoc, updateDoc, doc } from 'firebase/firestore';
+import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
-import { t } from 'i18next';
 import SearchAddress from '../../components/map/SearchAddress';
-import { color } from 'react-native-elements/dist/helpers';
 import { useTranslation } from 'react-i18next';
+import Toast from 'react-native-toast-message';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
@@ -49,19 +48,33 @@ const AddPostScreen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const userData = await fetchUser(user.uid);
-      userData.id = user.uid;
-      setUserConnected(userData);
-    };
+      try {
+        const userData = await fetchUser(user.uid);
+        if (userData) {
+            userData.id = user.uid;
+            setUserConnected(userData);
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Failed to fetch user data',
+            });
+        }
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'An unexpected error occurred',
+        });
+    }};
     fetchData();
   }, []);
 
   const showAlert = (title, message) => {
-    Alert.alert(
-      title,
-      message,
-    );
+    Alert.alert(title, message);
   }
+
   const confirmClose = () => {
     setModalCloseVisible(false);
     navigation.navigate("Home Page");
@@ -77,28 +90,55 @@ const AddPostScreen = () => {
   };
 
   const handleOpenCamera = async () => {
-    openCameraAndTakePicture(setImages);
+     try {
+            await openCameraAndTakePicture(setImages);
+        } catch (error) {
+            console.error("Error opening camera:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Camera Error',
+                text2: 'Failed to open camera',
+            });
+        }
   };
 
-  const handleAddImages = () => {
-    openGalereAndSelectImages(setImages);
+  const handleAddImages = async () => {
+    try {
+      await openGalereAndSelectImages(setImages);
+  } catch (error) {
+      console.error("Error selecting images:", error);
+      Toast.show({
+          type: 'error',
+          text1: 'Gallery Error',
+          text2: 'Failed to select images',
+      });
+  }
   };
 
   const handleAddLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      console.log("Permission to access location was denied");
-      return;
+    try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+            Toast.show({
+                type: 'error',
+                text1: 'Location Alert',
+                text2: 'Permission to access location was denied',
+            });
+            return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        location = {latitude: location.coords.latitude, longitude: location.coords.longitude};
+        setLocation(location);
+    } catch (error) {
+        console.error("Error getting location:", error);
+        Toast.show({
+            type: 'error',
+            text1: 'Location Error',
+            text2: 'Failed to get current location',
+        });
     }
-
-    let location = await Location.getCurrentPositionAsync({});
-    location = {latitude: location.coords.latitude, longitude: location.coords.longitude};
-
-    setLocation(location);
-    console.log("Location", location);
-    // setShowLocationModel(showLocationModel ? false : true);
-    // updateUserLocation(userConnected.id, location);
-  };
+};
 
   const handelAddPhone = () => {
     setShowInputAddPhone(false);
@@ -109,63 +149,59 @@ const AddPostScreen = () => {
     setCategoryModalVisible(true);
   };
 
-  useEffect(() => {
-    console.log("Location updated:", location);
-  }, [location]);
-
   const handleAddPost = async () => {
-    console.log("Location at handleAddPost", location);
-
-    if(postInput.length === 0){
+    if (postInput.trim().length === 0) {
       setMessError('Please enter the post content');
       return;  
     }
 
     if (!location || typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
-      console.log("Invalid Location");
       showAlert("Location Alert", "Please add a valid location to publish the post");
       return;
     }
-    
-    // if (isPosting) return; // Prevent multiple submissions
   
     setIsPosting(true);
-
     setIsUploading(true);
 
-    // push image to firebase storage
-    let imagesUrl = [];
-    if (images.length > 0) {
-      for (let i = 0; i < images.length; i++)
-        imagesUrl.push(await uploadImages(images[i], "postsImges/", "image"));
-    }
-
-    const newPost = new Post(
-      userConnected.id,
-      userConnected.userName,
-      userConnected.firstName,
-      userConnected.lastName,
-      userConnected.profileImg,
-      phoneNumber,
-      postInput,
-      timeInput,
-      category,
-      imagesUrl,
-      location,
-    );
-
     try {
+      let imagesUrl = [];
+      if (images.length > 0) {
+          for (let i = 0; i < images.length; i++) {
+              const url = await uploadImages(images[i], "postsImges/", "image");
+              imagesUrl.push(url);
+          }
+      }
+      const newPost = new Post(
+        userConnected.id,
+        userConnected.userName,
+        userConnected.firstName,
+        userConnected.lastName,
+        userConnected.profileImg,
+        phoneNumber,
+        postInput,
+        timeInput,
+        category,
+        imagesUrl,
+        location,
+      );
       await addPost(newPost);
       navigation.navigate("Home Page");
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Post added successfully',
+    });
     } catch (error) {
-      console.error("Error adding post:", error);
-      showAlert("Error", "Failed to add post. Please try again.");
+        console.error("Error adding post:", error);
+        Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to add post. Please try again.',
+        });
     } finally {
       setIsPosting(false);
       setIsUploading(false);
     }
-    
-    navigation.navigate("Home Page");
   };
 
   const handleCheck = (option) => {
@@ -192,10 +228,14 @@ const AddPostScreen = () => {
   const handleAcceptLocationFromSearch = async (data, details) => {
     const { geometry } = details;
     const { location } = geometry;
-    console.log('\nlocation from user', location);
     
     if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') {
       console.error('Invalid location data:', location);
+      Toast.show({
+        type: 'error',
+        text1: 'Location Error',
+        text2: 'Invalid location data received',
+      });
       return;
     }
   
@@ -205,7 +245,6 @@ const AddPostScreen = () => {
     };
   
     setLocation(locationFromSearch);
-    console.log('Location set:', locationFromSearch);
   };
 
   return (

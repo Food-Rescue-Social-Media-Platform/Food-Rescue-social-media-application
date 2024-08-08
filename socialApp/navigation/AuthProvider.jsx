@@ -1,4 +1,3 @@
-// AuthProvider.js
 import React, { createContext, useState, useEffect } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
 import { auth, database, GoogleAuthProvider, signInWithCredential } from '../firebase';
@@ -50,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
                 if (!docSnap.exists()) {
                     // If user does not exist, create a new user in Firestore
-                    const userInfo = {
+                    const newUser = {
                         userName: firebaseUser.user.displayName,
                         email: firebaseUser.user.email,
                         profileImg: firebaseUser.user.photoURL,
@@ -70,7 +69,7 @@ export const AuthProvider = ({ children }) => {
                         postsNum: 0,
                     };
 
-                    await setDoc(doc(database, 'users', firebaseUser.user.uid), userInfo);
+                    await setDoc(doc(database, 'users', firebaseUser.user.uid), newUser);
                     const feedFollowers = new FeedFollowers(firebaseUser.user.uid);
                     await addFeedFollowers(feedFollowers);
                 }

@@ -5,21 +5,23 @@
     "name": "FOOD RESCUE",
     "slug": "socialApp",
     "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "plugins": [
-      "expo-font"
+      "expo-font",
+      "@react-native-google-signin/google-signin"
     ],
     "android": {
       "package": "com.mohammad_belbesi.socialApp",
+      "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY"
         }
       },
       "permissions": [
-        "ACCESS_BACKGROUND_LOCATION", "ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"
+        "ACCESS_BACKGROUND_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
       ]
     },
     "web": {

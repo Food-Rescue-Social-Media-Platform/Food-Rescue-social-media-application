@@ -1,4 +1,3 @@
-// LoginScreen.js
 import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';
@@ -14,6 +13,7 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false); // Add Google loading state
   const { login, signInWithGoogle } = useContext(AuthContext);
   const { t } = useTranslation();
 
@@ -59,8 +59,10 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    signInWithGoogle();
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    await signInWithGoogle();
+    setGoogleLoading(false);
   };
 
   return (
@@ -115,13 +117,17 @@ const LoginScreen = ({ navigation }) => {
               backgroundColor="#e6eaf4"
               onPress={() => {}}
             />
-            <SocialButton
-              buttonTitle={t("Sign In with Google")}
-              btnType="google"
-              color="#de4d41"
-              backgroundColor="#f5e7ea"
-              onPress={handleGoogleSignIn}
-            />
+            {googleLoading ? (
+              <ActivityIndicator size="large" color={COLORS.primary} />
+            ) : (
+              <SocialButton
+                buttonTitle={t("Sign In with Google")}
+                btnType="google"
+                color="#de4d41"
+                backgroundColor="#f5e7ea"
+                onPress={handleGoogleSignIn}
+              />
+            )}
           </View>
           <View style={styles.createAccountContainer}>
             <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account?')}</Text>

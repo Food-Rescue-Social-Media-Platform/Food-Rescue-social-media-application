@@ -6,7 +6,8 @@ export const signIn = async () => {
     await GoogleSignin.hasPlayServices();
     GoogleSignin.configure({});
     const userInfo = await GoogleSignin.signIn();
-    console.log(userInfo.user);
+    const { idToken, accessToken } = await GoogleSignin.getTokens();
+    return { ...userInfo, idToken, accessToken };
   } catch (error) {
     if (isErrorWithCode(error)) {
       switch (error.code) {
@@ -25,5 +26,6 @@ export const signIn = async () => {
     } else {
       console.log("Non-standard error: ", error);
     }
+    throw error;
   }
 };

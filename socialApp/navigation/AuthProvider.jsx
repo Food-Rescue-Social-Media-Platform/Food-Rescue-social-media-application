@@ -36,12 +36,70 @@ export const AuthProvider = ({ children }) => {
         return () => unsubscribe();
     }, [dispatch]);
 
+    const signInWithGoogle = async () => {
+        try {
+            const userInfo = await signIn();
+            if (userInfo) {
+                const { idToken, accessToken } = userInfo;
+                const credential = GoogleAuthProvider.credential(idToken, accessToken);
+                const firebaseUser = await signInWithCredential(auth, credential);
+
+                // Check if user exists
+                const docRef = doc(database, 'users', firebaseUser.user.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    // If user does not exist, create a new user in Firestore
+                    const userInfo = {
+                        userName: firebaseUser.user.displayName,
+                        email: firebaseUser.user.email,
+                        profileImg: firebaseUser.user.photoURL,
+                        createdAt: serverTimestamp(),
+                        followingUsersId: [],
+                        followersUsersId: [],
+                        followingNum: 0,
+                        followersNum: 0,
+                        ratingNumber: 0,
+                        bio: "",
+                        location: "",
+                        profileCover: "",
+                        rating: 0,
+                        earningPoints: 0,
+                        postsId: [],
+                        isAdmin: false,
+                        postsNum: 0,
+                    };
+
+                    await setDoc(doc(database, 'users', firebaseUser.user.uid), userInfo);
+                    const feedFollowers = new FeedFollowers(firebaseUser.user.uid);
+                    await addFeedFollowers(feedFollowers);
+                }
+
+                const userData = { id: firebaseUser.user.uid, ...userInfo };
+                dispatch(setUserData(userData));
+
+                Toast.show({
+                    type: 'success',
+                    text1: 'Success',
+                    text2: 'Logged in with Google successfully.',
+                });
+            }
+        } catch (error) {
+            console.log('error', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Login Error',
+                text2: 'An error occurred during Google sign-in.',
+            });
+        }
+    };
+
     return (
         <AuthContext.Provider 
             value={{
                 user,
                 setUser,
-                signInWithGoogle: signIn,
+                signInWithGoogle,
 
                 login: async (email, password) => {
                     try {

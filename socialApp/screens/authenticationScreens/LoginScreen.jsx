@@ -1,3 +1,4 @@
+// LoginScreen.js
 import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';

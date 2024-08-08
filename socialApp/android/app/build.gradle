@@ -90,8 +90,15 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
-
         buildConfigField("boolean", "REACT_NATIVE_UNSTABLE_USE_RUNTIME_SCHEDULER_ALWAYS", (findProperty("reactNative.unstable_useRuntimeSchedulerAlways") ?: true).toString())
+        
+        // Add this block to read from local.properties
+        def localProperties = new Properties()
+        localProperties.load(new FileInputStream(rootProject.file("local.properties")))
+
+        // Set the value in resValue or manifestPlaceholders
+        resValue "string", "google_maps_api_key", localProperties['GOOGLE_MAPS_API_KEY']
+        manifestPlaceholders = [GOOGLE_MAPS_API_KEY: localProperties['GOOGLE_MAPS_API_KEY']]
     }
     signingConfigs {
         debug {

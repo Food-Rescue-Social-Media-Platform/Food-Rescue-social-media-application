@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp,getApps } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -27,7 +27,13 @@ const firebaseConfig = {
     // measurementId: "G-P1SGVSNEJL"
 };
 
-export const app = initializeApp(firebaseConfig);
+let app;
+if(getApps()?.length === 0){
+    app = initializeApp(firebaseConfig);
+} else {
+    app = getApps()[0];
+}
+
 export const analytics = () => {
     if (typeof window !== "undefined") {
       return getAnalytics()

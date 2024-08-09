@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 
 const AddPostScreen = () => {
     const navigation = useNavigation();
+    const { t } = useTranslation();
     const { user, logout } = useContext(AuthContext);
     const [userConnected, setUserConnected] = useState(null);
     const [postInput, setPostInput] = useState('');
@@ -38,13 +39,12 @@ const AddPostScreen = () => {
     const [showLocationModel, setShowLocationModel] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
-    const [options, setOptions] = useState(categoriesList.map((category) => ({ value: category })));
+    const [options, setOptions] = useState(categoriesList.map((category) => ({ value: t(category)})));
     const [ messError, setMessError ] = useState('');
     const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
     const [isPosting, setIsPosting] = useState(false);
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;  
-    const { t } = useTranslation();
 
 
   useEffect(() => {
@@ -340,12 +340,12 @@ const AddPostScreen = () => {
                           <View style={[styles.modal, { marginTop: Platform.OS === 'web'? '10%': '50%', backgroundColor: themeColors.white }]}>
 
                                 <Text style={[styles.modalText, {padding: '8%', color: themeColors.primaryText}]}>
-                                      Would you like to add a number to the post?
+                                      {t("Would you like to add a number to the post?")}
                                 </Text>
 
                               <TextInput 
                                   style={{ borderWidth: 1, borderColor: 'gray', padding: 10, margin: 7, borderRadius: 5, width: '90%', alignSelf: 'center'}}
-                                  placeholder='Enter phone number'
+                                  placeholder={t('Enter phone number')}
                                   value={phoneNumber}
                                   numberOfLines={1}
                                   editable={phoneNumber.length < 15 }
@@ -362,14 +362,14 @@ const AddPostScreen = () => {
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                      text='Yes'
+                                      text={t('Yes')}
                                       styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
                                       onPress={() => { if(!phoneNumber.length) return; setModalPhoneVisible(false);}}
                                   />
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                      text='No'
+                                      text={t('No')}
                                       styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                       onPress={() => { setModalPhoneVisible(false) }}
                                   />
@@ -386,7 +386,7 @@ const AddPostScreen = () => {
                       <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
                           <View style={[styles.modal, { marginTop: Platform.OS === 'web'? '10%': '30%', backgroundColor: themeColors.white }]}>
 
-                              <Text style={[styles.modalText, {padding: '8%', fontWeight: 'bold', color: themeColors.primaryText }]}>Select categories</Text>
+                              <Text style={[styles.modalText, {padding: '8%', fontWeight: 'bold', color: themeColors.primaryText }]}>{t("Select categories")}</Text>
                               <View style={{ flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
                                   {options.map((option) => (
                                       <CheckBox
@@ -403,7 +403,7 @@ const AddPostScreen = () => {
 
                               <MyButton
                                   style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
-                                  text='Done'
+                                  text={t('Select')}
                                   styleText={{ fontSize: 15, color: themeColors.primaryText, fontWeight: 'bold'}}
                                   onPress={handleCloseCategoryModal}
                               />
@@ -421,7 +421,7 @@ const AddPostScreen = () => {
 
                           <View style={[styles.modal, {marginTop: Platform.OS === 'web' ? '14%' : '55%', backgroundColor: themeColors.white }]}>
 
-                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Add the address of the post delivery location:</Text>
+                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>{t("Add the address of the post delivery location:")}</Text>
                              
                               <View style={{marginHorizontal:15}}>
                                 <SearchAddress 
@@ -438,7 +438,7 @@ const AddPostScreen = () => {
                                   />
                                   <MyButton
                                       style={{ width: '50%', padding:5}}
-                                      text="Your current location"
+                                      text={t("Your current location")}
                                       styleText={{ fontSize: 17, color: themeColors.textLink, textDecorationLine: 'underline' }}
                                       onPress={handleAddLocation}
                                   />
@@ -447,14 +447,14 @@ const AddPostScreen = () => {
                               <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}> 
                                   <MyButton
                                     style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                    text='Yes'
+                                    text={t('Yes')}
                                     styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
                                     onPress={() => {setShowLocationModel(false);}}
                                   />
 
                                   <MyButton
                                     style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                    text='No'
+                                    text={t('No')}
                                     styleText={{ fontSize: 17, color: themeColors.primaryText}}
                                     onPress={() => { setLocation(''); setShowLocationModel(false) }}
                                   />
@@ -472,19 +472,19 @@ const AddPostScreen = () => {
 
                           <View style={[styles.modal, { marginTop: Platform.OS === 'web' ? '17%' : '70%' , backgroundColor: themeColors.white }]}>
 
-                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>Are you sure you want to leave?</Text>
+                              <Text style={[styles.modalText, { color: themeColors.primaryText }]}>{t("Are you sure you want to leave?")}</Text>
 
                               <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginBottom:10}}>
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                      text='Yes'
+                                      text={t('Yes')}
                                       styleText={{ fontSize: 17, color: themeColors.primaryText }}
                                       onPress={confirmClose}
                                   />
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
-                                      text='No'
+                                      text={t('No')}
                                       styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
                                       onPress={() => { setModalCloseVisible(false) }}
                                   />

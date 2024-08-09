@@ -7,6 +7,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { database } from '../../firebase'; // Import the Firestore instance from firebase.js
 import { doc, updateDoc } from "firebase/firestore";
 import { CheckBox } from 'react-native-elements';
+import { categoriesList } from '../../utils/categories';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
@@ -22,21 +24,22 @@ const EditPostScreen = ({ navigation, route }) => {
     const [deliveryTime, setDeliveryTime] = useState(item.deliveryRange);
     const [postText, setPostText] = useState(item.postText);
     const [selectedCategory, setSelectedCategory] = useState(item.category); // Single selected option
+    const options = categoriesList.map((category) => ({ label: category, value: category }));
 
-    const options = [
-        { label: 'Drinks', value: 'Drinks' },
-        { label: 'Fruits', value: 'Fruits' },
-        { label: 'Vegetables', value: 'Vegetables' },
-        { label: 'Seafood', value: 'Seafood' },
-        { label: 'Sweets', value: 'Sweets' },
-        { label: 'Dairy', value: 'Dairy' },
-        { label: 'Rice', value: 'Rice' },
-        { label: 'Fast Food', value: 'Fast Food' },
-        { label: 'Chicken', value: 'Chicken' },
-        { label: 'Cooked', value: 'Cooked' },
-        { label: 'Bread', value: 'Bread' },
-        { label: 'Other', value: 'Other' },
-    ];
+    // const options = [
+    //     { label: 'Drinks', value: 'Drinks' },
+    //     { label: 'Fruits', value: 'Fruits' },
+    //     { label: 'Vegetables', value: 'Vegetables' },
+    //     { label: 'Seafood', value: 'Seafood' },
+    //     { label: 'Sweets', value: 'Sweets' },
+    //     { label: 'Dairy', value: 'Dairy' },
+    //     { label: 'Rice', value: 'Rice' },
+    //     { label: 'Fast Food', value: 'Fast Food' },
+    //     { label: 'Chicken', value: 'Chicken' },
+    //     { label: 'Cooked', value: 'Cooked' },
+    //     { label: 'Bread', value: 'Bread' },
+    //     { label: 'Other', value: 'Other' },
+    // ];
 
     const handleCheck = (option) => {
         setSelectedCategory(option.value === selectedCategory ? null : option.value);
@@ -57,7 +60,7 @@ const EditPostScreen = ({ navigation, route }) => {
 
     // Function to handle post update
     const handleUpdatePost = async () => {
-        if (!validatePhoneNumber(phoneNumber)) {
+        if (phoneNumber && !validatePhoneNumber(phoneNumber)) {
             Toast.show({
                 type: 'error',
                 text1: 'Validation Error',
@@ -66,7 +69,7 @@ const EditPostScreen = ({ navigation, route }) => {
             return;
         }
 
-        if (!validateDeliveryTime(deliveryTime)) {
+        if (deliveryTime && !validateDeliveryTime(deliveryTime)) {
             Toast.show({
                 type: 'error',
                 text1: 'Validation Error',
@@ -75,7 +78,7 @@ const EditPostScreen = ({ navigation, route }) => {
             return;
         }
 
-        if (!validatePostText(postText)) {
+        if (postText && !validatePostText(postText)) {
             Toast.show({
                 type: 'error',
                 text1: 'Validation Error',

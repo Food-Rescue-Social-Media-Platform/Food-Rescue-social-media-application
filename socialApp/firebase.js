@@ -1,15 +1,15 @@
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { getAuth, initializeAuth, getReactNativePersistence, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import firebase from 'firebase/compat/app';
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDiwU4JI2KtkDhg6uYMeL7125BmHtPQ_2A",
     authDomain: "food-rescue-social-platform.firebaseapp.com",
+    databaseURL: "https://food-rescue-social-platform-default-rtdb.firebaseio.com",
     projectId: "food-rescue-social-platform",
     storageBucket: "food-rescue-social-platform.appspot.com",
     messagingSenderId: "684711937854",
@@ -17,20 +17,19 @@ const firebaseConfig = {
     measurementId: "G-P1SGVSNEJL"
 };
 
-export const app = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Analytics (only in browser environment)
 export const analytics = () => {
     if (typeof window !== "undefined") {
-      return getAnalytics()
+        return getAnalytics(app);
     } else {
-      return null
+        return null;
     }
-}
+};
 
-if(firebase.apps.length === 0){
-    firebase.initializeApp(firebaseConfig);   
-}
-
-
+// Initialize Authentication
 let auth;
 if (typeof window !== 'undefined' && window.document) {
     auth = getAuth(app);
@@ -40,9 +39,8 @@ if (typeof window !== 'undefined' && window.document) {
     });
 }
 
-
-
+// Initialize Firestore, Storage, and Realtime Database
 export const storage = getStorage(app);
 export const database = getFirestore(app);
-export const db =  getDatabase();
-export { auth };
+export const db = getDatabase(app);
+export { auth, GoogleAuthProvider, signInWithCredential };

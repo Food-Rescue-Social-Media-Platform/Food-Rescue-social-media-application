@@ -13,10 +13,10 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const [googleLoading, setGoogleLoading] = useState(false); // Add Google loading state
+  const { login, signInWithGoogle } = useContext(AuthContext);
   const { t } = useTranslation();
 
-  // Email validation function
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
@@ -57,6 +57,12 @@ const LoginScreen = ({ navigation }) => {
       });
       setLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    await signInWithGoogle();
+    setGoogleLoading(false);
   };
 
   return (
@@ -104,20 +110,24 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.line}></View>
           </View>
           <View style={styles.SocialButtonContainer}>
+            <SocialButton
+              buttonTitle={t("Sign In with Facebook")}
+              btnType="facebook"
+              color="#4867aa"
+              backgroundColor="#e6eaf4"
+              onPress={() => {}}
+            />
+            {googleLoading ? (
+              <ActivityIndicator size="large" color={COLORS.primary} />
+            ) : (
               <SocialButton
-                  buttonTitle={t("Sign In with Facebook")}
-                  btnType="facebook"
-                  color="#4867aa"
-                  backgroundColor="#e6eaf4"
-                  onPress={() => {}}
+                buttonTitle={t("Sign In with Google")}
+                btnType="google"
+                color="#de4d41"
+                backgroundColor="#f5e7ea"
+                onPress={handleGoogleSignIn}
               />
-              <SocialButton
-                  buttonTitle={t("Sign In with Google")}
-                  btnType="google"
-                  color="#de4d41"
-                  backgroundColor="#f5e7ea"
-                  onPress={() => {}}
-              />
+            )}
           </View>
           <View style={styles.createAccountContainer}>
             <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account?')}</Text>
@@ -137,17 +147,17 @@ const styles = StyleSheet.create({
   outerContainer: {
     flex: 1,
     paddingTop: 10,
-    borderBottomWidth: 0, // Add bottom border
+    borderBottomWidth: 0,
     borderRightWidth: 0,
     borderLeftWidth: 0,
-    borderColor: COLORS.white, // Border color
-    shadowColor: COLORS.black, // Shadow color
+    borderColor: COLORS.white,
+    shadowColor: COLORS.black,
     shadowOffset: {
       width: 3,
       height: 3,
     },
-    shadowOpacity: 0.1, // Shadow opacity (0 to 1)
-    shadowRadius: 3, // Shadow radius
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
   },
   container: {
     justifyContent: 'center',
@@ -165,22 +175,22 @@ const styles = StyleSheet.create({
     color: '#051d5f',
   },
   forgotButton: {
-    width: '95%', // Set the width to 95% of the screen
-    alignItems: 'flex-end', // Align items to the right
+    width: '95%',
+    alignItems: 'flex-end',
     color: '#34ebde',
     paddingBottom: 8,
     paddingTop: 10,
   },
   createAccountContainer: {
-    flexDirection: 'row', // Arrange children horizontally
-    marginTop: 20, // Add some margin to separate from the button
-    justifyContent: 'center', // Center the items horizontally
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'center',
   },
   orRowContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding:12,
-    marginTop:10,
+    padding: 12,
+    marginTop: 10,
   },
   line: {
     flex: 1,
@@ -193,8 +203,8 @@ const styles = StyleSheet.create({
   },
   SocialButtonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between', // Adjust as needed
-    paddingHorizontal: 20, // Adjust as needed
-    gap:20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    gap: 20,
   },
 });

@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
                     dispatch(setUserData(userData));
                 } else {
                     console.log("No such document!");
-                    throw new Error('No such document');
                 }
             }
         };
@@ -120,7 +119,6 @@ export const AuthProvider = ({ children }) => {
                             dispatch(setUserData(userData));
                         } else {
                             console.log("No such document!");
-                            throw new Error('No such document');
                         }
                     } catch (error) {
                         throw error;

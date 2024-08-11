@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Keyboard, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Keyboard, ActivityIndicator } from 'react-native';
 import FormInput from '../../components/formButtonsAndInput/FormInput';
 import FormButton from '../../components/formButtonsAndInput/FormButton';
 import SocialButton from '../../components/formButtonsAndInput/SocialButton';
@@ -17,9 +17,11 @@ const SignUpScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false); // Google loading state
   const { t } = useTranslation();
 
-  const { register } = useContext(AuthContext);
+  const { register, signInWithGoogle } = useContext(AuthContext); // Added signInWithGoogle
+
   const [topPadding, setTopPadding] = useState(5);
 
   useEffect(() => {
@@ -77,7 +79,7 @@ const SignUpScreen = ({ navigation }) => {
       Toast.show({
         type: 'error',
         text1: 'Registration Error',
-        text2: 'First name must be between 2 and 10 characters and contain only letters',
+        text2: 'First name must be between 2 and 10 letters',
       });
       return;
     }
@@ -86,7 +88,7 @@ const SignUpScreen = ({ navigation }) => {
       Toast.show({
         type: 'error',
         text1: 'Registration Error',
-        text2: 'Last name must be between 2 and 10 characters and contain only letters',
+        text2: 'Last name must be between 2 and 10 letters',
       });
       return;
     }
@@ -112,8 +114,9 @@ const SignUpScreen = ({ navigation }) => {
     if (!validatePassword(password)) {
       Toast.show({
         type: 'error',
-        text1: 'Registration Error',
-        text2: 'Password must be between 12 and 20 characters and include at least one uppercase letter, one lowercase letter, and one number',
+        text1: 'Password must be 12-20 chars long, with at least:',
+        text2: 'one uppercase letter, one lowercase letter and one number.',
+        visibilityTime: 8000,
       });
       return;
     }
@@ -148,6 +151,21 @@ const SignUpScreen = ({ navigation }) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Google Sign-In Error',
+        text2: error.message,
+      });
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -237,20 +255,24 @@ const SignUpScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.SocialButtonContainer}>
+            <SocialButton
+              buttonTitle={t("Sign In with Facebook")}
+              btnType="facebook"
+              color="#4867aa"
+              backgroundColor="#e6eaf4"
+              onPress={() => {}}
+            />
+            {googleLoading ? (
+              <ActivityIndicator size="large" color={COLORS.primary} />
+            ) : (
               <SocialButton
-                  buttonTitle={t("Sign In with Facebook")}
-                  btnType="facebook"
-                  color="#4867aa"
-                  backgroundColor="#e6eaf4"
-                  onPress={() => {}}
+                buttonTitle={t("Sign In with Google")}
+                btnType="google"
+                color="#de4d41"
+                backgroundColor="#f5e7ea"
+                onPress={handleGoogleSignIn}
               />
-              <SocialButton
-                  buttonTitle={t("Sign In with Google")}
-                  btnType="google"
-                  color="#de4d41"
-                  backgroundColor="#f5e7ea"
-                  onPress={() => {}}
-              />
+            )}
           </View>
 
           <View style={styles.createAccountContainer}>

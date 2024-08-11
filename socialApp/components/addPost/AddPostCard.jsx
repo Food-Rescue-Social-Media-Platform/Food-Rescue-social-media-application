@@ -52,7 +52,7 @@ const AddPostCard = () => {
                 source={
                     userConnected?.profileImg
                         ? { uri: userConnected.profileImg }
-                        : require('../../assets/Images/emptyProfieImage.png')
+                        : require('../../assets/Images/emptyUserProfieImage.jpeg')
                 }
             />
             <View style={{

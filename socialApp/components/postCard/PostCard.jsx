@@ -78,7 +78,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
 
     const userImgSource = item.userImg && typeof item.userImg === 'string'
         ? { uri: item.userImg }
-        : require('../../assets/Images/emptyProfieImage.png');
+        : require('../../assets/Images/emptyUserProfieImage.jpeg');
 
     const createdAt = item.createdAt ? moment(item.createdAt.toDate()).fromNow() : '';
     const postDate = item.createdAt ? moment(item.createdAt.toDate()).calendar() : '';

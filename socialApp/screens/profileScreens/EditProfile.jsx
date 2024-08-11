@@ -181,7 +181,7 @@ const EditProfile = ({ navigation, route }) => {
                                 source={
                                     userProfileCover && typeof userProfileCover === 'string'
                                     ? { uri: userProfileCover }
-                                    : require('../../assets/Images/cover.png')
+                                    : require('../../assets/Images/emptyCover.jpeg')
                                 }
                                 style={{ height: 150, width: 300 }}
                                 imageStyle={{ borderRadius: 15 }}
@@ -223,7 +223,7 @@ const EditProfile = ({ navigation, route }) => {
                                 source={
                                     userProfileImage && typeof userProfileImage === 'string'
                                     ? { uri: userProfileImage }
-                                    : require('../../assets/Images/emptyProfieImage.png')
+                                    : require('../../assets/Images/emptyUserProfieImage.jpeg')
                                 }
                                 style={{ height: 100, width: 100 }}
                                 imageStyle={{ borderRadius: 15 }}

@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, Text, Button, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import { Platform } from 'react-native';
 
 import Onboarding from 'react-native-onboarding-swiper';
 import {COLORS} from '../../styles/colors';

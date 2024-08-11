@@ -42,15 +42,21 @@ export const AuthProvider = ({ children }) => {
                 const { idToken, accessToken } = userInfo;
                 const credential = GoogleAuthProvider.credential(idToken, accessToken);
                 const firebaseUser = await signInWithCredential(auth, credential);
-
+    
+                // Extract firstName and lastName from displayName
+                const displayName = firebaseUser.user.displayName || '';
+                const [firstName = '', lastName = ''] = displayName.split(' ', 2);
+    
                 // Check if user exists
                 const docRef = doc(database, 'users', firebaseUser.user.uid);
                 const docSnap = await getDoc(docRef);
-
+    
                 if (!docSnap.exists()) {
                     // If user does not exist, create a new user in Firestore
                     const newUser = {
-                        userName: firebaseUser.user.displayName,
+                        firstName, // From displayName
+                        lastName,  // From displayName
+                        phoneNumber: "", // Empty phone number
                         email: firebaseUser.user.email,
                         profileImg: firebaseUser.user.photoURL,
                         createdAt: serverTimestamp(),
@@ -68,15 +74,15 @@ export const AuthProvider = ({ children }) => {
                         isAdmin: false,
                         postsNum: 0,
                     };
-
+    
                     await setDoc(doc(database, 'users', firebaseUser.user.uid), newUser);
                     const feedFollowers = new FeedFollowers(firebaseUser.user.uid);
                     await addFeedFollowers(feedFollowers);
                 }
-
+    
                 const userData = { id: firebaseUser.user.uid, ...userInfo };
                 dispatch(setUserData(userData));
-
+    
                 Toast.show({
                     type: 'success',
                     text1: 'Success',
@@ -91,7 +97,7 @@ export const AuthProvider = ({ children }) => {
                 text2: 'An error occurred during Google sign-in.',
             });
         }
-    };
+    };    
 
     return (
         <AuthContext.Provider 

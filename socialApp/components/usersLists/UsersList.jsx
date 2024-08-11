@@ -79,7 +79,7 @@ const UsersList = ({ usersIds }) => {
                                         {item.profileImg && typeof item.profileImg === 'string' && item.profileImg.trim() !== '' ? (
                                             <Image source={{ uri: item.profileImg }} style={styles.profileImage} />
                                         ) : (
-                                            <Image source={require('../../assets/Images/emptyProfieImage.png')} style={styles.profileImage} /> // Ensure this path is correct
+                                            <Image source={require('../../assets/Images/emptyUserProfieImage.png')} style={styles.profileImage} /> // Ensure this path is correct
                                         )}
                                         <Text style={styles.userName}>{item.userName}</Text>
                                     </View>

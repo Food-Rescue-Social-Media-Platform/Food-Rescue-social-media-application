@@ -214,10 +214,10 @@ const ProfileScreen = ({ navigation, route }) => {
     <View style={[styles.container, { backgroundColor: themeColors.appBackGroundColor }]} >
       {userData && (
         <View style={styles.header}>
-          <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/emptyCover.png')} style={styles.coverImage} />
+          <Image source={userData.profileCover ? { uri: userData.profileCover } : require('../../assets/Images/emptyCover.jpeg')} style={styles.coverImage} />
           <View style={styles.overlay}>
             <View style={styles.avatarContainer}>
-              <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../../assets/Images/emptyUserProfieImage.png')} style={styles.avatar} />
+              <Image source={userData.profileImg ? { uri: userData.profileImg } : require('../../assets/Images/emptyUserProfieImage.jpeg')} style={styles.avatar} />
             </View>
             <Text style={[styles.name, { color: themeColors.black }]}>{userData?.userName}</Text>
           </View>

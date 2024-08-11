@@ -47,7 +47,7 @@ const HomeChat = ({ navigation }) => {
       {item.image ? (
         <Avatar source={{ uri: item.image }} rounded title={item.receiver} size="medium" />
       ) : (
-        <Avatar source={require('../../assets/Images/emptyUserProfieImage.png')} title={item.receiver} size="medium" rounded />
+        <Avatar source={require('../../assets/Images/emptyUserProfieImage.jpeg')} title={item.receiver} size="medium" rounded />
       )}
 
       <ListItem.Content>

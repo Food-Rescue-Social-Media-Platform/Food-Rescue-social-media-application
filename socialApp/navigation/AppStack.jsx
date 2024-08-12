@@ -65,11 +65,11 @@ const FeedStack = ({ navigation, isHomeTabPressed }) => {
             opacity: 1
           },
           headerTitle: ()=>
-            <View style={{marginTop:'10%'}}>
+            <View>
               <Image
                 source={require('../assets/Images/logoHomePage.png')}
                 resizeMode="contain"
-                style={{ width: 180, height: 160}}
+                style={{ width: 180, height: 155}}
               />
           </View>
           ,

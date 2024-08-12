@@ -338,7 +338,8 @@ const ProfileScreen = ({ navigation, route }) => {
                   <Text style={[styles.buttonText, { color: themeColors.black }]}>{renderButtonText()}</Text>
                 </TouchableOpacity>
               </View>
-            )}
+            )
+            }
             <View>
               <Text style={[styles.earningsPoints, { color: themeColors.black, backgroundColor: themeColors.secondaryTheme }]}>{t('Advertising points:')} {userData?.earningPoints || 0}</Text>
             </View>
@@ -351,7 +352,7 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={[styles.AddPostCardContainer, { backgroundColor: themeColors.appBackGroundColor }]}>
               {postUserId === user.uid && <AddPostCard />}
             </View>
-
+            <AddPostCard/>
             <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
 
           </View>

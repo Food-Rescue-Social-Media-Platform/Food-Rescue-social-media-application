@@ -4,7 +4,7 @@ import * as geofire from 'geofire-common';
 import Toast from 'react-native-toast-message';
 import { addPostToFeedFollowers } from './feedFollowers';
 
-let PAGE_SIZE =5;
+let PAGE_SIZE =10;
 let PAGE_SIZE_POSTS_PROFILE = 5;
 
 export class Post {

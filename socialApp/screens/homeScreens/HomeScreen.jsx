@@ -231,7 +231,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
           {posts.length !== 0 ? (
             <FlatList
               data={posts}
-              style={{ width: '100%' }}
+              style={{ width: '100%', marginTop:5 }}
               ListHeaderComponent={headerComponent}
               renderItem={({ item }) => (
                 item && item.id ? (

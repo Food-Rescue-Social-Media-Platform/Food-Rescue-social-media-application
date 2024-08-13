@@ -27,6 +27,7 @@ export const getLocation = async (setPosition, setRegion = null, setPermissionDe
         });
         console.log("location", location)
         setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
+        setPermissionDenied(false);
         if (setRegion) {
             setRegion({
                 latitude: location.coords.latitude,

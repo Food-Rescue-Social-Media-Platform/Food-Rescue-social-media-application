@@ -1,0 +1,9 @@
+{
+    "hosting": {
+      "site": "your-desired-app-name",
+      "public": "build"
+    },
+    "projects": {
+    "default": "684711937854"
+  }
+}

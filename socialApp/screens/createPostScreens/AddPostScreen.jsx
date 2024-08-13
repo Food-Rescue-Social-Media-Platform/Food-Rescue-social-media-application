@@ -125,7 +125,7 @@ const AddPostScreen = () => {
       return;
     }
     
-    // if (isPosting) return; // Prevent multiple submissions
+    if (isPosting) return; // Prevent multiple submissions
   
     setIsPosting(true);
 

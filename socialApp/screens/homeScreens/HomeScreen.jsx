@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl,TouchableOpacity, View, Text, ScrollView } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
@@ -12,6 +12,7 @@ import { useRoute } from "@react-navigation/native";
 import { Button } from 'react-native-elements';
 import PostCardSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/PostCardSkeletonPlaceholder';
 import AddPostCardSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/AddPostCardSkeletonPlaceholder';
+import { set } from 'firebase/database';
 
 const HomeScreen = ({ isHomeTabPressed }) => {
   const route = useRoute();
@@ -107,10 +108,12 @@ const HomeScreen = ({ isHomeTabPressed }) => {
 
   useEffect(() => {
     const fetchLocationAndPosts = async () => {
-      await getLocation(setPosition, null, setPermissionDenied);
+      if(!permissionDenied) {
+          await getLocation(setPosition, null, setPermissionDenied);
+      }
     };
     fetchLocationAndPosts();
-  }, []);
+  }, [isFocused]);
 
   useEffect(() => {
     if (isFocused) {
@@ -175,109 +178,92 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     }
   };
 
-  const headerComponent = () => {
-    return (
-      <View>
-        <AddPostCard />
-        {permissionDenied &&
-          <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-            <Button
-              title={buttonTitle}
-              onPress={async () => {
-                await getLocation(setPosition);
-                setButtonTitle("Location Shared ...");
-                if (position) fetchData();
-              }}
-              style={{ width: 200, height: 50, backgroundColor: '#007BFF', borderRadius: 10 }}
-            />
-          </View>
-        }
-      </View>
-    );
-  };
-
   if (error) {
     return <Text style={{ color: theme.primaryText }}>Error: {error}</Text>;
   }
 
   return (
     <>
-      {loading ? (
-        <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-          <ScrollView 
-            style={{ marginLeft: 2, marginRight: 2 }} 
-            showsVerticalScrollIndicator={false}
-          >
-            <AddPostCardSkeletonPlaceholder />
-            <PostCardSkeletonPlaceholder />
-            <PostCardSkeletonPlaceholder />
-          </ScrollView>
-        </Container>
-      ) : (
-        <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-          {permissionDenied &&
-            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-              <Button
-                title={buttonTitle}
-                onPress={async () => {
-                  await getLocation(setPosition);
-                  setButtonTitle("Location Shared ...");
-                  if (position) fetchData();
-                }}
-                style={{ width: 200, height: 50, backgroundColor: '#007BFF', borderRadius: 10 }}
-              />
-            </View>
-          }
-          {posts.length !== 0 ? (
-            <FlatList
-              data={posts}
-              style={{ width: '100%' }}
-              ListHeaderComponent={headerComponent}
-              renderItem={({ item }) => (
-                item && item.id ? (
-                  <PostCard
-                    key={item.id}
-                    item={item}
-                    postUserId={item.userId}
-                    isProfilePage={false}
-                    userLocation={position}
-                  />
-                ) : null
-              )}
-              keyExtractor={(item, index) => item.id ? item.id : index.toString()}
-              showsVerticalScrollIndicator={false}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                  tintColor={theme.primaryText}
-                />
-              }
-              onEndReached={loadMore}
-              onEndReachedThreshold={0.1}
-              ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
-              ListEmptyComponent={() => (
-                <View style={styles.emptyContainer}>
-                  {position &&
-                    <Text style={{ color: theme.primaryText }}>No posts available. Pull down to refresh.</Text>
-                  }
-                </View>
-              )}
-            />
-          ) : (
+    {loading && !permissionDenied ? (
+          <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
             <ScrollView 
               style={{ marginLeft: 2, marginRight: 2 }} 
               showsVerticalScrollIndicator={false}
             >
-              <AddPostCard />
-              <PostCardSkeletonPlaceholder />
+              <AddPostCardSkeletonPlaceholder />
               <PostCardSkeletonPlaceholder />
               <PostCardSkeletonPlaceholder />
             </ScrollView>
-          )}
-        </Container>
+          </Container>
+        ) : (
+          <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+            {permissionDenied ? (
+              <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={async () => {
+                        setButtonTitle("loading...");
+                        await getLocation(setPosition, null, setPermissionDenied);
+                        if(permissionDenied){ // if permission is still denied
+                          setButtonTitle("Share Location");
+                        }
+                      }}
+                    >
+                          <Text style={{ color: theme.primaryText, fontSize:16, fontWeight:'500'}}>{buttonTitle}</Text>
+                    </TouchableOpacity>
+              </View>
+            ) : (
+              posts.length !== 0 ? (
+                <FlatList
+                  data={posts}
+                  style={{ width: '100%' }}
+                  ListHeaderComponent={<AddPostCard />}
+                  renderItem={({ item }) => (
+                    item && item.id ? (
+                      <PostCard
+                        key={item.id}
+                        item={item}
+                        postUserId={item.userId}
+                        isProfilePage={false}
+                        userLocation={position}
+                      />
+                    ) : null
+                  )}
+                  keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                  showsVerticalScrollIndicator={false}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                      tintColor={theme.primaryText}
+                    />
+                  }
+                  onEndReached={loadMore}
+                  onEndReachedThreshold={0.1}
+                  ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                  ListEmptyComponent={() => (
+                    <View style={styles.emptyContainer}>
+                      {position &&
+                        <Text style={{ color: theme.black }}>No posts available. Pull down to refresh.</Text>
+                      }
+                    </View>
+                  )}
+                />
+              ) : (
+                <ScrollView 
+                  style={{ marginLeft: 2, marginRight: 2 }} 
+                  showsVerticalScrollIndicator={false}
+                >
+                  <AddPostCard />
+                  <PostCardSkeletonPlaceholder />
+                  <PostCardSkeletonPlaceholder />
+                  <PostCardSkeletonPlaceholder />
+                </ScrollView>
+              )
+            )}
+          </Container>
       )}
-    </>
+  </>
   );
 };
 
@@ -298,6 +284,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  button:{
+    // width: '110',
+    // height: '290',
+    backgroundColor: "#A7EAAE",
+    padding: 15,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    borderRadius: 10,
+ }
 });
 
 export default HomeScreen;

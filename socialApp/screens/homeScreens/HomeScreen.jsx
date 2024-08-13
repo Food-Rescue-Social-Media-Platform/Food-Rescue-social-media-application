@@ -9,10 +9,8 @@ import { getLocation } from '../../hooks/helpersMap/getLocation';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { getPostsWithFilters, getPostsFromFollowers } from '../../FirebaseFunctions/collections/post';
 import { useRoute } from "@react-navigation/native";
-import { Button } from 'react-native-elements';
 import PostCardSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/PostCardSkeletonPlaceholder';
 import AddPostCardSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/AddPostCardSkeletonPlaceholder';
-import { set } from 'firebase/database';
 
 const HomeScreen = ({ isHomeTabPressed }) => {
   const route = useRoute();

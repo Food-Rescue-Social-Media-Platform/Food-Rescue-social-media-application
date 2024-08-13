@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import {COLORS} from '../../styles/colors';
-import { useSelector } from 'react-redux';
 import moment from 'moment';
 import { Image } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';

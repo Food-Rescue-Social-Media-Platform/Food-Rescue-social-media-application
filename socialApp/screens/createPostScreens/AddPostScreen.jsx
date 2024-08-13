@@ -14,12 +14,10 @@ import { windowHeight } from '../../utils/Dimentions';
 import { categoriesList } from '../../utils/categories';
 import * as Location from 'expo-location';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { getDoc, updateDoc, doc } from 'firebase/firestore';
+import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Adjust the path accordingly
-import { t } from 'i18next';
 import SearchAddress from '../../components/map/SearchAddress';
-import { color } from 'react-native-elements/dist/helpers';
 import { useTranslation } from 'react-i18next';
 
 const AddPostScreen = () => {

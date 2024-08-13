@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, ImageBackground, TextInput, StyleSheet, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
-import { useTheme } from 'react-native-paper';
 import AntDesign from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';

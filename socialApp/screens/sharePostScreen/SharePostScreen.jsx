@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, Button } from 'react-native';
 import PostCard from '../../components/postCard/PostCard';
-import { use } from 'i18next';
 import { getPost } from '../../FirebaseFunctions/collections/post';
 import { useState, useEffect } from 'react';
 import { getLocation } from '../../hooks/helpersMap/getLocation';

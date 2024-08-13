@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, KeyboardAvoidingView, Platform, StyleSheet, Dimensions ,ActivityIndicator, Text } from 'react-native';
+import { View, StyleSheet ,ActivityIndicator } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { useRoute, useIsFocused } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
@@ -9,8 +9,6 @@ import { getLocation } from '../../hooks/helpersMap/getLocation';
 import Feather from 'react-native-vector-icons/Feather';
 import PostModal from '../../components/map/PostModal';
 import SearchAddress from '../../components/map/SearchAddress';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const MapScreen = () => {
   const route = useRoute();

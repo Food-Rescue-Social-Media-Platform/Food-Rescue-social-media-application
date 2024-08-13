@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { Platform, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {COLORS} from '../styles/colors';
-
 import LoginScreen from '../screens/authenticationScreens/LoginScreen';
 import SignUpScreen from '../screens/authenticationScreens/SignUpScreen';
 import OnboardingScreen from '../screens/onboardingScreens/OnboardingScreen';

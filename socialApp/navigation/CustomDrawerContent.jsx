@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Switch, StyleSheet, TouchableOpacity, Platform, ScrollView, I18nManager } from 'react-native';
+import { View, Text, Switch, StyleSheet, TouchableOpacity, Platform, I18nManager } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { useDarkMode } from '../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';

@@ -20,6 +20,8 @@ import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToP
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
+import ImageModalViewer from './ImageModalViewer';
+import { TouchableWithoutFeedback } from 'react-native';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -68,6 +70,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
+    const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
     useEffect(() => {
         if (!item.coordinates || (item.coordinates[0] === 0 && item.coordinates[1] === 0) || !userLocation || isProfilePage) 
@@ -217,7 +220,14 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
         setCurrentImageIndex(index);
     };
 
+    const handelPressImages = () => {
+        setIsImageModalVisible(true);
+    };
+
+    
+
     return (
+        <>
         <Card style={[styles.card, { backgroundColor: theme.secondaryTheme, borderColor: theme.borderColor }]}>
             {loading && (
                 <View style={styles.loadingOverlay}>
@@ -335,14 +345,16 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                         showsVerticalScrollIndicator={false}
                     >
                         {item.postImg.map((img, index) => (
-                            <Image key={index} source={{ uri: img }} style={styles.postImage} />
+                            <TouchableWithoutFeedback key={`image-${index}`} onPress={handelPressImages}>
+                                <Image source={{ uri: img }} style={styles.postImage} />
+                            </TouchableWithoutFeedback>
                         ))}
                     </ScrollView>
-
+            
                     <View style={styles.pagination}>
                         {item.postImg.map((_, index) => (
                             <View
-                                key={index}
+                                key={`dot-${index}`}
                                 style={[
                                     styles.dot,
                                     { backgroundColor: index === currentImageIndex ? 'black' : 'grey' }
@@ -390,6 +402,12 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
             )}
             <PostText style={{ color: theme.primaryText }}>{item.postText || ''}</PostText>
         </Card>
+        <ImageModalViewer
+            images={item.postImg}
+            visible={isImageModalVisible}
+            onClose={() => setIsImageModalVisible(false)}
+        />
+        </>
     );
 };
 
@@ -485,7 +503,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         width: screenWidth,
-        height: 210,
+        height: 300,
     },
     pagination: {
         flexDirection: 'row',

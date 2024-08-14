@@ -16,6 +16,10 @@ web-build/
 *.key
 *.mobileprovision
 
+# google-services
+android/app/google-services.json
+google-services.json
+
 # Metro
 .metro-health-check*
 

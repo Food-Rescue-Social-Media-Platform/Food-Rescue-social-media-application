@@ -2,7 +2,7 @@ import React from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
-
+import { GOOGLE_MAPS_API_KEY } from '@env';
 const { width, height } = Dimensions.get('window');
 
 const MapComponent = 
@@ -56,7 +56,7 @@ const MapComponent =
           <MapViewDirections
             origin={userPosition}
             destination={postDestination}
-            apikey={'AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY'}
+            apikey={GOOGLE_MAPS_API_KEY}
             strokeColor="#6644ff"
             strokeWidth={4}
           />

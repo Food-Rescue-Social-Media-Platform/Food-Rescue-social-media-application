@@ -94,8 +94,7 @@ const AddPostScreen = () => {
 
     setLocation(location);
     console.log("Location", location);
-    // setShowLocationModel(showLocationModel ? false : true);
-    // updateUserLocation(userConnected.id, location);
+    setShowLocationModel(false);
   };
 
   const handelAddPhone = () => {

@@ -133,12 +133,19 @@ const ProfileStack = () => {
           headerTitleStyle: {
             color: themeColors.headerColor,
           },
+          headerTitle: ()=>
+            <View>
+              <Image
+                source={require('../assets/Images/logoHomePage.png')}
+                resizeMode="contain"
+                style={{ width: 180, height: 155}}
+              />
+          </View>,
           headerStyle: {
             backgroundColor: themeColors.appBackGroundColor,
             shadowColor: themeColors.white,
             elevation: 0,
           },
-          headerTitle: t("Profile"),
         }}
       />
     </Stack.Navigator>
@@ -165,7 +172,14 @@ const ChatStack = () => {
             shadowColor: themeColors.white,
             elevation: 0,
           },
-          headerTitle: t("Chat"),
+          headerTitle: ()=>
+            <View>
+              <Image
+                source={require('../assets/Images/logoHomePage.png')}
+                resizeMode="contain"
+                style={{ width: 180, height: 155}}
+              />
+          </View>
         }}
       />
     </Stack.Navigator>
@@ -192,7 +206,14 @@ const MapStack = () => {
             shadowColor: themeColors.white,
             elevation: 0,
           },
-          headerTitle: t("Map"),
+          headerTitle: ()=>
+            <View>
+              <Image
+                source={require('../assets/Images/logoHomePage.png')}
+                resizeMode="contain"
+                style={{ width: 180, height: 155}}
+              />
+          </View>,
         }}
       />
     </Stack.Navigator>

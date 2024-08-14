@@ -25,6 +25,7 @@
       ]
     },
     "web": {
+      "output": "server",
       "bundler": "metro"
     },
     "extra": {

@@ -352,7 +352,6 @@ const ProfileScreen = ({ navigation, route }) => {
             <View style={[styles.AddPostCardContainer, { backgroundColor: themeColors.appBackGroundColor }]}>
               {postUserId === user.uid && <AddPostCard />}
             </View>
-            <AddPostCard/>
             <Text style={[styles.PostsTitleText, { color: themeColors.black }]}>{t('Posts')}</Text>
 
           </View>

@@ -1,9 +1,19 @@
 {
-    "hosting": {
-      "site": "your-desired-app-name",
-      "public": "build"
-    },
-    "projects": {
+  "hosting": {
+    "public": "socialApp/dist"
+  },
+  "projects": {
     "default": "684711937854"
-  }
+  },
+  "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+  "rewrites": [
+    {
+      "source": "**",
+      "destination": "/index.html"
+    }
+    ]
 }

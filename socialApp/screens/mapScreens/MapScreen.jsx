@@ -30,8 +30,13 @@ const MapScreen = () => {
 
   useEffect(() => {
     const loadMapComponent = async () => {
+      if (Platform.OS === 'web') {
+        const module = await import('../../components/map/MapComponent.web');
+        setMapComponent(() => module.default);
+      } else {
         const module = await import('../../components/map/MapComponent.android');
         setMapComponent(() => module.default);
+      }
     };
 
     loadMapComponent();

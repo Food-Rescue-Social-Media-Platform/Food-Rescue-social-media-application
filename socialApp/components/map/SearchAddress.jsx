@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
+import { GOOGLE_MAPS_API_KEY } from '@env';
 
 function SearchAddress({style, onLocationSelected }) {
   const { theme } = useDarkMode(); // Access the current theme
@@ -29,7 +30,7 @@ function SearchAddress({style, onLocationSelected }) {
           onLocationSelected(data, details);
         }}
         query={{
-          key: 'AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY',
+          key: {GOOGLE_MAPS_API_KEY},
           language: 'en',
         }}
         styles={{

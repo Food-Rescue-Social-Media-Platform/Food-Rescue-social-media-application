@@ -27,7 +27,7 @@ export const getLocation = async (setPosition, setRegion = null, setPermissionDe
         });
         console.log("location", location)
         setPosition({ latitude: location.coords.latitude, longitude: location.coords.longitude });
-        setPermissionDenied(false);
+        if(setPermissionDenied) setPermissionDenied(false);
         if (setRegion) {
             setRegion({
                 latitude: location.coords.latitude,
@@ -38,6 +38,7 @@ export const getLocation = async (setPosition, setRegion = null, setPermissionDe
             // return true;
         }
     } catch (error) {
+        console.log("location error", error)
         if(setPermissionDenied) setPermissionDenied(true);
         if (Platform.OS === 'android') {
             ToastAndroid.show(

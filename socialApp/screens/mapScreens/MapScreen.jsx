@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet ,ActivityIndicator } from 'react-native';
+import { View, StyleSheet ,ActivityIndicator, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { useRoute, useIsFocused } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';

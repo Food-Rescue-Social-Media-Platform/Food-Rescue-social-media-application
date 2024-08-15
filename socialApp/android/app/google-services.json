@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "684711937854-4eaojv40poe3hfsqaa9bkjqpneeq2gvp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mohammad_belbesi.socialApp",
+            "certificate_hash": "b0322a21d7d283dab8a905a8ff729dce2d4b10f3"
+          }
+        },
+        {
+          "client_id": "684711937854-56ls42gu28v4md03k8qqoasmorai1o1d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mohammad_belbesi.socialApp",
+            "certificate_hash": "684fbf178981b56a09831e0279810ce1f1be86fc"
+          }
+        },
+        {
           "client_id": "684711937854-n0vv51uhqghlhvbepo9raa9g1t0k5qab.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

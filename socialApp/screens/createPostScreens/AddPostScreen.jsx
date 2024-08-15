@@ -37,7 +37,9 @@ const AddPostScreen = () => {
     const [showLocationModel, setShowLocationModel] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
-    const [options, setOptions] = useState(categoriesList.map((category) => ({ value: t(category)})));
+    const [options, setOptions] = useState(
+      categoriesList.map((category) => ({ value: category, label: t(category) }))
+    );    
     const [ messError, setMessError ] = useState('');
     const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
@@ -56,8 +58,8 @@ const AddPostScreen = () => {
 
   const showAlert = (title, message) => {
     Alert.alert(
-      title,
-      message,
+      t(title),
+      t(message),
     );
   }
   const confirmClose = () => {
@@ -70,9 +72,11 @@ const AddPostScreen = () => {
   };
 
   const handleCloseCategoryModal = () => {
-    setCategory(selectedOptions[0]);
+    if (selectedOptions.length > 0) {
+        setCategory(options.find(opt => opt.label === selectedOptions[0]).value);
+    }
     setCategoryModalVisible(false);
-  };
+};
 
   const handleOpenCamera = async () => {
     openCameraAndTakePicture(setImages);
@@ -93,7 +97,7 @@ const AddPostScreen = () => {
     location = {latitude: location.coords.latitude, longitude: location.coords.longitude};
 
     setLocation(location);
-    console.log("Location", location);
+    // console.log("Location", location);
     setShowLocationModel(false);
   };
 
@@ -111,67 +115,66 @@ const AddPostScreen = () => {
   }, [location]);
 
   const handleAddPost = async () => {
-    console.log("Location at handleAddPost", location);
+    // console.log("Category to be saved:", category); // This should log the English category name
 
-    if(postInput.length === 0){
-      setMessError('Please enter the post content');
-      return;  
+    if (postInput.length === 0) {
+        setMessError('Please enter the post content');
+        return;  
     }
 
     if (!location || typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
-      console.log("Invalid Location");
-      showAlert("Location Alert", "Please add a valid location to publish the post");
-      return;
+        showAlert("Location Alert", "Please add a valid location to publish the post");
+        return;
     }
-    
-    if (isPosting) return; // Prevent multiple submissions
-  
-    setIsPosting(true);
 
+    if (isPosting) return; // Prevent multiple submissions
+
+    setIsPosting(true);
     setIsUploading(true);
 
-    // push image to firebase storage
+    // Upload images to Firebase Storage
     let imagesUrl = [];
     if (images.length > 0) {
-      for (let i = 0; i < images.length; i++)
-        imagesUrl.push(await uploadImages(images[i], "postsImges/", "image"));
+        for (let i = 0; i < images.length; i++) {
+            imagesUrl.push(await uploadImages(images[i], "postsImges/", "image"));
+        }
     }
 
     const newPost = new Post(
-      userConnected.id,
-      userConnected.userName,
-      userConnected.firstName,
-      userConnected.lastName,
-      userConnected.profileImg,
-      phoneNumber,
-      postInput,
-      timeInput,
-      category,
-      imagesUrl,
-      location,
+        userConnected.id,
+        userConnected.userName,
+        userConnected.firstName,
+        userConnected.lastName,
+        userConnected.profileImg,
+        phoneNumber,
+        postInput,
+        timeInput,
+        category, // Use the original category value in English
+        imagesUrl,
+        location,
     );
 
     try {
-      await addPost(newPost);
-      navigation.navigate("Home Page");
+        await addPost(newPost);
+        navigation.navigate("Home Page");
     } catch (error) {
-      console.error("Error adding post:", error);
-      showAlert("Error", "Failed to add post. Please try again.");
+        console.error("Error adding post:", error);
+        showAlert("Error", "Failed to add post. Please try again.");
     } finally {
-      setIsPosting(false);
-      setIsUploading(false);
+        setIsPosting(false);
+        setIsUploading(false);
     }
-    
-    navigation.navigate("Home Page");
-  };
+};
+
+
 
   const handleCheck = (option) => {
-    if (selectedOptions.includes(option.value)) {
-      setSelectedOptions(
-        selectedOptions.filter((item) => item !== option.value),
-      );
+    if (selectedOptions.includes(option.label)) {
+      setSelectedOptions([]);
+      setCategory(''); // Clear category selection
     } else {
-      setSelectedOptions([option.value]);
+      setSelectedOptions([option.label]); // Store the translated label for display
+      setCategory(option.value); // Store the original value (English) for saving to Firestore
     }
   };
 
@@ -189,7 +192,7 @@ const AddPostScreen = () => {
   const handleAcceptLocationFromSearch = async (data, details) => {
     const { geometry } = details;
     const { location } = geometry;
-    console.log('\nlocation from user', location);
+    // console.log('\nlocation from user', location);
     
     if (!location || typeof location.lat !== 'number' || typeof location.lng !== 'number') {
       console.error('Invalid location data:', location);
@@ -202,7 +205,7 @@ const AddPostScreen = () => {
     };
   
     setLocation(locationFromSearch);
-    console.log('Location set:', locationFromSearch);
+    // console.log('Location set:', locationFromSearch);
   };
 
   return (
@@ -389,9 +392,9 @@ const AddPostScreen = () => {
                                       <CheckBox
                                           style={[styles.checkboxWrapper, { backgroundColor: themeColors.secondaryBackground }]}
                                           key={option.value}
-                                          title={option.value}
-                                          checked={selectedOptions.includes(option.value)}
-                                          onPress={() => handleCheck(option)}
+                                          title={option.label} // Display translated label
+                                          checked={selectedOptions.includes(option.label)}
+                                          onPress={() => handleCheck(option)} // Handle selection
                                           textStyle={{ color: themeColors.primaryText }}
                                           containerStyle={{ backgroundColor: themeColors.secondaryBackground }}
                                       />

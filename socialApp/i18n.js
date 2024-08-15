@@ -30,7 +30,7 @@ if (!i18n.isInitialized) {
         he: { translation: he },
       },
       fallbackLng: 'en',
-      debug: true,
+      debug: false,
       interpolation: {
         escapeValue: false,
       },

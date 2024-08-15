@@ -21,6 +21,7 @@
   "Dairy": "Dairy",
   "Sweets": "Sweets",
   "Seafood": "Seafood",
+  "Vegan": "Vegan",
   "Vegetables": "Vegetables",
   "Fruits": "Fruits",
   "Drinks": "Drinks",
@@ -111,5 +112,8 @@
   "Radius": "Radius",
   "Radius Filter":"Radius Filter",
   "Search location": "Search location",
-  "KM": "KM"
+  "KM": "KM",
+  "Add the address of the post delivery location:": "Add the address of the post delivery location:",
+  "Location Alert": "Location Alert",
+  "Please add a valid location to publish the post": "Please add a valid location to publish the post"
 }

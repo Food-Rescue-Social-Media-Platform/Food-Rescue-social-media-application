@@ -20,8 +20,8 @@
     "Rice": "אורז",
     "Dairy": "חלב",
     "Sweets": "ממתקים",
-    "fish": "דגים",
-    "vegan": "טבעוני",
+    "Seafood": "דגים",
+    "Vegan": "טבעוני",
     "Vegetables": "ירקות",
     "Fruits": "פירות",
     "Drinks": "משקאות",
@@ -112,5 +112,8 @@
     "Radius": "רדיוס",
     "Radius Filter": "סנן לפי רדיוס",
     "Search location": "חפש מיקום",
-    "KM": "ק''מ"
+    "KM": "ק''מ",
+    "Location Alert": "התראת מיקום",
+    "Add the address of the post delivery location:": "הוסף את כתובת מיקום המסירה של הפוסט:",
+    "Please add a valid location to publish the post": "אנא הוסף מיקום חוקי כדי לפרסם את הפוסט"
   }

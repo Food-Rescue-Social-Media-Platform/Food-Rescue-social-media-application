@@ -179,15 +179,15 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                 url: postURL,
             });
 
-            if (result.action === Share.sharedAction) {
-                if (result.activityType) {
-                    console.log('Shared with activity type of:', result.activityType);
-                } else {
-                    console.log('Shared');
-                }
-            } else if (result.action === Share.dismissedAction) {
-                console.log('Dismissed');
-            }
+            // if (result.action === Share.sharedAction) {
+            //     if (result.activityType) {
+            //         // console.log('Shared with activity type of:', result.activityType);
+            //     } else {
+            //         // console.log('Shared');
+            //     }
+            // } else if (result.action === Share.dismissedAction) {
+            //     // console.log('Dismissed');
+            // }
         } catch (error) {
             alert(error.message);
         }

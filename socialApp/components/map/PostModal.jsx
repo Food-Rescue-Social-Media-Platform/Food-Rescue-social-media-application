@@ -31,7 +31,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
     );
   };
   const handleReadMorePress = () => {
-    console.log("read more go to single post..");
+    // console.log("read more go to single post..");
     setVisible(false);
   };
 

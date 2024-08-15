@@ -29,7 +29,7 @@ const AddPostCard = () => {
     }, []);
 
     const openShareFoodScreen = () => {
-        console.log("open share food");
+        // console.log("open share food");
         navigation.navigate('AddPost');
     }
 

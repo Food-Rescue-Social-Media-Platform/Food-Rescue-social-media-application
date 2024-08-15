@@ -29,7 +29,7 @@ export async function addFeedFollowers(feedFollowers) {
 export async function addPostToFeedFollowers(followersUsersIds, postId) {
     try{
         // loop through the followingUserList and add the post to their feed
-        console.log("followingUserList", followersUsersIds);
+        // console.log("followingUserList", followersUsersIds);
         followersUsersIds?.forEach(async (followerUser) => {
             const docRef = doc(database, "feedFollowers", followerUser);
             const docSnap = await getDoc(docRef);

@@ -197,7 +197,7 @@ const MapScreen = () => {
   const handleAcceptLocationFromSearch = (data, details) => {
     const { geometry } = details;
     const { location } = geometry;
-    console.log('\nlocation from user', location);
+    // console.log('\nlocation from user', location);
     setLocationFromSearch(location);
     const newRegion = {
       latitude: location.lat,

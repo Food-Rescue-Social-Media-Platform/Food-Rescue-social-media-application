@@ -11,10 +11,10 @@ export const DarkModeProvider = ({ children }) => {
     const loadDarkMode = async () => {
       try {
         const savedDarkMode = await AsyncStorage.getItem('isDarkMode');
-        console.log('Loaded dark mode:', savedDarkMode);
+        // console.log('Loaded dark mode:', savedDarkMode);
         if (savedDarkMode !== null) {
           const parsedDarkMode = JSON.parse(savedDarkMode);
-          console.log('Parsed dark mode:', parsedDarkMode, typeof parsedDarkMode);
+          // console.log('Parsed dark mode:', parsedDarkMode, typeof parsedDarkMode);
           setIsDarkMode(parsedDarkMode);
         }
       } catch (error) {
@@ -27,9 +27,9 @@ export const DarkModeProvider = ({ children }) => {
 
   const handleSetIsDarkMode = async (value) => {
     try {
-      console.log('handleSetIsDarkMode called with:', value, typeof value);
+      // console.log('handleSetIsDarkMode called with:', value, typeof value);
       if (typeof value === 'boolean') {
-        console.log('Saving dark mode:', value);
+        // console.log('Saving dark mode:', value);
         await AsyncStorage.setItem('isDarkMode', JSON.stringify(value));
         setIsDarkMode(value);
       } else {

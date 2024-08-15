@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }) => {
                 if (!docSnap.exists()) {
                     // If user does not exist, create a new user in Firestore
                     const newUser = {
+                        userName: displayName,
                         firstName, // From displayName
                         lastName,  // From displayName
                         phoneNumber: "", // Empty phone number

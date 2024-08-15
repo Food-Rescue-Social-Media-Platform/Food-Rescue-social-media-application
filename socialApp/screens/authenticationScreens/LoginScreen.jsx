@@ -110,13 +110,13 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.line}></View>
           </View>
           <View style={styles.SocialButtonContainer}>
-            <SocialButton
+            {/* <SocialButton
               buttonTitle={t("Sign In with Facebook")}
               btnType="facebook"
               color="#4867aa"
               backgroundColor="#e6eaf4"
               onPress={() => {}}
-            />
+            /> */}
             {googleLoading ? (
               <ActivityIndicator size="large" color={COLORS.primary} />
             ) : (

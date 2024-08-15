@@ -5,10 +5,13 @@
     "name": "FOOD RESCUE",
     "slug": "socialApp",
     "version": "1.0.0",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "plugins": [
       "expo-font",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "expo-router"
     ],
     "android": {
       "package": "com.mohammad_belbesi.socialApp",

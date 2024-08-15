@@ -43,7 +43,7 @@
     "expo-linear-gradient": "~12.7.2",
     "expo-location": "~16.5.5",
     "expo-random": "~13.6.0",
-    "expo-router": "^3.5.21",
+    "expo-router": "~3.4.10",
     "expo-status-bar": "~1.11.1",
     "expo-updates": "~0.24.13",
     "expo-web-browser": "~12.8.2",

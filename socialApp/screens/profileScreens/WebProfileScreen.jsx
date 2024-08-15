@@ -500,27 +500,23 @@ const styles = StyleSheet.create({
         marginLeft: '-5%',
       },
       sideContainerUser: {
-        zIndex: 2,
-        alignItems: 'left',
-        justifyContent: 'left',
-        width: '38%',
-        marginTop: '-168.3%',
-        marginLeft: 25,
-
+          alignItems: 'left',
+          justifyContent: 'left',
+          width: '35%', // Adjust as per your layout
+          marginLeft: 25,
+          zIndex: 2,
       },
       sideContainerOther: {
         zIndex: 2,
         alignItems: 'left',
         justifyContent: 'left',
-        width: '30%',
-        marginTop: '-65.5%',
+        width: '35%',
       },
       CardContainerAndSideContainer: {
-        flexDirection: 'row',
-        width: '70%',
-        alignItems: 'center',
-        marginTop: '1%',
-
+          flexDirection: 'row',
+          width: '70%', // Ensure the width is 100% to align properly
+          alignItems: 'flex-start',
+          marginTop: '1%',
       },
       header: {
         position: 'relative',

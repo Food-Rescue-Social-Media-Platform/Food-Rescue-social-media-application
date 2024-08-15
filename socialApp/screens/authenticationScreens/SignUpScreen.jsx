@@ -60,10 +60,11 @@ const SignUpScreen = ({ navigation }) => {
   const validatePhoneNumber = (number) => {
     return /^[0-9]{9,15}$/.test(number);
   };
-
+  
   const validatePassword = (password) => {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{12,20}$/.test(password);
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+\-={}\[\]|\\:;"'<>,.?/~` ]{8,20}$/.test(password);
   };
+  
 
   const handleSignUp = async () => {
     if (!firstName || !lastName || !email || !phoneNumber || !password || !confirmPassword) {
@@ -114,7 +115,7 @@ const SignUpScreen = ({ navigation }) => {
     if (!validatePassword(password)) {
       Toast.show({
         type: 'error',
-        text1: 'Password must be 12-20 chars long, with at least:',
+        text1: 'Password must be 8-20 chars long, with at least:',
         text2: 'one uppercase letter, one lowercase letter and one number.',
         visibilityTime: 8000,
       });

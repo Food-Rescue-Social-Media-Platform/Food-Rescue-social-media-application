@@ -130,7 +130,7 @@ const LoginScreen = ({ navigation }) => {
             )}
           </View>
           <View style={styles.createAccountContainer}>
-            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account?')}</Text>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Dont have an account? ')}</Text>
             <TouchableOpacity>
               <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('SignUp')}>{t('Sign up')}</Text>
             </TouchableOpacity>

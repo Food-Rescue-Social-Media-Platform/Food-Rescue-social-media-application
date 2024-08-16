@@ -277,7 +277,7 @@ const SignUpScreen = ({ navigation }) => {
           </View>
 
           <View style={styles.createAccountContainer}>
-            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Already have an account?')}</Text>
+            <Text style={{ color: COLORS.black, fontWeight: 'bold', fontSize: 16 }}>{t('Already have an account? ')}</Text>
             <TouchableOpacity>
               <Text style={{ color: '#6ee7f0', fontWeight: 'bold', fontSize: 16 }} onPress={() => navigation.navigate('Login')}>{t('Sign in')}</Text>
             </TouchableOpacity>

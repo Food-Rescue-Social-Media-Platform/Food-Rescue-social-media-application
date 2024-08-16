@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState,useCallback  } from 'react';
 import { View, StyleSheet ,ActivityIndicator, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import { useRoute, useIsFocused } from '@react-navigation/native';
+import { useRoute, useIsFocused, useNavigation, useFocusEffect  } from '@react-navigation/native';
 import { getPostsNearby } from '../../FirebaseFunctions/collections/post';
 import { getDistance } from '../../hooks/helpersMap/getDistance';
 import { watchLocation } from '../../hooks/helpersMap/watchLocation';
@@ -13,6 +13,7 @@ import SearchAddress from '../../components/map/SearchAddress';
 const MapScreen = () => {
   const route = useRoute();
   const isFocused = useIsFocused();
+  const navigation = useNavigation();
   const mapRef = useRef(null);
   const [position, setPosition] = useState(null);
   const [postDestination, setPostDestination] = useState(null);
@@ -27,6 +28,7 @@ const MapScreen = () => {
   const [locationSubscription, setLocationSubscription] = useState(null); // for watching location
   const [initialPostsLoaded, setInitialPostsLoaded] = useState(false);
   const radiusInMeters = 10000;
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
 
   useEffect(() => {
     const loadMapComponent = async () => {
@@ -65,9 +67,27 @@ const MapScreen = () => {
     setLoading(false);
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      if (isFirstLoad && route.params) {
+        setPostFromFeed(route.params);
+        setSelectedPost(route.params);
+        setModalVisible(true);
+        setIsFirstLoad(false);
+        
+        // אפס את הפרמטרים מיד לאחר השימוש
+        navigation.setParams(null);
+      }
+
+      return () => {
+        // כאשר המסך מאבד פוקוס, אפשר לאפס את isFirstLoad
+        setIsFirstLoad(true);
+      };
+    }, [isFirstLoad, route.params])
+  );
+
   useEffect(() => {
     if (isFocused) {
-      setPostFromFeed(route.params ? route.params : null);
       fetchLocation();
     } else {
       resetStates();
@@ -92,16 +112,16 @@ const MapScreen = () => {
     }
   }, [position, initialPostsLoaded]);
 
-  useEffect(() => {
-    if (postFromFeed && isFocused) {
-      mapRef.current?.animateToRegion({
-        latitude: postFromFeed.latitude,
-        longitude: postFromFeed.longitude,
-        latitudeDelta: 0.0001,
-        longitudeDelta: 0.0001,
-      }, 500);
-    }
-  }, [postFromFeed]);
+  // useEffect(() => {
+  //   if (postFromFeed && isFocused) {
+  //     mapRef.current?.animateToRegion({
+  //       latitude: postFromFeed.latitude,
+  //       longitude: postFromFeed.longitude,
+  //       latitudeDelta: 0.0001,
+  //       longitudeDelta: 0.0001,
+  //     }, 500);
+  //   }
+  // }, [postFromFeed]);
 
   useEffect(() => {
     return () => {
@@ -128,6 +148,8 @@ const MapScreen = () => {
      setPostFromFeed(null);
      setSelectedPost(null);
      setModalVisible(false);
+     navigation.setParams(null);
+     setIsFirstLoad(true);
   }
 
   const zoomIn = () => {
@@ -185,12 +207,14 @@ const MapScreen = () => {
   };
   
   const closeModal = () => {
+    navigation.setParams(null);
     setModalVisible(false);
     setSelectedPost(null);
   };
   
   const handleUserPressToNavigateToPost = (post) => {
     console.log("navigate to post", post);
+    navigation.setParams(null);
     setPostDestination({latitude:post?.latitude, longitude:post?.longitude});
   }
 

@@ -21,6 +21,7 @@ const SharePostScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     if(!position) return;
+    // console.log(position);
     getPost(postId).then((post) => {
         setPost(post);
         setLoading(false);
@@ -49,7 +50,7 @@ const SharePostScreen = ({ navigation, route }) => {
   return (
     <View>
         {post && position && !loading &&
-            <PostCard item={post} postUserId={post.userId} isProfilePage={false} userLocation={position}/>
+            <PostCard item={post} postUserId={post.userId} isProfilePage={false} isMapPostCard={true} userLocation={position}/>
         }
         {
             !post && <Text>Loading...</Text>

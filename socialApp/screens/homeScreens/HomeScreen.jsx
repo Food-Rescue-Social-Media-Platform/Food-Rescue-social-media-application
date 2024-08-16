@@ -223,6 +223,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
                         item={item}
                         postUserId={item.userId}
                         isProfilePage={false}
+                        isMapPostCard={false}
                         userLocation={position}
                       />
                     ) : null

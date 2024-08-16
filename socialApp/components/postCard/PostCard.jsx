@@ -60,7 +60,7 @@ const emojisWithIcons = [
     { title: 'wasted', icon: 'emoticon-sad-outline', status: 'wasted' },
 ];
 
-const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
+const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation }) => {
     const navigation = useNavigation();
     const { user } = useContext(AuthContext);
     const { theme } = useDarkMode();
@@ -376,7 +376,7 @@ const PostCard = ({ item, postUserId, isProfilePage, userLocation }) => {
                     <MaterialCommunityIcons name="clock" size={22} color={theme.primaryText} />
                     <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
                 </View>
-                {haveSharedLocation && !isProfilePage && (
+                {haveSharedLocation && !isProfilePage && isMapPostCard==false &&(
                     <TouchableOpacity style={[styles.iconsWrapper]} onPress={handleClickLocationPost}>
                         <MaterialCommunityIcons name="map-marker" size={22} color={theme.primaryText} />
                         <Text style={[styles.text, { color: theme.primaryText }]}>{distance}</Text>

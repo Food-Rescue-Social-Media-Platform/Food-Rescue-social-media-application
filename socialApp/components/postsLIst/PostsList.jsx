@@ -2,7 +2,7 @@ import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, View, Text } f
 import PostCard from '../postCard/PostCard';
 
 
-const PostsList = ({posts, loadMore, loadingMore, position, refreshing, onRefresh, isProfilePage, theme}) => (
+const PostsList = ({posts, loadMore, loadingMore, position, refreshing, onRefresh, isProfilePage, isMapPostCard, theme}) => (
     <FlatList
         data={posts}
         style={{ width: '100%' }}
@@ -12,7 +12,8 @@ const PostsList = ({posts, loadMore, loadingMore, position, refreshing, onRefres
                             key={item.id} 
                             item={item} 
                             postUserId={item.userId} 
-                            isProfilePage={isProfilePage} 
+                            isProfilePage={isProfilePage}
+                            isMapPostCard={false}
                             userLocation={position} 
                         />;
              else 

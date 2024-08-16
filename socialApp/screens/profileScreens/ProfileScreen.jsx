@@ -364,7 +364,7 @@ const ProfileScreen = ({ navigation, route }) => {
     <View style={styles.postContainer}>
       {Platform.OS === 'web'
         ? <WebPostCard key={item.id} item={item} postUserId={postUserId} isProfilePage={true} />
-        : <PostCard key={item.id} item={item} postUserId={postUserId} isProfilePage={true} />
+        : <PostCard key={item.id} item={item} postUserId={postUserId} isMapPostCard={false} isProfilePage={true} />
       }
     </View>
   );

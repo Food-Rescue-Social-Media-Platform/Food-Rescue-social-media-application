@@ -61,7 +61,7 @@ export function getListChats(userId, setListChats){
   // console.log('docRef: ', docRef);
   onValue(docRef, (snapshot) => {
       const data = snapshot.val();
-      // if(!data) return console.log('getListChats, No data found');
+      if(!data) return console.log('getListChats, No data found');
       // console.log('getListChats, chatList: ', Object.values(data));
       setListChats(Object.values(snapshot.val()));//todo
   });

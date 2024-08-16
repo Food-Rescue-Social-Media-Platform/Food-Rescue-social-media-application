@@ -42,10 +42,10 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     }
 
     // if loadMore is true, get the lastVisibleDoc from state
-    if (!loadMore && !lastVisibleForYou && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
-      console.log("No lastVisibleForYou found for initial load");
-      return;
-    }
+    // if (!loadMore && !lastVisibleForYou && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
+    //   console.log("No lastVisibleForYou found for initial load");
+    //   return;
+    // }
     try {
       // set loading to true before fetching data
       if (loadMore) {
@@ -90,8 +90,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
       }
 
       // set firstFetchForYou and firstFetchFollowing to false after fetching data
-      if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
-      if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(false);
+      if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(true);
+      if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(true);
 
       // set loading to false after fetching data
       setLoading(false);

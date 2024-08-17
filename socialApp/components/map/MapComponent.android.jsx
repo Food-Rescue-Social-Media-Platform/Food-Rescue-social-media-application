@@ -59,7 +59,7 @@ const MapComponent = ({
           <MapViewDirections
             origin={userPosition}
             destination={postDestination}
-            apikey={GOOGLE_MAPS_API_KEY} // Use the API key here
+            apikey='AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY' // Use the API key here
             strokeColor="#6644ff"
             strokeWidth={4}
           />

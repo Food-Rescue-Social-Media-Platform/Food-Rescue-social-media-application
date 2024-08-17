@@ -8,6 +8,7 @@ export default ({ config }) => ({
     "expo-router"
   ],
   android: {
+    package: "com.mohammad_belbesi.socialApp",  // Added the package name here
     config: {
       googleMaps: {
         apiKey: process.env.GOOGLE_MAPS_API_KEY

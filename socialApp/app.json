@@ -1,0 +1,32 @@
+{
+    "expo": {
+      "name": "FOOD RESCUE",
+      "slug": "socialApp",
+      "version": "1.0.0",
+      "assetBundlePatterns": ["**/*"],
+      "android": {
+        "package": "com.mohammad_belbesi.socialApp",
+        "googleServicesFile": "./google-services.json",
+        "permissions": [
+          "ACCESS_BACKGROUND_LOCATION",
+          "ACCESS_COARSE_LOCATION",
+          "ACCESS_FINE_LOCATION"
+        ]
+      },
+      "web": {
+        "bundler": "metro"
+      },
+      "icon": "./assets/Images/FR_logo.png",
+      "splash": {
+        "image": "./assets/Images/FR_logo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
+      "extra": {
+        "eas": {
+          "projectId": "a3c76fc0-4054-4bdf-afb4-a432deb8da57"
+        }
+      }
+    }
+  }
+  

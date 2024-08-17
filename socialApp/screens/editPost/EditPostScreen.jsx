@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -8,6 +8,7 @@ import { database } from '../../firebase'; // Import the Firestore instance from
 import { doc, updateDoc } from "firebase/firestore";
 import { CheckBox } from 'react-native-elements';
 import { categoriesList } from '../../utils/categories';
+import { COLORS } from '../../styles/colors';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,8 @@ const EditPostScreen = ({ navigation, route }) => {
     const [postText, setPostText] = useState(item.postText);
     const [selectedCategory, setSelectedCategory] = useState(item.category); // Single selected option
     const options = categoriesList.map((category) => ({ label: category, value: category }));
+    const [loading, setLoading] = useState(false);
+
 
     // const options = [
     //     { label: 'Drinks', value: 'Drinks' },
@@ -66,6 +69,7 @@ const EditPostScreen = ({ navigation, route }) => {
                 text1: 'Validation Error',
                 text2: 'Phone number must be between 9 and 15 digits',
             });
+            setLoading(false);
             return;
         }
 
@@ -75,6 +79,7 @@ const EditPostScreen = ({ navigation, route }) => {
                 text1: 'Validation Error',
                 text2: 'Delivery time must be less than or equal to 30 characters',
             });
+            setLoading(false);
             return;
         }
 
@@ -84,10 +89,12 @@ const EditPostScreen = ({ navigation, route }) => {
                 text1: 'Validation Error',
                 text2: 'Post text must be less than or equal to 3000 characters',
             });
+            setLoading(false);
             return;
         }
 
         try {
+            setLoading(true);
             const postDocRef = doc(database, "posts", item.id);
             // update the post in the database with the new values
             await updateDoc(postDocRef, {
@@ -109,6 +116,7 @@ const EditPostScreen = ({ navigation, route }) => {
                 text1: 'Error',
                 text2: 'Failed to update post.',
             });
+            setLoading(false);
         }
     };
 
@@ -180,11 +188,13 @@ const EditPostScreen = ({ navigation, route }) => {
                 keyExtractor={(item) => item.value}
                 showsVerticalScrollIndicator={false}
             />
-
-            {/* Button to update the post */}
-            <TouchableOpacity style={[styles.button, { backgroundColor: theme.secondaryBackground }]} onPress={handleUpdatePost}>
-                <Text style={[styles.buttonText, { color: theme.primaryText }]}>{t('Update Post')}</Text>
-            </TouchableOpacity>
+            {loading ? (
+                <ActivityIndicator size="large" color={COLORS.primary} />
+            ) : (
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.secondaryBackground }]} onPress={handleUpdatePost}>
+                    <Text style={[styles.buttonText, { color: theme.primaryText }]}>{t('Update Post')}</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };

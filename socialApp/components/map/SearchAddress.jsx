@@ -30,8 +30,10 @@ function SearchAddress({style, onLocationSelected }) {
           onLocationSelected(data, details);
         }}
         query={{
-          key: {GOOGLE_MAPS_API_KEY},
+          key: GOOGLE_MAPS_API_KEY,
           language: 'en',
+          language: 'ar',
+          language: 'he',
         }}
         styles={{
           textInput: {

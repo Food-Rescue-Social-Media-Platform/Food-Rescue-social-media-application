@@ -5,16 +5,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
+import { 
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_DATABASE_URL,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID,
+  FIREBASE_MEASUREMENT_ID 
+} from '@env';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDiwU4JI2KtkDhg6uYMeL7125BmHtPQ_2A",
-    authDomain: "food-rescue-social-platform.firebaseapp.com",
-    databaseURL: "https://food-rescue-social-platform-default-rtdb.firebaseio.com",
-    projectId: "food-rescue-social-platform",
-    storageBucket: "food-rescue-social-platform.appspot.com",
-    messagingSenderId: "684711937854",
-    appId: "1:684711937854:web:aa16c5dfb5ff0fe8f68e6f",
-    measurementId: "G-P1SGVSNEJL"
+    apiKey: FIREBASE_API_KEY,
+    authDomain: FIREBASE_AUTH_DOMAIN,
+    databaseURL: FIREBASE_DATABASE_URL,
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+    appId: FIREBASE_APP_ID,
+    measurementId: FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

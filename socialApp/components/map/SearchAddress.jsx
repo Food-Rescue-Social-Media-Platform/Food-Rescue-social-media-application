@@ -1,16 +1,17 @@
 import React, { useRef } from 'react';
 import { useDarkMode } from '../../styles/DarkModeContext';
-import { StyleSheet,TouchableOpacity ,FlatList,TextInput,Button, Platform, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
-import { GOOGLE_MAPS_API_KEY } from '@env';
+import Constants from 'expo-constants'; // Import Constants
 
-function SearchAddress({style, onLocationSelected }) {
+function SearchAddress({ style, onLocationSelected }) {
   const { theme } = useDarkMode(); // Access the current theme
   const autocompleteRef = useRef();
   const { t } = useTranslation();
+  const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey; // Retrieve the API key
 
   const clearInput = () => {
     autocompleteRef.current?.setAddressText('');
@@ -26,14 +27,11 @@ function SearchAddress({style, onLocationSelected }) {
         returnKeyType={'default'}
         fetchDetails={true}
         onPress={(data, details = null) => {
-          // console.log('data', data);
           onLocationSelected(data, details);
         }}
         query={{
-          key: GOOGLE_MAPS_API_KEY,
-          language: 'en',
-          language: 'ar',
-          language: 'he',
+          key: GOOGLE_MAPS_API_KEY, // Use the API key here
+          language: 'en', // Choose the appropriate language
         }}
         styles={{
           textInput: {
@@ -46,10 +44,10 @@ function SearchAddress({style, onLocationSelected }) {
         }}
         renderLeftButton={() => (
           <MaterialCommunityIcons
-              name="map-marker"
-              size={26}
-              style={styles.iconContainer}
-        />
+            name="map-marker"
+            size={26}
+            style={styles.iconContainer}
+          />
         )}
         renderRightButton={() => (
           <TouchableOpacity onPress={clearInput} style={styles.clearButton}>
@@ -66,7 +64,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 1,
     backgroundColor: 'white',
-    // shadowColor: '#000',
     shadowOffset: { width: 0, height: 11 },
     shadowOpacity: 0.15,
     shadowRadius: 1.84,
@@ -84,25 +81,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    height:45,
+    height: 45,
     width: 45,
     backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 10,
     paddingLeft: 8,
-    }
-    ,clearButton: {
-      height: 45,
-      width: 45,
-      backgroundColor: 'white',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }
+  },
+  clearButton: {
+    height: 45,
+    width: 45,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
 
 export default SearchAddress;
-
 
 // enablePoweredByContainer={false}
 // styles={{

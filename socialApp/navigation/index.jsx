@@ -3,7 +3,7 @@ import Routes from './Routes';
 import { AuthProvider } from "./AuthProvider";
 import { Provider } from 'react-redux';
 import {AppRegistry} from 'react-native';
-import {name} from '../app.json';
+import {name} from '../app.config.js';
 import store from "../redux/store";
 
 const Providers = () => {    

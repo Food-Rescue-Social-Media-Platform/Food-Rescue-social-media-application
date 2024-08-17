@@ -465,7 +465,22 @@ const RootStackScreen = () => {
                 name="SharePost"
                 component={SharePostScreen}
                 options={({ route }) => ({
-                  title: '',
+                  headerTitle: t("post"),
+                  headerTitleAlign: 'center',
+                  headerTitleStyle: {
+                    color: themeColors.headerColor,
+                  },
+                  headerStyle: {
+                    backgroundColor: themeColors.appBackGroundColor,
+                    shadowColor: COLORS.white,
+                    elevation: 0,
+                  },
+                  headerBackTitleVisible: false,
+                  headerBackImage: () => (
+                    <View style={{ marginLeft: 15 }}>
+                      <Ionicons name="arrow-back" size={25} color={themeColors.headerColor} />
+                    </View>
+                  ),
                 })}
               />
               <RootStack.Screen

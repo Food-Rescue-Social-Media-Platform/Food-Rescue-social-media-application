@@ -11,8 +11,8 @@ function SearchAddress({ style, onLocationSelected }) {
   const { theme } = useDarkMode(); // Access the current theme
   const autocompleteRef = useRef();
   const { t } = useTranslation();
-  const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey; // Retrieve the API key
-
+  const GOOGLE_AUTOCOMPLETE_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey; // Retrieve the API key
+  
   const clearInput = () => {
     autocompleteRef.current?.setAddressText('');
   };
@@ -30,7 +30,7 @@ function SearchAddress({ style, onLocationSelected }) {
           onLocationSelected(data, details);
         }}
         query={{
-          key: GOOGLE_MAPS_API_KEY, // Use the API key here
+          key: GOOGLE_AUTOCOMPLETE_API_KEY, // Use the API key here
           language: 'en', // Choose the appropriate language
         }}
         styles={{

@@ -17,6 +17,7 @@ import { Message, addMessage, startListeningForMessages } from '../../FirebaseFu
 import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const SingleChat = ({ navigation }) => {
@@ -28,7 +29,7 @@ const SingleChat = ({ navigation }) => {
     const [msg, setMsg] = useState('');
     const [images, setImages] = useState([]);
     const chatContainerRef = useRef(null);
-    const { theme } = useDarkMode(); // Access the current theme
+    const { isDarkMode, setIsDarkMode, theme } = useDarkMode(); // Use full context
     const { t } = useTranslation();
 
   useEffect(() => {
@@ -78,9 +79,8 @@ const SingleChat = ({ navigation }) => {
             onContentSizeChange={() => chatContainerRef.current?.scrollToEnd({ animated: true })}
             keyExtractor={(item, index) => index.toString()}
             data={allMessages}
-            renderItem={({ item }) => <MsgComponent item={item} 
+            renderItem={({ item }) => <MsgComponent item={item} />}
             showsVerticalScrollIndicator={false}
-            />}
         />
 
         <View style={{ ...styles.containerFooter, backgroundColor: theme.secondaryTheme }}>
@@ -91,7 +91,7 @@ const SingleChat = ({ navigation }) => {
                 <MaterialCommunityIcons name="camera" size={24} color={theme.iconColor} />
             </TouchableOpacity>
 
-            <View style={{ ...styles.windowSend, backgroundColor: theme.white}}>
+            <View style={{ ...styles.windowSend, backgroundColor: theme.white }}>
                 <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
                     <TextInput
                         autoFocus={true}
@@ -105,9 +105,9 @@ const SingleChat = ({ navigation }) => {
                             fontSize: 16,
                             flex: 1,
                             aspectRatio: 10,
-                            minHeight: Platform.OS === 'web'? 50:200,
+                            minHeight: Platform.OS === 'web' ? 50 : 200,
                         }}
-                        placeholderTextColor={theme.secondaryText}
+                        placeholderTextColor={theme.primaryText} // Set placeholder color to theme.primaryText
                         returnKeyType="send"
                         blurOnSubmit={false}
                         onSubmitEditing={sendMsg}

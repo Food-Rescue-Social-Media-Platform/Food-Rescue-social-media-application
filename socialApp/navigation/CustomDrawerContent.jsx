@@ -163,10 +163,11 @@ const CustomDrawerContent = (props) => {
                       <CheckBox
                         style={styles.checkboxWrapper}
                         key={category.value}
-                        title={category.value}
+                        title={t(category.value)}
                         checked={selectedCategories.includes(category.value)}
                         onPress={() => handleClickCategory(category)}
                         containerStyle={[styles.checkboxWrapper, { backgroundColor: themeColors.theme,borderRadius:10 }]}
+                        textStyle={{ color: themeColors.black }} // Change the text color based on the theme
                       />
                     ))}
                   </View>

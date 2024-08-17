@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, FlatList, StyleSheet,Text, Platform, RefreshControl } from 'react-native';
+import { View, FlatList, StyleSheet, Text, Platform, RefreshControl } from 'react-native';
 import { ListItem, Avatar } from 'react-native-elements';
 import Entypo from 'react-native-vector-icons/Entypo';
 import { windowHeight, windowWidth } from '../../utils/Dimentions';
@@ -7,21 +7,20 @@ import { AuthContext } from '../../navigation/AuthProvider';
 import { getListChats } from '../../FirebaseFunctions/collections/chat';
 import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
-import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
+import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
+import { COLORS, DARKCOLORS } from '../../styles/colors';
 
 const HomeChat = ({ navigation }) => {
   const { user } = useContext(AuthContext);
-  const { theme } = useDarkMode(); // Access the current theme
   const [listChats, setListChats] = useState([]);
   const [search, setSearch] = useState('');
   const [userConnected, setUserConnected] = useState(null);
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
-
+  const { isDarkMode, setIsDarkMode, theme } = useDarkMode();
 
   useEffect(() => {
-  
     fetchData();
   }, []);
 
@@ -42,7 +41,7 @@ const HomeChat = ({ navigation }) => {
     <ListItem
       bottomDivider
       containerStyle={{ ...styles.listItem, backgroundColor: theme.listItemBackground }}
-      onPress={() => navigation.navigate('SingleChat', { receiverData: item, userConnected: userConnected })}
+      onPress={() => navigation.navigate('SingleChat', { receiverData: item, userConnected })}
     >
       {item.image ? (
         <Avatar source={{ uri: item.image }} rounded title={item.receiver} size="medium" />
@@ -62,14 +61,15 @@ const HomeChat = ({ navigation }) => {
     </ListItem>
   );
 
-
   const ListEmptyComponent = () => {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop:'50%' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: '50%' }}>
         <Entypo name="chat" size={80} color={theme.primaryText} />
-        <Text style={{fontWeight:'bold', fontSize:20, padding:10, marginTop:7}}>Nothing to see here</Text>
-        <Text style={{fontSize:15}}>Start a conversation with any of the {'\n'} users.
-              Your chats will show here </Text>
+        <Text style={[styles.boldText, { color: theme.primaryText }]}>Nothing to see here</Text>
+        <Text style={[styles.normalText, { color: theme.primaryText }]}>
+          Start a conversation with any of the{'\n'}
+          users. Your chats will show here
+        </Text>
       </View>
     );
   };
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     ...Platform.select({
-      web:{
+      web: {
         width: '70%',
         maxWidth: 500,
         alignSelf: 'left',
@@ -133,6 +133,15 @@ const styles = StyleSheet.create({
   },
   listItemSubtitle: {
     fontSize: 12,
+  },
+  boldText: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    padding: 10,
+    marginTop: 7,
+  },
+  normalText: {
+    fontSize: 15,
   },
 });
 

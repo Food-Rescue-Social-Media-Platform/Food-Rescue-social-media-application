@@ -37,6 +37,7 @@ const AddPostScreen = () => {
     const [showLocationModel, setShowLocationModel] = useState(false);
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [options, setOptions] = useState(
       categoriesList.map((category) => ({ value: category, label: t(category) }))
     );    
@@ -116,14 +117,16 @@ const AddPostScreen = () => {
 
   const handleAddPost = async () => {
     // console.log("Category to be saved:", category); // This should log the English category name
-
+    setLoading(true);
     if (postInput.length === 0) {
         setMessError('Please enter the post content');
+        setLoading(false);
         return;  
     }
 
     if (!location || typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
         showAlert("Location Alert", "Please add a valid location to publish the post");
+        setLoading(false);
         return;
     }
 
@@ -160,6 +163,7 @@ const AddPostScreen = () => {
     } catch (error) {
         console.error("Error adding post:", error);
         showAlert("Error", "Failed to add post. Please try again.");
+        setLoading(false);
     } finally {
         setIsPosting(false);
         setIsUploading(false);
@@ -217,9 +221,13 @@ const AddPostScreen = () => {
                           <Ionicons name="arrow-back" size={24} color={themeColors.headerColor} />
                       </TouchableOpacity>
                       <Text style={{ fontSize: 18, color: themeColors.headerColor, paddingHorizontal: Platform.OS === 'web' ? '44%' : '27%', marginBottom: 5 }}>{t('Create Post')}</Text>
-                      <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.theme }]} onPress={handleAddPost}>
+                      {loading ? (
+                        <ActivityIndicator size="large" color={COLORS.primary} />
+                      ) : (
+                        <TouchableOpacity style={[styles.button, { backgroundColor: themeColors.theme }]} onPress={handleAddPost}>
                           <Text style={{ fontSize: 15 }}>{t('Post')}</Text>
-                      </TouchableOpacity>
+                        </TouchableOpacity>
+                      )}
                   </View>
 
                   <ScrollView>

@@ -1,4 +1,13 @@
 {
-  "compilerOptions": {},
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "target": "es2017",       // You can adjust this target based on your project's requirements
+    "module": "esnext",       // Adjust this based on your project setup
+    "moduleResolution": "node",
+    "esModuleInterop": true,  // Useful for compatibility with CommonJS modules
+    "skipLibCheck": true,     // Skip type checking of declaration files
+    "jsx": "react-native"     // Specify JSX handling
+  },
   "extends": "expo/tsconfig.base"
 }

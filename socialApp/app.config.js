@@ -1,6 +1,7 @@
 export default ({ config }) => ({
   ...config,
   name: "FOOD RESCUE",
+  slug: "socialApp", // Add this line and ensure it matches your EAS project slug
   displayName: "FOOD RESCUE",
   version: "1.0.0",
   assetBundlePatterns: ["**/*"],
@@ -27,7 +28,7 @@ export default ({ config }) => ({
     bundler: "metro"
   },
   extra: {
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,  // Add your environment variable here
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     eas: {
       projectId: "a3c76fc0-4054-4bdf-afb4-a432deb8da57"
     }

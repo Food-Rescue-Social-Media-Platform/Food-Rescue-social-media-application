@@ -39,9 +39,9 @@ const Drawer = createDrawerNavigator();
 
 
 const FeedStack = ({ navigation, isHomeTabPressed }) => {
-  const { isDarkMode, theme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   const HomeComponent = Platform.OS === 'web' ? WebHomeScreen : HomeScreen;
   const ProfileComponent = Platform.OS === 'web' ? WebProfileScreen : ProfileScreen;
@@ -117,9 +117,9 @@ const FeedStack = ({ navigation, isHomeTabPressed }) => {
 };
 
 const ProfileStack = () => {
-  const { isDarkMode, theme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   const ProfileComponent = Platform.OS === 'web' ? WebProfileScreen : ProfileScreen;
 
@@ -153,9 +153,9 @@ const ProfileStack = () => {
 };
 
 const ChatStack = () => {
-  const { isDarkMode, theme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   return (
     <Stack.Navigator>
@@ -187,9 +187,9 @@ const ChatStack = () => {
 };
 
 const MapStack = () => {
-  const { isDarkMode, theme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
 
   return (
     <Stack.Navigator>
@@ -256,7 +256,7 @@ const DrawerNavigator = ({ isHomeTabPressed }) => {
 };
 
 const AppStack = () => {
-  const { isDarkMode, theme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
   const { t } = useTranslation();
   const [isHomeTabPressed, setIsHomeTabPressed] = useState(false);
@@ -377,7 +377,7 @@ const RootStackScreen = () => {
   const { user } = useContext(AuthContext); // Assuming you have access to the authenticated user
   const [isAdmin, setIsAdmin] = useState(false);
   const { t } = useTranslation();
-  const { isDarkMode, theme } = useDarkMode();
+  const { isDarkMode } = useDarkMode();
   const themeColors = isDarkMode ? DARKCOLORS : COLORS;
 
   const fetchUser = async (id) => {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
-import { useTheme } from 'react-native-paper';
+// import { useTheme } from 'react-native-paper';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

@@ -1,14 +1,13 @@
 import React, { useRef } from 'react';
 import { useDarkMode } from '../../styles/DarkModeContext';
-import { StyleSheet,TouchableOpacity ,FlatList,TextInput,Button, Platform, View } from 'react-native';
+import { StyleSheet,TouchableOpacity , View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTranslation } from 'react-i18next';
-import { GOOGLE_MAPS_API_KEY } from '@env';
+// import { GOOGLE_MAPS_API_KEY } from '@env';
 
 function SearchAddress({style, onLocationSelected }) {
-  const { theme } = useDarkMode(); // Access the current theme
   const autocompleteRef = useRef();
   const { t } = useTranslation();
 
@@ -32,8 +31,6 @@ function SearchAddress({style, onLocationSelected }) {
         query={{
           key: 'AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY',
           language: 'en',
-          language: 'ar',
-          language: 'he',
         }}
         styles={{
           textInput: {

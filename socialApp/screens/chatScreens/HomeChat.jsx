@@ -9,16 +9,16 @@ import { getDoc, doc } from 'firebase/firestore';
 import { database } from '../../firebase';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
-import { COLORS, DARKCOLORS } from '../../styles/colors';
+// import { COLORS, DARKCOLORS } from '../../styles/colors';
 
 const HomeChat = ({ navigation }) => {
   const { user } = useContext(AuthContext);
   const [listChats, setListChats] = useState([]);
-  const [search, setSearch] = useState('');
+  // const [search, setSearch] = useState('');
   const [userConnected, setUserConnected] = useState(null);
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
-  const { isDarkMode, setIsDarkMode, theme } = useDarkMode();
+  const { theme } = useDarkMode();
 
   useEffect(() => {
     fetchData();
@@ -65,10 +65,9 @@ const HomeChat = ({ navigation }) => {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: '50%' }}>
         <Entypo name="chat" size={80} color={theme.primaryText} />
-        <Text style={[styles.boldText, { color: theme.primaryText }]}>Nothing to see here</Text>
+        <Text style={[styles.boldText, { color: theme.primaryText }]}>{t('Nothing to see here')}</Text>
         <Text style={[styles.normalText, { color: theme.primaryText }]}>
-          Start a conversation with any of the{'\n'}
-          users. Your chats will show here
+          {t('Start a conversation with any of the users.\nYour chats will show here')}
         </Text>
       </View>
     );

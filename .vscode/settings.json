@@ -1,6 +1,4 @@
 {
-  "cSpell.words": [
-    "geofire"
-  ],
+  "cSpell.words": ["firestore", "geofire"],
   "java.configuration.updateBuildConfiguration": "interactive"
 }

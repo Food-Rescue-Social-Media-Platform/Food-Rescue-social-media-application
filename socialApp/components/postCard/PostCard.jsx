@@ -201,15 +201,16 @@ const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation
 
     const handleClickLocationPost = () => {
         if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) return;
-        
+        console.log('item:', item);
         navigation.navigate('MapTab', {
             screen: 'Map',
             params: {
-                id: item.id,
+                post:{
+                id: item.id,                
                 latitude: item.coordinates.latitude,
                 longitude: item.coordinates.longitude,
                 title: item.postText,
-                image: item.postImg[0],
+                image: item.postImg[0],}
             }
         });
     };
@@ -308,12 +309,12 @@ const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation
                                 renderButton={(selectedItem, isOpened) => (
                                     <View style={[styles.dropdownButtonStyle, { backgroundColor: theme.secondaryBackground }]}>
                                         {selectedItem && (
-                                            <Icon name={selectedItem.icon} style={[styles.dropdownButtonIconStyle, { color: theme.primaryText }]} />
+                                            <Icon name={selectedItem.icon} style={[styles.dropdownButtonIconStyle, { color: theme.lowContrastText }]} />
                                         )}
-                                        <Text style={[styles.dropdownButtonTxtStyle, { color: theme.primaryText }]}>
+                                        <Text style={[styles.dropdownButtonTxtStyle, { color: theme.lowContrastText }]}>
                                             {(selectedItem && t(selectedItem.title)) || t(item.status)}
                                         </Text>
-                                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={[styles.dropdownButtonArrowStyle, { color: theme.primaryText }]} />
+                                        <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={[styles.dropdownButtonArrowStyle, { color: theme.lowContrastText }]} />
                                     </View>
                                 )}
                                 renderItem={(item, index, isSelected) => (
@@ -369,17 +370,17 @@ const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation
 
             <InteractionWrapper>
                 <View style={styles.iconsWrapper}>
-                    {getCategoryIcon(item.category, theme.primaryText)}
-                    <Text style={[styles.text, { color: theme.primaryText }]}>{t(item.category)}</Text>
+                    {getCategoryIcon(item.category, theme.lowContrastText)}
+                    <Text style={[styles.text, { color: theme.lowContrastText }]}>{t(item.category)}</Text>
                 </View>
                 <View style={styles.iconsWrapper}>
-                    <MaterialCommunityIcons name="clock" size={22} color={theme.primaryText} />
-                    <Text style={[styles.text, { color: theme.primaryText }]}>{postDate}</Text>
+                    <MaterialCommunityIcons name="clock" size={22} color={theme.lowContrastText} />
+                    <Text style={[styles.text, { color: theme.lowContrastText }]}>{postDate}</Text>
                 </View>
                 {haveSharedLocation && !isProfilePage && isMapPostCard==false &&(
                     <TouchableOpacity style={[styles.iconsWrapper]} onPress={handleClickLocationPost}>
-                        <MaterialCommunityIcons name="map-marker" size={22} color={theme.primaryText} />
-                        <Text style={[styles.text, { color: theme.primaryText }]}>{distance}</Text>
+                        <MaterialCommunityIcons name="map-marker" size={22} color={theme.lowContrastText} />
+                        <Text style={[styles.text, { color: theme.lowContrastText }]}>{distance}</Text>
                     </TouchableOpacity>
                 )}
             </InteractionWrapper>
@@ -388,14 +389,14 @@ const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation
                 <InteractionWrapper style={{ backgroundColor: theme.secondaryBackground }}>
                     {item.phoneNumber && (
                         <View style={styles.iconsWrapper}>
-                            <MaterialCommunityIcons name="phone" size={22} color={theme.primaryText} />
-                            <Text style={[styles.text, { color: theme.primaryText }]}>{item.phoneNumber}</Text>
+                            <MaterialCommunityIcons name="phone" size={22} color={theme.lowContrastText} />
+                            <Text style={[styles.text, { color: theme.lowContrastText }]}>{item.phoneNumber}</Text>
                         </View>
                     )}
                     {item.deliveryRange && (
                         <View style={styles.iconsWrapper}>
-                            <MaterialCommunityIcons name="bus-clock" size={22} color={theme.primaryText} />
-                            <Text style={[styles.text, { color: theme.primaryText }]}>{item.deliveryRange}</Text>
+                            <MaterialCommunityIcons name="bus-clock" size={22} color={theme.lowContrastText} />
+                            <Text style={[styles.text, { color: theme.lowContrastText }]}>{item.deliveryRange}</Text>
                         </View>
                     )}
                 </InteractionWrapper>

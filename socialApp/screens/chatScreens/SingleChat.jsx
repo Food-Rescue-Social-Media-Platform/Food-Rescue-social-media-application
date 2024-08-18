@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -15,21 +15,21 @@ import MsgComponent from "../../components/chat/MsgComponent";
 import { windowHeight, windowWidth } from "../../utils/Dimentions";
 import { Message, addMessage, startListeningForMessages } from '../../FirebaseFunctions/collections/message';
 import { openGalereAndSelectImages, openCameraAndTakePicture } from '../../hooks/OperationComponents/OpeningComponentsInPhone';
-import { AuthContext } from '../../navigation/AuthProvider';
+// import { AuthContext } from '../../navigation/AuthProvider';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import the dark mode context
-import { COLORS, DARKCOLORS } from '../../styles/colors';
+// import { COLORS, DARKCOLORS } from '../../styles/colors';
 import { useTranslation } from 'react-i18next';
 
 const SingleChat = ({ navigation }) => {
     const route = useRoute();
-    const { user } = useContext(AuthContext);
+    // const { user } = useContext(AuthContext);
     const receiverData = route.params.receiverData;
     const userData = route.params.userConnected; 
     const [allMessages, setAllMessages] = useState([]);
     const [msg, setMsg] = useState('');
     const [images, setImages] = useState([]);
     const chatContainerRef = useRef(null);
-    const { isDarkMode, setIsDarkMode, theme } = useDarkMode(); // Use full context
+    const { theme } = useDarkMode(); // Use full context
     const { t } = useTranslation();
 
   useEffect(() => {

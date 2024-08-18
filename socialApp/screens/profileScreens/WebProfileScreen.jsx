@@ -6,7 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { database } from '../../firebase';
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import AddPostCard from '../../components/addPost/AddPostCard';
-import PostCard from '../../components/postCard/PostCard';
+// import PostCard from '../../components/postCard/PostCard';
 import WebPostCard from '../../components/postCard/webPostCard'
 import { Container } from '../../styles/feedStyles';
 import { COLORS, DARKCOLORS } from '../../styles/colors';

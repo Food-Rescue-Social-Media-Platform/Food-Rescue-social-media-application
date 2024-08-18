@@ -19,16 +19,19 @@ const HomeChat = ({ navigation }) => {
   const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const { theme } = useDarkMode();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = async () => {
+    setIsLoading(true);
     const user_data = await fetchUser(user.uid);
     user_data.id = user.uid;
     setUserConnected(user_data);
     getListChats(user.uid, setListChats);
+    setIsLoading(false);
   };
 
   const onRefresh = async () => {
@@ -62,6 +65,7 @@ const HomeChat = ({ navigation }) => {
   );
 
   const ListEmptyComponent = () => {
+    if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', marginTop: '50%' }}>
         <Entypo name="chat" size={80} color={theme.primaryText} />
@@ -71,6 +75,7 @@ const HomeChat = ({ navigation }) => {
         </Text>
       </View>
     );
+    }
   };
 
   return (

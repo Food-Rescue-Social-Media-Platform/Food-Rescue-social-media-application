@@ -12,7 +12,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
   const navigation = useNavigation();
   const [ distance, setDistance ] = useState('Calculating...');
   const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
-  const { isDarkMode, theme } = useDarkMode(); // Use the hook to get the current theme
+  const { isDarkMode } = useDarkMode(); // Use the hook to get the current theme
   const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
 
   useEffect(() => {

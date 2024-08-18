@@ -14,7 +14,7 @@ import { Chat, addChat, fetchChat } from '../../FirebaseFunctions/collections/ch
 import uuid from 'react-native-uuid';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import { useTranslation } from 'react-i18next';
-import PostsList from '../../components/postsLIst/PostsList';
+// import PostsList from '../../components/postsLIst/PostsList';
 import { getPostsOfUser } from '../../FirebaseFunctions/collections/post';
 import ProfileSkeletonPlaceholder from '../../components/CustomSkeletonPlaceholder/ProfileSkeletonPlaceholder'; // Import the skeleton component
 import { fetchHistoryPostsFromUserToUserFollow } from '../../FirebaseFunctions/collections/feedFollowers';

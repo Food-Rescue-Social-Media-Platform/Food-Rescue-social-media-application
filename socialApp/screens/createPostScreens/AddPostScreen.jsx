@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 const AddPostScreen = () => {
     const navigation = useNavigation();
     const { t } = useTranslation();
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [userConnected, setUserConnected] = useState(null);
     const [postInput, setPostInput] = useState('');
     const [category, setCategory] = useState('');
@@ -38,11 +38,11 @@ const AddPostScreen = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [options, setOptions] = useState(
+    const [options] = useState(
       categoriesList.map((category) => ({ value: category, label: t(category) }))
     );    
     const [ messError, setMessError ] = useState('');
-    const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
+    const [ setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
     const [isPosting, setIsPosting] = useState(false);
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;  

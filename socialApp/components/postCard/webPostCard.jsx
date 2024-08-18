@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, Platform, Share, ScrollView, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Share, ScrollView } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';

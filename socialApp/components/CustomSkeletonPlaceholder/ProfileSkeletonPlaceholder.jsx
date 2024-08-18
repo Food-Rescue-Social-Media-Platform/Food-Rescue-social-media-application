@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, Platform, ScrollView} from 'react-native';
+import { View, StyleSheet, ScrollView} from 'react-native';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { useDarkMode } from '../../styles/DarkModeContext';
 import AddPostCardSkeletonPlaceholder from './AddPostCardSkeletonPlaceholder';
 
-const { width: screenWidth, height: windowHeight } = Dimensions.get('window');
+// const { width: screenWidth, height: windowHeight } = Dimensions.get('window');
 
 const ProfileSkeletonPlaceholder = () => {
   const { theme } = useDarkMode();

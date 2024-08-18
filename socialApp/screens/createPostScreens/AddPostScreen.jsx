@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 const AddPostScreen = () => {
     const navigation = useNavigation();
     const { t } = useTranslation();
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [userConnected, setUserConnected] = useState(null);
     const [postInput, setPostInput] = useState('');
     const [category, setCategory] = useState('');
@@ -38,11 +38,11 @@ const AddPostScreen = () => {
     const [selectedOptions, setSelectedOptions] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [options, setOptions] = useState(
+    const [options] = useState(
       categoriesList.map((category) => ({ value: category, label: t(category) }))
     );    
     const [ messError, setMessError ] = useState('');
-    const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
+    const [ setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
     const [isPosting, setIsPosting] = useState(false);
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;  
@@ -539,11 +539,6 @@ const styles = StyleSheet.create({
       },  
     }),
   },
-  iconsWrapper: {
-    flexDirection: "row",
-    height: 50,
-    width: "100%",
-  },
   icon: {
     marginHorizontal: 10,
     marginVertical: 5,
@@ -557,19 +552,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     height: "92%",
     minHeight: windowHeight - 200,
-  },
-  postInput: {
-    height: "50%",
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 10,
-    // marginVertical: 14,
-  },
-  timeInput: {
-    borderWidth: 1,
-    padding: 10,
-    borderColor: "gray",
-    // marginVertical: 14,
   },
   button: {
     padding: 10,

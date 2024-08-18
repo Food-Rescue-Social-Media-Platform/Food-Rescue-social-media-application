@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ShimmerPlaceholder from 'react-native-shimmer-placeholder';
 import { useDarkMode } from '../../styles/DarkModeContext';
 
-const { width: screenWidth, height: windowHeight } = Dimensions.get('window');
+// const { width: screenWidth, height: windowHeight } = Dimensions.get('window');
 
 const PostCardSkeletonPlaceholder = () => {
   const { theme } = useDarkMode();
@@ -82,12 +82,6 @@ const styles = StyleSheet.create({
   postImage: {
     width: '100%',
     height: 220, // Increased height for the post image
-  },
-  interactionWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
   },
   placeholderText: {
     width: '97%',

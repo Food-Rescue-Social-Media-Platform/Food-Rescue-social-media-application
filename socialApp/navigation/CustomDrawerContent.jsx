@@ -22,7 +22,7 @@ const CustomDrawerContent = (props) => {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [currentFeedChoice, setCurrentFeedChoice] = useState('For You');
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [categories, setCategories] = useState(categoriesList.map((category) => ({ label: category, value: category })));
+  const [categories] = useState(categoriesList.map((category) => ({ label: category, value: category })));
   const [isForYou, setIsForYou] = useState(true);
   const [categoriesFilterOpen, setCategoriesFilterOpen] = useState(false);
   const [radiusFilterOpen, setRadiusFilterOpen] = useState(false);

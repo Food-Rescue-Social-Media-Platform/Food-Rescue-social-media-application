@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 const AddPostCard = () => {
     const navigation = useNavigation();
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [userConnected, setUserConnected] = useState(null);
     const { isDarkMode } = useDarkMode();
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;

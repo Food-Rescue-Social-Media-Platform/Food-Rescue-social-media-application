@@ -18,8 +18,8 @@ const MapScreen = () => {
   const [postDestination, setPostDestination] = useState(null);
   const [locationMarkers, setLocationMarkers] = useState([]);
   const [region, setRegion] = useState();
-  const [loading, setLoading] = useState(false);
-  const [locationFromSearch, setLocationFromSearch] = useState(null);
+  const [setLoading] = useState(false);
+  const [setLocationFromSearch] = useState(null);
   const [postFromFeed, setPostFromFeed] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isModalVisible, setModalVisible] = useState(false);

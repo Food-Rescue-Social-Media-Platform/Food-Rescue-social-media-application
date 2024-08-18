@@ -168,7 +168,6 @@ const styles = StyleSheet.create({
   columnHeaderPostId: {
     fontWeight: 'bold',
     paddingVertical: 20,
-    paddingLeft:20,
     paddingLeft:95,
   },
   columnHeaderPostImg: {

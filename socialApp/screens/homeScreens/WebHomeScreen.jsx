@@ -10,7 +10,7 @@ import { getPostsWithFiltersForWeb, getPostsFromFollowersForWeb } from '../../Fi
 
 const WebHomeScreen = () => {
     const route = useRoute();
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
     const [firstFetchForYou, setFirstFetchForYou] = useState(true);
     const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
@@ -19,7 +19,7 @@ const WebHomeScreen = () => {
     const [error, setError] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
     const [loadingMore, setLoadingMore] = useState(false);
-    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [setIsLoadingMore] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [feedChoice, setFeedChoice] = useState('For You');
     const { theme } = useDarkMode();

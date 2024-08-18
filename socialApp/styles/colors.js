@@ -9,6 +9,7 @@ export const COLORS = {
     skeletonSecondaryThemeWrapper: '#CEF0D3',
     primaryText: '#000',
     secondaryText: '#fff',
+    lowContrastText: '#000',
     borderColor: '#000',
     themeColor: '#56D06B',
     messageNotME: '#E5E5E5',
@@ -34,6 +35,7 @@ export const DARKCOLORS = {
     secondaryBackground: '#A7EAAE', // Darker secondary background
     primaryText: '#fff', // Light text for dark backgrounds
     secondaryText: '#000', // Dark text for lighter elements in dark mode
+    lowContrastText: '#000', 
     borderColor: '#fff', // Light border color
     themeColor: '#4CAF50', // Adjusted dark mode theme color
     messageNotME: '#424242', // Dark mode message background

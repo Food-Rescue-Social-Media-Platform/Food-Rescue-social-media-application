@@ -27,6 +27,7 @@ const MapScreen = () => {
   const [locationSubscription, setLocationSubscription] = useState(null); // for watching location
   const [initialPostsLoaded, setInitialPostsLoaded] = useState(false);
   const radiusInMeters = 10000;
+  const [ lastPost, setLastPost ] = useState(null);
 
   useEffect(() => {
     const loadMapComponent = async () => {
@@ -67,71 +68,27 @@ const MapScreen = () => {
 
   useEffect(() => {
     if (isFocused) {
-      setPostFromFeed(route.params ? route.params : null);
-      // setModalVisible(true);
-      // selectedPost(route.params ? route.params : null);
       fetchLocation();
     } else {
       resetStates();
     }
   }, [isFocused]);
 
-  
+
   useEffect(() => {
-    if (isFocused) {
-      console.log("route params", route.params);
-      const routeParams = route.params;
-      if (routeParams && routeParams.post) {
-        console.log("post from feed", routeParams.post);
-        setPostFromFeed(routeParams.post);
-        setSelectedPost(routeParams.post);
-        setModalVisible(true);
-      }
-      fetchLocation();
-    } else {
-      resetStates();
+    if (isFocused && route.params?.post && route.params.post !== lastPost) {
+      console.log("post from feed", route.params.post);
+      setLastPost(route.params.post);
+      setPostFromFeed(route.params.post);
+      setSelectedPost(route.params.post);
+      setModalVisible(true);
+    }
+    else{
+      setPostFromFeed(null);
+      setSelectedPost(null);
+      setModalVisible(false);
     }
   }, [isFocused, route.params]);
-
-  // useEffect(() => {
-  //   if (postFromFeed && isFocused) {
-  //     mapRef.current?.animateToRegion({
-  //       latitude: postFromFeed.latitude,
-  //       longitude: postFromFeed.longitude,
-  //       latitudeDelta: 0.0001,
-  //       longitudeDelta: 0.0001,
-  //     }, 500);
-  //   }
-  // }, [postFromFeed, isFocused]);
-
-  // useEffect(() => {
-  //   if (position && !initialPostsLoaded) {
-  //     fetchPosts(position);
-  //     setInitialPostsLoaded(true);
-  //   } else if (position && region) {
-  //     const distance = getDistance(region.latitude, region.longitude, position.latitude, position.longitude);
-  //     if (distance > radiusInMeters) {
-  //       setRegion({
-  //         latitude: position.latitude,
-  //         longitude: position.longitude,
-  //         latitudeDelta: region.latitudeDelta,
-  //         longitudeDelta: region.longitudeDelta
-  //       });
-  //       fetchPosts(position);
-  //     }
-  //   }
-  // }, [position, initialPostsLoaded]);
-
-  // useEffect(() => {
-  //   if (postFromFeed && isFocused) {
-  //     mapRef.current?.animateToRegion({
-  //       latitude: postFromFeed.latitude,
-  //       longitude: postFromFeed.longitude,
-  //       latitudeDelta: 0.0001,
-  //       longitudeDelta: 0.0001,
-  //     }, 500);
-  //   }
-  // }, [postFromFeed]);
 
   useEffect(() => {
     return () => {

@@ -6,7 +6,7 @@ import { Image } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 
 const MsgComponent = (props) => {
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const { item } = props;
     const formatDate = moment(item.sentTime).format('LT');
     

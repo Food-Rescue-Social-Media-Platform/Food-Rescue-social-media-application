@@ -17,14 +17,14 @@ import Toast from 'react-native-toast-message';
 const EditProfile = ({ navigation, route }) => {
     const { userData } = route.params;
     const { user } = useContext(AuthContext);
-    const { isDarkMode, theme } = useDarkMode();
+    const { theme } = useDarkMode();
     const [userProfileCover, setUserProfileCover] = useState(userData?.profileCover || '');
     const [userProfileImage, setUserProfileImage] = useState(userData?.profileImg || '');
     const [firstName, setFirstName] = useState(userData?.firstName || '');
     const [lastName, setLastName] = useState(userData?.lastName || '');
     const [phone, setPhone] = useState(userData?.phoneNumber || '');
     const [email, setEmail] = useState(userData?.email || '');
-    const [userName, setUserName] = useState(userData?.userName || '');
+    const [userName] = useState(userData?.userName || '');
     const [bio, setUserBio] = useState(userData?.bio || '');
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation();

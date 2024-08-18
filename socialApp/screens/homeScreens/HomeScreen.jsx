@@ -32,7 +32,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [permissionDenied, setPermissionDenied] = useState(false);
   const { theme } = useDarkMode();
   const isFocused = useIsFocused();
-  const [showAddPostCard, setShowAddPostCard] = useState(false);
+  const [setShowAddPostCard] = useState(false);
 
   const fetchData = async (loadMore = false) => {
     // if position is null and feedChoice is 'For You', return

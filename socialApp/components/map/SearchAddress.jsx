@@ -32,8 +32,6 @@ function SearchAddress({style, onLocationSelected }) {
         query={{
           key: 'AIzaSyDsrEf0oqU7R84Ta6WvGf29klHMQbVBCJY',
           language: 'en',
-          language: 'ar',
-          language: 'he',
         }}
         styles={{
           textInput: {

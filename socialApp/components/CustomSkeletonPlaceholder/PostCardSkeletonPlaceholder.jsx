@@ -83,12 +83,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 220, // Increased height for the post image
   },
-  interactionWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 10,
-  },
   placeholderText: {
     width: '97%',
     height: 15,

@@ -539,11 +539,6 @@ const styles = StyleSheet.create({
       },  
     }),
   },
-  iconsWrapper: {
-    flexDirection: "row",
-    height: 50,
-    width: "100%",
-  },
   icon: {
     marginHorizontal: 10,
     marginVertical: 5,
@@ -557,19 +552,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     height: "92%",
     minHeight: windowHeight - 200,
-  },
-  postInput: {
-    height: "50%",
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 10,
-    // marginVertical: 14,
-  },
-  timeInput: {
-    borderWidth: 1,
-    padding: 10,
-    borderColor: "gray",
-    // marginVertical: 14,
   },
   button: {
     padding: 10,

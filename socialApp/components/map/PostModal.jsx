@@ -7,6 +7,7 @@ import { calDistanceUserToPost } from '../../hooks/helpersMap/calDistanceUserToP
 import { useNavigation } from '@react-navigation/native';
 import { useDarkMode } from '../../styles/DarkModeContext'; // Import useDarkMode hook
 import { COLORS, DARKCOLORS } from '../../styles/colors';
+import { useTranslation } from 'react-i18next';
 
 const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUserPosition }) => {
   const navigation = useNavigation();
@@ -14,6 +15,8 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
   const [ haveSharedLocation, setHaveSharedLocation ] = useState(false);
   const { isDarkMode } = useDarkMode(); // Use the hook to get the current theme
   const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     const fetchDistance = async () => {
@@ -80,7 +83,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
                               onPress={handleNavigatePress}
                               style={[styles.buttonNavigate, { backgroundColor:themeColors.secondaryBackground }]}
                           >
-                              <Text style={[styles.text, {fontWeight:'bold', color:themeColors.black}]}>Navigate</Text>
+                              <Text style={[styles.text, {fontWeight:'bold', color:themeColors.black}]}>{t('Navigate')}</Text>
                           </TouchableOpacity>
                       </View>
                   </View>

@@ -201,15 +201,16 @@ const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation
 
     const handleClickLocationPost = () => {
         if (!userLocation || !item.coordinates || item.coordinates === 'undefined' || item.coordinates.length < 2) return;
-        
+        console.log('item:', item);
         navigation.navigate('MapTab', {
             screen: 'Map',
             params: {
-                id: item.id,
+                post:{
+                id: item.id,                
                 latitude: item.coordinates.latitude,
                 longitude: item.coordinates.longitude,
                 title: item.postText,
-                image: item.postImg[0],
+                image: item.postImg[0],}
             }
         });
     };

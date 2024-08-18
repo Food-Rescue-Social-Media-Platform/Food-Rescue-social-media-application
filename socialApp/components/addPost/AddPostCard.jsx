@@ -69,7 +69,7 @@ const AddPostCard = () => {
                             }
                         ]}
                     >
-                        <Text style={[styles.mainText, { color: themeColors.primaryText }]}>{t('Share food...')}</Text>
+                        <Text style={[styles.mainText, { color: themeColors.lowContrastText }]}>{t('Share food...')}</Text>
                     </Animated.View>
                 </TouchableOpacity>
                 <Icons

@@ -354,7 +354,7 @@ const EditProfile = ({ navigation, route }) => {
                     {loading ? (
                         <ActivityIndicator size="small" color={theme.primaryText} />
                     ) : (
-                        <Text style={[styles.panelButtonTitle, { color: theme.primaryText }]}>{t('Submit')}</Text>
+                        <Text style={[styles.panelButtonTitle, { color: theme.lowContrastText }]}>{t('Submit')}</Text>
                     )}
                 </TouchableOpacity>
             </ScrollView>

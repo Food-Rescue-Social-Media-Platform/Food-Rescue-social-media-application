@@ -42,7 +42,7 @@ const AddPostScreen = () => {
       categoriesList.map((category) => ({ value: category, label: t(category) }))
     );    
     const [ messError, setMessError ] = useState('');
-    const [ setShowInputAddPhone ] = useState(false);
+    const [ showInputAddPhone, setShowInputAddPhone ] = useState(false);
     const { isDarkMode } = useDarkMode();
     const [isPosting, setIsPosting] = useState(false);
     const themeColors = isDarkMode ? DARKCOLORS : COLORS;  
@@ -291,7 +291,7 @@ const AddPostScreen = () => {
                     <Entypo
                       name="camera"
                       size={26}
-                      color={themeColors.primaryText}
+                      color={themeColors.lowContrastText}
                       onPress={handleOpenCamera}
                       style={styles.icon}
                     />
@@ -300,7 +300,7 @@ const AddPostScreen = () => {
                     <MaterialIcons
                       name="photo-library"
                       size={26}
-                      color={themeColors.primaryText}
+                      color={themeColors.lowContrastText}
                       onPress={handleAddImages}
                       style={styles.icon}
                     />
@@ -309,7 +309,7 @@ const AddPostScreen = () => {
                     <MaterialCommunityIcons
                       name="map-marker"
                       size={26}
-                      color={themeColors.primaryText}
+                      color={themeColors.lowContrastText}
                       onPress={() => setShowLocationModel(true)}
                       style={styles.icon}
                     />
@@ -318,7 +318,7 @@ const AddPostScreen = () => {
                     <MaterialCommunityIcons
                       name="phone"
                       size={26}
-                      color={themeColors.primaryText}
+                      color={themeColors.lowContrastText}
                       onPress={handelAddPhone}
                       style={styles.icon}
                     />
@@ -327,7 +327,7 @@ const AddPostScreen = () => {
                     <MaterialIcons
                       name="category"
                       size={26}
-                      color={themeColors.primaryText}
+                      color={themeColors.lowContrastText}
                       onPress={handelAddCategory}
                       style={styles.icon}
                     />
@@ -371,14 +371,14 @@ const AddPostScreen = () => {
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                       text={t('Yes')}
-                                      styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                      styleText={{ fontSize: 17, color: themeColors.lowContrastText, fontWeight: 'bold'}}
                                       onPress={() => { if(!phoneNumber.length) return; setModalPhoneVisible(false);}}
                                   />
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                       text={t('No')}
-                                      styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                      styleText={{ fontSize: 17, color: themeColors.lowContrastText }}
                                       onPress={() => { setModalPhoneVisible(false) }}
                                   />
                               </View>
@@ -403,7 +403,7 @@ const AddPostScreen = () => {
                                           title={option.label} // Display translated label
                                           checked={selectedOptions.includes(option.label)}
                                           onPress={() => handleCheck(option)} // Handle selection
-                                          textStyle={{ color: themeColors.primaryText }}
+                                          textStyle={{ color: themeColors.lowContrastText }}
                                           containerStyle={{ backgroundColor: themeColors.secondaryBackground }}
                                       />
                                   ))}
@@ -412,7 +412,7 @@ const AddPostScreen = () => {
                               <MyButton
                                   style={[styles.button, { borderRadius: 20, backgroundColor: themeColors.secondaryBackground }]}
                                   text={t('Select')}
-                                  styleText={{ fontSize: 15, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                  styleText={{ fontSize: 15, color: themeColors.lowContrastText, fontWeight: 'bold'}}
                                   onPress={handleCloseCategoryModal}
                               />
 
@@ -456,14 +456,14 @@ const AddPostScreen = () => {
                                   <MyButton
                                     style={{ backgroundColor: themeColors.secondaryBackground, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                     text={t('Yes')}
-                                    styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold' }}
+                                    styleText={{ fontSize: 17, color: themeColors.lowContrastText, fontWeight: 'bold' }}
                                     onPress={() => {setShowLocationModel(false);}}
                                   />
 
                                   <MyButton
                                     style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                     text={t('No')}
-                                    styleText={{ fontSize: 17, color: themeColors.primaryText}}
+                                    styleText={{ fontSize: 17, color: themeColors.lowContrastText}}
                                     onPress={() => { setLocation(''); setShowLocationModel(false) }}
                                   />
                               </View>
@@ -486,14 +486,14 @@ const AddPostScreen = () => {
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                       text={t('Yes')}
-                                      styleText={{ fontSize: 17, color: themeColors.primaryText }}
+                                      styleText={{ fontSize: 17, color: themeColors.lowContrastText }}
                                       onPress={confirmClose}
                                   />
 
                                   <MyButton
                                       style={{ backgroundColor: themeColors.secondaryBackground, marginLeft: 10, padding: 10, borderRadius: 5, width: '15%', alignItems: 'center'}}
                                       text={t('No')}
-                                      styleText={{ fontSize: 17, color: themeColors.primaryText, fontWeight: 'bold'}}
+                                      styleText={{ fontSize: 17, color: themeColors.lowContrastText, fontWeight: 'bold'}}
                                       onPress={() => { setModalCloseVisible(false) }}
                                   />
                               </View>

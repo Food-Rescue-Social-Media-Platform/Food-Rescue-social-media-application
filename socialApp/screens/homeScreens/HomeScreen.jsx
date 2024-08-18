@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { StyleSheet, FlatList, ActivityIndicator, RefreshControl,TouchableOpacity, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, View, Text, ScrollView } from 'react-native';
 import { AuthContext } from '../../navigation/AuthProvider';
 import { Container } from '../../styles/feedStyles';
 import PostCard from '../../components/postCard/PostCard';
@@ -19,7 +19,7 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [firstFetchForYou, setFirstFetchForYou] = useState(true);
   const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);
   const [lastVisibleForYou, setLastVisibleForYou] = useState(null);
-  const [lastVisibleForFollowers, setLastVisibleFollowers ] = useState(null); 
+  const [lastVisibleForFollowers, setLastVisibleFollowers] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -32,22 +32,16 @@ const HomeScreen = ({ isHomeTabPressed }) => {
   const [permissionDenied, setPermissionDenied] = useState(false);
   const { theme } = useDarkMode();
   const isFocused = useIsFocused();
-  const [setShowAddPostCard] = useState(false);
+  const [showAddPostCard, setShowAddPostCard] = useState(false);
+  const [showNoPostsMessage, setShowNoPostsMessage] = useState(false); // New state
 
   const fetchData = async (loadMore = false) => {
-    // if position is null and feedChoice is 'For You', return
     if (!position && feedChoice === 'For You') {
       console.info("No position found");
       return;
     }
 
-    // if loadMore is true, get the lastVisibleDoc from state
-    // if (!loadMore && !lastVisibleForYou && (!firstFetchForYou || !firstFetchFollowing) && !refreshing) {
-    //   console.log("No lastVisibleForYou found for initial load");
-    //   return;
-    // }
     try {
-      // set loading to true before fetching data
       if (loadMore) {
         setLoadingMore(true);
       } else {
@@ -55,45 +49,39 @@ const HomeScreen = ({ isHomeTabPressed }) => {
       }
 
       let newPosts = [];
-      let lastVisibleDoc; // lastVisibleDoc for pagination
+      let lastVisibleDoc;
 
       if (feedChoice === 'For You') {
-            lastVisibleDoc = loadMore ? lastVisibleForYou : null; // get lastVisibleDoc for pagination
-            // get posts with filters
-            const result = await getPostsWithFilters(
-              [position.latitude, position.longitude],
-              radius,
-              user.uid,
-              selectedCategories,
-              lastVisibleDoc,
-            );
-            newPosts = result?.posts;
-            lastVisibleDoc = result?.lastVisible;
-            setLastVisibleForYou(lastVisibleDoc);
-            setFirstFetchFollowing(false); // set firstFetchFollowing to false after fetching data of 'For You'
-      } 
-      else {
-            lastVisibleDoc = loadMore ? lastVisibleForFollowers : null; // get lastVisibleDoc for pagination
-            // get posts from followers
-            const result = await getPostsFromFollowers(user.uid, lastVisibleDoc, firstFetchFollowing);
-            newPosts = result?.posts;
-            lastVisibleDoc = result?.lastVisible;
-            setLastVisibleFollowers(lastVisibleDoc);
-            setFirstFetchForYou(false); // set firstFetchForYou to false after fetching data of 'Following'
+        lastVisibleDoc = loadMore ? lastVisibleForYou : null;
+        const result = await getPostsWithFilters(
+          [position.latitude, position.longitude],
+          radius,
+          user.uid,
+          selectedCategories,
+          lastVisibleDoc,
+        );
+        newPosts = result?.posts;
+        lastVisibleDoc = result?.lastVisible;
+        setLastVisibleForYou(lastVisibleDoc);
+        setFirstFetchFollowing(false);
+      } else {
+        lastVisibleDoc = loadMore ? lastVisibleForFollowers : null;
+        const result = await getPostsFromFollowers(user.uid, lastVisibleDoc, firstFetchFollowing);
+        newPosts = result?.posts;
+        lastVisibleDoc = result?.lastVisible;
+        setLastVisibleFollowers(lastVisibleDoc);
+        setFirstFetchForYou(false);
       }
 
-      // if loadMore is true, append newPosts to the existing posts
       if (loadMore) {
         setPosts(prevPosts => [...prevPosts, ...newPosts]);
       } else {
         setPosts(newPosts);
       }
 
-      // set firstFetchForYou and firstFetchFollowing to false after fetching data
-      if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(true);
-      if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(true);
+      if (feedChoice === 'For You' && firstFetchForYou) setFirstFetchForYou(false);
+      if (feedChoice === 'Following' && firstFetchFollowing) setFirstFetchFollowing(false);
 
-      // set loading to false after fetching data
       setLoading(false);
       setLoadingMore(false);
     } catch (error) {
@@ -106,8 +94,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
 
   useEffect(() => {
     const fetchLocationAndPosts = async () => {
-      if(!permissionDenied) {
-          await getLocation(setPosition, null, setPermissionDenied);
+      if (!permissionDenied) {
+        await getLocation(setPosition, null, setPermissionDenied);
       }
     };
     fetchLocationAndPosts();
@@ -140,8 +128,9 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     const timer = setTimeout(() => {
       if (posts.length === 0) {
         setShowAddPostCard(true);
+        setShowNoPostsMessage(true); // Show the message after 6 seconds
       }
-    }, 3000);
+    }, 6000);
     return () => clearTimeout(timer);
   }, [posts]);
 
@@ -165,9 +154,8 @@ const HomeScreen = ({ isHomeTabPressed }) => {
     setRefreshing(false);
   };
 
-  // Load more posts when end of the list is reached
   const loadMore = async () => {
-    if (!loadingMore && (lastVisibleForYou || lastVisibleForFollowers) ) {
+    if (!loadingMore && (lastVisibleForYou || lastVisibleForFollowers)) {
       setLoadingMore(true);
       if (position) {
         await fetchData(true);
@@ -182,87 +170,80 @@ const HomeScreen = ({ isHomeTabPressed }) => {
 
   return (
     <>
-    {loading && !permissionDenied ? (
-          <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-            <ScrollView 
-              style={{ marginLeft: 2, marginRight: 2 }} 
-              showsVerticalScrollIndicator={false}
-            >
-              <AddPostCardSkeletonPlaceholder />
-              <PostCardSkeletonPlaceholder />
-              <PostCardSkeletonPlaceholder />
-            </ScrollView>
-          </Container>
-        ) : (
-          <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
-            {permissionDenied ? (
-              <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                    <TouchableOpacity
-                      style={styles.button}
-                      onPress={async () => {
-                        setButtonTitle("loading...");
-                        await getLocation(setPosition, null, setPermissionDenied);
-                        if(permissionDenied){ // if permission is still denied
-                          setButtonTitle("Share Location");
-                        }
-                      }}
-                    >
-                          <Text style={{ color: theme.primaryText, fontSize:16, fontWeight:'500'}}>{buttonTitle}</Text>
-                    </TouchableOpacity>
-              </View>
-            ) : (
-              posts.length !== 0 ? (
-                <FlatList
-                  data={posts}
-                  style={{ width: '100%' }}
-                  ListHeaderComponent={<AddPostCard />}
-                  renderItem={({ item }) => (
-                    item && item.id ? (
-                      <PostCard
-                        key={item.id}
-                        item={item}
-                        postUserId={item.userId}
-                        isProfilePage={false}
-                        isMapPostCard={false}
-                        userLocation={position}
-                      />
-                    ) : null
-                  )}
-                  keyExtractor={(item, index) => item.id ? item.id : index.toString()}
-                  showsVerticalScrollIndicator={false}
-                  refreshControl={
-                    <RefreshControl
-                      refreshing={refreshing}
-                      onRefresh={onRefresh}
-                      tintColor={theme.primaryText}
-                    />
+      {loading && !permissionDenied ? (
+        <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+          <ScrollView 
+            style={{ marginLeft: 2, marginRight: 2 }} 
+            showsVerticalScrollIndicator={false}
+          >
+            <AddPostCardSkeletonPlaceholder />
+            <PostCardSkeletonPlaceholder />
+            <PostCardSkeletonPlaceholder />
+          </ScrollView>
+        </Container>
+      ) : (
+        <Container style={[styles.container, { backgroundColor: theme.appBackGroundColor }]}>
+          {permissionDenied ? (
+            <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={async () => {
+                  setButtonTitle("loading...");
+                  await getLocation(setPosition, null, setPermissionDenied);
+                  if (permissionDenied) { 
+                    setButtonTitle("Share Location");
                   }
-                  onEndReached={loadMore}
-                  onEndReachedThreshold={0.1}
-                  ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
-                  ListEmptyComponent={() => (
-                    <View style={styles.emptyContainer}>
-                      {position &&
-                        <Text style={{ color: theme.black }}>No posts available. Pull down to refresh.</Text>
-                      }
-                    </View>
-                  )}
-                />
-              ) : (
-                <ScrollView 
-                  style={{ marginLeft: 2, marginRight: 2 }} 
-                  showsVerticalScrollIndicator={false}
-                >
-                  <AddPostCard />
-                  <PostCardSkeletonPlaceholder />
-                  <PostCardSkeletonPlaceholder />
-                  <PostCardSkeletonPlaceholder />
-                </ScrollView>
-              )
-            )}
-          </Container>
+                }}
+              >
+                <Text style={{ color: theme.primaryText, fontSize:16, fontWeight:'500'}}>{buttonTitle}</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <>
+              <FlatList
+                data={posts}
+                style={{ width: '100%' }}
+                ListHeaderComponent={<AddPostCard />}
+                renderItem={({ item }) => (
+                  item && item.id ? (
+                    <PostCard
+                      key={item.id}
+                      item={item}
+                      postUserId={item.userId}
+                      isProfilePage={false}
+                      isMapPostCard={false}
+                      userLocation={position}
+                    />
+                  ) : null
+                )}
+                keyExtractor={(item, index) => item.id ? item.id : index.toString()}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    tintColor={theme.primaryText}
+                  />
+                }
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.1}
+                ListFooterComponent={loadingMore && <ActivityIndicator size="large" color={theme.primaryText} />}
+                ListEmptyComponent={() => (
+                  <View style={styles.emptyContainer}>
+                    {position && <Text style={{ color: theme.black }}>No posts available. Pull down to refresh.</Text>}
+                  </View>
+                )}
+              />
+              {showNoPostsMessage && (
+                <Text style={{ textAlign: 'center', marginTop: 10, color: theme.primaryText }}>
+                  There are no posts to show you in your region
+                </Text>
+              )}
+            </>
+          )}
+        </Container>
       )}
-  </>
+    </>
   );
 };
 
@@ -283,15 +264,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  button:{
-    // width: '110',
-    // height: '290',
+  button: {
     backgroundColor: "#A7EAAE",
     padding: 15,
-    // alignItems: 'center',
-    // justifyContent: 'center',
     borderRadius: 10,
- }
+  }
 });
 
 export default HomeScreen;

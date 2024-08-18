@@ -10,7 +10,7 @@ import { getPostsWithFiltersForWeb, getPostsFromFollowersForWeb } from '../../Fi
 
 const WebHomeScreen = () => {
     const route = useRoute();
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [posts, setPosts] = useState([]);
     const [firstFetchForYou, setFirstFetchForYou] = useState(true);
     const [firstFetchFollowing, setFirstFetchFollowing] = useState(true);

@@ -220,7 +220,7 @@ const CustomDrawerContent = (props) => {
             </TouchableOpacity>
         </View>
 
-        <View style={{ marginTop: '10%' }}>
+        <View style={{ marginTop: '63%'}}>
           <View style={styles.switchContainer}>
             <Text style={{ color: theme.primaryText }}>{t('Dark Mode')}</Text>
             <Switch
@@ -271,14 +271,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   drawerItem: {
-    padding: 8,
+    padding:10,
     margin: 5,
     backgroundColor: '#FFF',
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: 10,
     borderColor: '#444',
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   selectedDrawerItem: {
     backgroundColor: '#A7EAAE', // Blue color for the selected button
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   filterButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10,
+    marginTop: 20,
   },
   filterButton: {
     backgroundColor: '#A7EAAE',
@@ -329,7 +329,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#FFF',
     borderRadius: 8,
-    borderWidth: 1,
     borderColor: '#444',
     flex: 1,
     alignItems: 'center',
@@ -339,6 +338,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#A7EAAE', // Blue color for the selected button
   },
   SelectLanguage: {
+    marginTop: '5%',
     fontSize: 14,
   },
   logoutButton: {
@@ -356,7 +356,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    borderWidth: 1,
     borderColor: '#444',
   },
   buttonText: {

@@ -205,14 +205,15 @@ const PostCard = ({ item, postUserId, isProfilePage, isMapPostCard, userLocation
         navigation.navigate('MapTab', {
             screen: 'Map',
             params: {
-                post:{
-                id: item.id,                
+              post: {
+                id: item.id,
                 latitude: item.coordinates.latitude,
                 longitude: item.coordinates.longitude,
                 title: item.postText,
-                image: item.postImg[0],}
+                image: item.postImg && item.postImg.length > 0 ? item.postImg[0] : null
+              }
             }
-        });
+          });
     };
 
     const handleScroll = (event) => {

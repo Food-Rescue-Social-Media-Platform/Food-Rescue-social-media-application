@@ -16,6 +16,8 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
   const { isDarkMode } = useDarkMode(); // Use the hook to get the current theme
   const themeColors = isDarkMode ? DARKCOLORS : COLORS; // Set theme-based colors
   const { t } = useTranslation();
+  console.log("PostModal: post", post);
+  console.log("PostModal: userLocation", userLocation);
 
 
   useEffect(() => {
@@ -25,7 +27,7 @@ const PostModal = ({ setVisible, visible, post, onClose, userLocation, handleUse
       calDistanceUserToPost(userLocation.latitude, userLocation.longitude, post.latitude, post.longitude, setDistance )
     }
     fetchDistance();  
-  }, []); 
+  }, [userLocation]); 
   const renderTruncatedFooter = () => {
     return (
       <Text style={styles.readMore} onPress={handleReadMorePress}>
